@@ -101,6 +101,7 @@ function DraftDot() {
 
 function SortablePinItem({ pin, href, pathname, onUnpin }: { pin: PinnedItem; href: string; pathname: string; onUnpin: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: pin.id });
+  const { t } = useLocale();
   const wasDragged = useRef(false);
 
   useEffect(() => {
@@ -160,7 +161,7 @@ function SortablePinItem({ pin, href, pathname, onUnpin }: { pin: PinnedItem; hr
           >
             <X className="size-1" />
           </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={4}>{sidebar.pinned}</TooltipContent>
+          <TooltipContent side="top" sideOffset={4}>{t.common.sidebar.pinned}</TooltipContent>
         </Tooltip>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -210,21 +211,21 @@ export function AppSidebar({ topSlot, searchSlot, headerClassName, headerStyle }
   const sidebar = t.common.sidebar;
 
   const personalNav: { key: NavKey; label: string; icon: typeof Inbox }[] = [
-    { key: "inbox", label: sidebar.inbox, icon: Inbox },
-    { key: "myIssues", label: sidebar.myIssues, icon: CircleUser },
+    { key: "inbox", label: sidebar.inbox!, icon: Inbox },
+    { key: "myIssues", label: sidebar.myIssues!, icon: CircleUser },
   ];
 
   const workspaceNav: { key: NavKey; label: string; icon: typeof Inbox }[] = [
-    { key: "issues", label: sidebar.issues, icon: ListTodo },
-    { key: "projects", label: sidebar.projects, icon: FolderKanban },
-    { key: "autopilots", label: sidebar.autopilot, icon: Zap },
-    { key: "agents", label: sidebar.agents, icon: Bot },
+    { key: "issues", label: sidebar.issues!, icon: ListTodo },
+    { key: "projects", label: sidebar.projects!, icon: FolderKanban },
+    { key: "autopilots", label: sidebar.autopilot!, icon: Zap },
+    { key: "agents", label: sidebar.agents!, icon: Bot },
   ];
 
   const configureNav: { key: NavKey; label: string; icon: typeof Inbox }[] = [
-    { key: "runtimes", label: sidebar.runtimes, icon: Monitor },
-    { key: "skills", label: sidebar.skills, icon: BookOpenText },
-    { key: "settings", label: sidebar.settings, icon: Settings },
+    { key: "runtimes", label: sidebar.runtimes!, icon: Monitor },
+    { key: "skills", label: sidebar.skills!, icon: BookOpenText },
+    { key: "settings", label: sidebar.settings!, icon: Settings },
   ];
 
   // Local presentational copy of pinnedItems for drop-animation stability.

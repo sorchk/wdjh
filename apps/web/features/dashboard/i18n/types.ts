@@ -9,7 +9,6 @@ export const localeLabels: Record<Locale, string> = {
 
 export type DashboardDict = {
   common: CommonDict;
-  auth: AuthDict;
   issues: IssuesDict;
   projects: ProjectsDict;
   agents: AgentsDict;
@@ -147,7 +146,6 @@ export type IssuesDict = {
   subIssues: string;
   subIssueOf: string;
   addSubIssues: string;
-  addSubIssue: string;
   // Dialog
   deleteIssueTitle: string;
   deleteIssueDescription: string;

@@ -35,7 +35,6 @@ func exactArgs(n int) cobra.PositionalArgs {
 	}
 }
 
-
 // initHelp configures the root command to use gh-style help output.
 func initHelp(root *cobra.Command) {
 	root.SetHelpTemplate(rootHelpTemplate)
@@ -111,7 +110,7 @@ func init() {
 var rootHelpTemplate = `Work seamlessly with Multica from the command line.
 
 USAGE
-  multica <command> <subcommand> [flags]
+  wdjh <command> <subcommand> [flags]
 {{range .Groups}}
 {{.Title}}
 {{formatCommandList (commandsInGroup $.Commands .ID)}}
@@ -119,17 +118,17 @@ USAGE
 FLAGS
 {{.LocalFlags.FlagUsages}}
 EXAMPLES
-  $ multica login
-  $ multica issue list --output json
-  $ multica daemon start
-  $ multica agent list --output json
+  $ wdjh login
+  $ wdjh issue list --output json
+  $ wdjh daemon start
+  $ wdjh agent list --output json
 
 ENVIRONMENT VARIABLES
   MULTICA_SERVER_URL    Override the default server URL
   MULTICA_WORKSPACE_ID  Set the active workspace
 
 LEARN MORE
-  Use ` + "`multica <command> <subcommand> --help`" + ` for more information about a command.
+  Use ` + "`wdjh <command> <subcommand> --help`" + ` for more information about a command.
 `
 
 var subHelpTemplate = `{{.Short}}
@@ -169,5 +168,5 @@ EXAMPLES
 {{- end}}
 
 LEARN MORE
-  Use ` + "`multica <command> <subcommand> --help`" + ` for more information about a command.
+  Use ` + "`wdjh <command> <subcommand> --help`" + ` for more information about a command.
 `

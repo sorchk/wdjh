@@ -32,8 +32,8 @@ export function LocaleProvider({
   }, []);
 
   const dictionaries: Record<Locale, DashboardDict> = {
-    en: { common: commonEn, issues: issuesEn, auth: {} as DashboardDict["auth"], projects: {} as DashboardDict["projects"], agents: {} as DashboardDict["agents"], settings: {} as DashboardDict["settings"], inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: {} as DashboardDict["autopilots"], skills: {} as DashboardDict["skills"], invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"] },
-    zh: { common: commonZh, issues: issuesZh, auth: {} as DashboardDict["auth"], projects: {} as DashboardDict["projects"], agents: {} as DashboardDict["agents"], settings: {} as DashboardDict["settings"], inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: {} as DashboardDict["autopilots"], skills: {} as DashboardDict["skills"], invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"] },
+    en: { common: commonEn, issues: issuesEn, projects: {} as DashboardDict["projects"], agents: {} as DashboardDict["agents"], settings: {} as DashboardDict["settings"], inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: {} as DashboardDict["autopilots"], skills: {} as DashboardDict["skills"], invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"] },
+    zh: { common: commonZh, issues: issuesZh, projects: {} as DashboardDict["projects"], agents: {} as DashboardDict["agents"], settings: {} as DashboardDict["settings"], inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: {} as DashboardDict["autopilots"], skills: {} as DashboardDict["skills"], invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"] },
   };
 
   return (

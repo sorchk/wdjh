@@ -131,7 +131,6 @@ export const en: IssuesDict = {
   subIssues: "Sub-issues",
   subIssueOf: "Sub-issue of",
   addSubIssues: "Add sub-issues",
-  addSubIssue: "Add sub-issue",
 
   // Dialog
   deleteIssueTitle: "Delete issue",

@@ -3,11 +3,11 @@ import type { CommonDict } from "../types";
 export const zh: CommonDict = {
   sidebar: {
     inbox: "收件箱",
-    myIssues: "我的 Issue",
-    issues: "Issue",
+    myIssues: "我的问题",
+    issues: "问题",
     projects: "项目",
     autopilot: "自动任务",
-    agents: "Agent",
+    agents: "智能体",
     runtimes: "运行时",
     skills: "技能",
     settings: "设置",
@@ -19,7 +19,7 @@ export const zh: CommonDict = {
     join: "加入",
     decline: "拒绝",
     logOut: "退出登录",
-    newIssue: "新建 Issue",
+    newIssue: "新建问题",
     workspaces: "工作区",
   },
   status: {
@@ -53,11 +53,11 @@ export const zh: CommonDict = {
     no_priority: "无优先级",
   },
   toast: {
-    failedToMoveIssue: "移动 Issue 失败",
+    failedToMoveIssue: "移动问题失败",
     linkCopied: "链接已复制",
-    failedToUpdateIssue: "更新 Issue 失败",
+    failedToUpdateIssue: "更新问题失败",
     issueDeleted: "Issue 已删除",
-    failedToDeleteIssue: "删除 Issue 失败",
+    failedToDeleteIssue: "删除问题失败",
   },
   date: {
     today: "今天",
@@ -75,12 +75,12 @@ export const zh: CommonDict = {
   },
   empty: {
     noResults: "无结果",
-    noIssuesYet: "暂无 Issue",
+    noIssuesYet: "暂无问题",
     noProjectsYet: "暂无项目",
-    noAgentsYet: "暂无 Agent",
+    noAgentsYet: "暂无智能体",
     noNotifications: "暂无通知",
-    noIssuesAssignedToYou: "没有分配给您的 Issue",
-    noArchivedAgents: "无已归档的 Agent",
-    noActiveAgents: "无活跃的 Agent",
+    noIssuesAssignedToYou: "没有分配给您的问题",
+    noArchivedAgents: "无已归档的智能体",
+    noActiveAgents: "无活跃的智能体",
   },
 };

@@ -4,19 +4,19 @@ export const zh: IssuesDict = {
   // Breadcrumbs & page titles
   issues: "Issue",
   workspace: "工作区",
-  myIssues: "我的 Issue",
+  myIssues: "我的问题",
 
   // Empty states
-  noIssuesYet: "暂无 Issue",
-  noIssuesAssignedToYou: "没有分配给您的 Issue",
-  noIssuesAssignedToYouDesc: "您创建或被分配的 Issue 将显示在这里。",
-  createAnIssueToGetStarted: "创建一个 Issue 以开始使用。",
+  noIssuesYet: "暂无问题",
+  noIssuesAssignedToYou: "没有分配给您的问题",
+  noIssuesAssignedToYouDesc: "您创建或被分配的问题将显示在这里。",
+  createAnIssueToGetStarted: "创建一个问题以开始使用。",
 
   // Activity timeline (formatActivity)
-  createdThisIssue: "创建了这个 Issue",
+  createdThisIssue: "创建了这个问题",
   changedStatusFromTo: "将状态从 {from} 改为 {to}",
   changedPriorityFromTo: "将优先级从 {from} 改为 {to}",
-  selfAssigned: "认领了这个 Issue",
+  selfAssigned: "认领了这个问题",
   assignedTo: "分配给了 {name}",
   removedAssignee: "移除了处理人",
   changedAssignee: "更改了处理人",
@@ -31,20 +31,20 @@ export const zh: IssuesDict = {
   searchIssues: "搜索 Issue...",
   searching: "搜索中...",
   noIssuesFound: "未找到 Issue。",
-  typeToSearchIssues: "输入以搜索 Issue",
+  typeToSearchIssues: "输入以搜索问题",
 
-  // Issue picker
-  setParentIssue: "设置父 Issue",
-  setParentIssueDescription: "搜索一个 Issue 作为此 Issue 的父 Issue",
-  addSubIssue: "添加子 Issue",
-  addSubIssueDescription: "搜索一个 Issue 作为子 Issue",
-  setAsParent: "将 {identifier} 设为父 Issue",
-  addedAsSubIssue: "已将 {identifier} 添加为子 Issue",
-  failedToAddSubIssue: "添加子 Issue 失败",
+  //问题picker
+  setParentIssue: "设置父问题",
+  setParentIssueDescription: "搜索一个问题作为此问题的父问题",
+  addSubIssue: "添加子问题",
+  addSubIssueDescription: "搜索一个问题作为子问题",
+  setAsParent: "将 {identifier} 设为父问题",
+  addedAsSubIssue: "已将 {identifier} 添加为子问题",
+  failedToAddSubIssue: "添加子问题失败",
 
   // Sidebar properties
   properties: "属性",
-  parentIssue: "父 Issue",
+  parentIssue: "父问题",
   details: "详情",
   createdBy: "创建人",
   created: "创建于",
@@ -61,13 +61,13 @@ export const zh: IssuesDict = {
   assignee: "处理人",
   dueDate: "截止日期",
   unassigned: "未分配",
-  createSubIssue: "创建子 Issue",
-  setParentIssueAction: "设置父 Issue...",
-  addSubIssueAction: "添加子 Issue...",
+  createSubIssue: "创建子问题",
+  setParentIssueAction: "设置父问题...",
+  addSubIssueAction: "添加子问题...",
   pinToSidebar: "固定到侧边栏",
   unpinFromSidebar: "从侧边栏取消固定",
   copyLink: "复制链接",
-  deleteIssue: "删除 Issue",
+  deleteIssue: "删除问题",
   toggleSidebar: "切换侧边栏",
 
   // Subscribe
@@ -82,8 +82,8 @@ export const zh: IssuesDict = {
   noResultsFound: "未找到结果",
 
   // Not found
-  issueDoesNotExist: "此 Issue 不存在或已被删除。",
-  backToIssues: "返回 Issue 列表",
+  issueDoesNotExist: "此问题不存在或已被删除。",
+  backToIssues: "返回问题列表",
 
   // Placeholders
   issueTitle: "Issue 标题",
@@ -91,11 +91,11 @@ export const zh: IssuesDict = {
 
   // Filter scopes
   all: "全部",
-  scopeAllDescription: "此工作区中的所有 Issue",
+  scopeAllDescription: "此工作区中的所有问题",
   members_scope: "成员",
-  scopeMembersDescription: "分配给成员的 Issue",
+  scopeMembersDescription: "分配给成员的问题",
   agents_scope: "Agent",
-  scopeAgentsDescription: "分配给 AI Agent 的 Issue",
+  scopeAgentsDescription: "分配给 AI Agent 的问题",
 
   // Filter labels
   filter: "筛选",
@@ -120,40 +120,39 @@ export const zh: IssuesDict = {
   resetAllFilters: "清除所有筛选",
 
   // Count labels
-  issue_s: "{count} 个 Issue",
+  issue_s: "{count} 个问题",
   issue_singular: "Issue",
   issue_plural: "Issue",
 
   // Sub-issues
-  subIssues: "子 Issue",
-  subIssueOf: "子 Issue 于",
-  addSubIssues: "添加子 Issue",
-  addSubIssue: "添加子 Issue",
+  subIssues: "子问题",
+  subIssueOf: "子问题于",
+  addSubIssues: "添加子问题",
 
   // Dialog
-  deleteIssueTitle: "删除 Issue",
+  deleteIssueTitle: "删除问题",
   deleteIssueDescription:
-    "此操作将永久删除此 Issue 及其所有评论，无法撤销。",
+    "此操作将永久删除此问题及其所有评论，无法撤销。",
   cancel: "取消",
   delete: "删除",
   deleting: "删除中...",
 
   // Batch
   selected: "已选择 {count} 项",
-  updatedNIssues: "已更新 {count} 个 Issue",
-  failedToUpdateIssues: "更新 Issue 失败",
-  deletedNIssues: "已删除 {count} 个 Issue",
-  failedToDeleteIssues: "删除 Issue 失败",
+  updatedNIssues: "已更新 {count} 个问题",
+  failedToUpdateIssues: "更新问题失败",
+  deletedNIssues: "已删除 {count} 个问题",
+  failedToDeleteIssues: "删除问题失败",
   deleteNIssuesTitle: "删除 {count} 个 Issue？",
   deleteNIssuesDescription:
-    "此操作无法撤销，将永久删除所选的 {count} 个 Issue 及所有相关数据。",
+    "此操作无法撤销，将永久删除所选的 {count} 个问题及所有相关数据。",
 
   // Toast
-  failedToMoveIssue: "移动 Issue 失败",
+  failedToMoveIssue: "移动问题失败",
   issueDeleted: "Issue 已删除",
-  failedToDeleteIssue: "删除 Issue 失败",
+  failedToDeleteIssue: "删除问题失败",
   linkCopied: "链接已复制",
-  failedToUpdateIssue: "更新 Issue 失败",
+  failedToUpdateIssue: "更新问题失败",
 
   // Date options
   today: "今天",

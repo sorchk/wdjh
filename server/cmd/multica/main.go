@@ -15,16 +15,16 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "wdjh",
-	Short: "wdjh CLI — local agent runtime and management tool",
-	Long:  "Work seamlessly with wdjh from the command line.",
+	Use:           "wdjh",
+	Short:         "wdjh CLI — local agent runtime and management tool",
+	Long:          "Work seamlessly with wdjh from the command line.",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 }
 
 func init() {
 	rootCmd.Version = fmt.Sprintf("%s (commit: %s, built: %s)\ngo: %s, os/arch: %s/%s", version, commit, date, runtime.Version(), runtime.GOOS, runtime.GOARCH)
-	rootCmd.SetVersionTemplate("multica {{.Version}}\n")
+	rootCmd.SetVersionTemplate("wdjh {{.Version}}\n")
 
 	rootCmd.PersistentFlags().String("server-url", "", "Multica server URL (env: MULTICA_SERVER_URL)")
 	rootCmd.PersistentFlags().String("workspace-id", "", "Workspace ID (env: MULTICA_WORKSPACE_ID)")
