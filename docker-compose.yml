@@ -1,0 +1,16 @@
+name: wdjh
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: wdjh
+      POSTGRES_USER: ${POSTGRES_USER:-wdjh}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wdjh}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
