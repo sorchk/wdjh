@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@multica/ui/components/common/theme-provider";
+import { useLocale, locales, localeLabels } from "@/features/dashboard/i18n";
 import { cn } from "@multica/ui/lib/utils";
 
 const LIGHT_COLORS = {
@@ -86,6 +87,7 @@ const themeOptions = [
 
 export function AppearanceTab() {
   const { theme, setTheme } = useTheme();
+  const { locale, setLocale } = useLocale();
 
   return (
     <div className="space-y-8">
@@ -136,6 +138,32 @@ export function AppearanceTab() {
                 >
                   {opt.label}
                 </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold">Language</h2>
+        <div className="flex gap-6" role="radiogroup" aria-label="Language">
+          {locales.map((l) => {
+            const active = locale === l;
+            return (
+              <button
+                key={l}
+                role="radio"
+                aria-checked={active}
+                aria-label={`Select ${localeLabels[l]} language`}
+                onClick={() => setLocale(l)}
+                className={cn(
+                  "h-9 px-4 rounded-md text-sm font-medium transition-all",
+                  active
+                    ? "bg-brand text-white"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                )}
+              >
+                {localeLabels[l]}
               </button>
             );
           })}
