@@ -1,6 +1,6 @@
-import type { InviteDict, WorkspaceDict, ProjectsDict, InboxDict } from "./types";
+import type { InviteDict, WorkspaceDict, ProjectsDict, InboxDict, RuntimesDict } from "./types";
 
-export const en: InviteDict & WorkspaceDict & ProjectsDict & InboxDict = {
+export const en: InviteDict & WorkspaceDict & ProjectsDict & InboxDict & RuntimesDict = {
   invitationNotFound: "Invitation not found",
   invitationNotFoundDesc:
     "This invitation may have expired, been revoked, or doesn't belong to your account.",
@@ -57,4 +57,9 @@ export const en: InviteDict & WorkspaceDict & ProjectsDict & InboxDict = {
   yourInboxIsEmpty: "Your inbox is empty",
   selectANotificationToViewDetails: "Select a notification to view details",
   archive: "Archive",
+  runtimes: "Runtimes",
+  selectARuntimeToViewDetails: "Select a runtime to view details",
+  noRuntimesOwnedByYou: "No runtimes owned by you",
+  noRuntimesForThisOwner: "No runtimes for this owner",
+  noRuntimesRegistered: "No runtimes registered",
 };

@@ -1,6 +1,6 @@
-import type { InviteDict, WorkspaceDict, ProjectsDict, InboxDict } from "./types";
+import type { InviteDict, WorkspaceDict, ProjectsDict, InboxDict, RuntimesDict } from "./types";
 
-export const zh: InviteDict & WorkspaceDict & ProjectsDict & InboxDict = {
+export const zh: InviteDict & WorkspaceDict & ProjectsDict & InboxDict & RuntimesDict = {
   invitationNotFound: "邀请未找到",
   invitationNotFoundDesc: "此邀请可能已过期、被撤销或不属于您的账户。",
   goToDashboard: "前往仪表盘",
@@ -56,4 +56,9 @@ export const zh: InviteDict & WorkspaceDict & ProjectsDict & InboxDict = {
   yourInboxIsEmpty: "您的收件箱为空",
   selectANotificationToViewDetails: "选择通知查看详情",
   archive: "归档",
+  runtimes: "运行时",
+  selectARuntimeToViewDetails: "选择运行时查看详情",
+  noRuntimesOwnedByYou: "您没有拥有的运行时",
+  noRuntimesForThisOwner: "该所有者没有运行时",
+  noRuntimesRegistered: "没有已注册的运行时",
 };

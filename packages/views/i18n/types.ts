@@ -66,3 +66,11 @@ export type InboxDict = {
   selectANotificationToViewDetails: string;
   archive: string;
 };
+
+export type RuntimesDict = {
+  runtimes: string;
+  selectARuntimeToViewDetails: string;
+  noRuntimesOwnedByYou: string;
+  noRuntimesForThisOwner: string;
+  noRuntimesRegistered: string;
+};

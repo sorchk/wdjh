@@ -393,7 +393,13 @@ export type InboxDict = {
   selectANotificationToViewDetails: string;
   archive: string;
 };
-export type RuntimesDict = Record<string, unknown>;
+export type RuntimesDict = {
+  runtimes: string;
+  selectARuntimeToViewDetails: string;
+  noRuntimesOwnedByYou: string;
+  noRuntimesForThisOwner: string;
+  noRuntimesRegistered: string;
+};
 export type InviteDict = {
   invitationNotFound: string;
   invitationNotFoundDesc: string;
