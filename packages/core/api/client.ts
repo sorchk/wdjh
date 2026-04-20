@@ -231,6 +231,13 @@ export class ApiClient {
     });
   }
 
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    await this.fetch("/api/me/change-password", {
+      method: "POST",
+      body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
+    });
+  }
+
   // Issues
   async listIssues(params?: ListIssuesParams): Promise<ListIssuesResponse> {
     const search = new URLSearchParams();
