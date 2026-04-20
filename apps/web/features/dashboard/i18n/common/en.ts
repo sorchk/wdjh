@@ -2,6 +2,7 @@ import type { CommonDict } from "../types";
 
 export const en: CommonDict = {
   sidebar: {
+    search: "Search",
     inbox: "Inbox",
     myIssues: "My Issues",
     issues: "Issues",

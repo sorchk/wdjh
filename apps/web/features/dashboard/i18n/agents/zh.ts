@@ -1,0 +1,30 @@
+import type { AgentsDict } from "../types";
+
+export const zh: AgentsDict = {
+  agents: "智能体",
+  searchAgentPlaceholder: "搜索智能体...",
+  noAgentsYet: "暂无智能体",
+  noActiveAgents: "无活跃的智能体",
+  noArchivedAgents: "无已归档的智能体",
+  createAgent: "创建智能体",
+  selectAgentToViewDetails: "选择一个智能体以查看详情",
+  agentUpdated: "智能体已更新",
+  failedToUpdateAgent: "更新智能体失败",
+  agentArchived: "智能体已归档",
+  failedToArchiveAgent: "归档智能体失败",
+  agentRestored: "智能体已恢复",
+  failedToRestoreAgent: "恢复智能体失败",
+  showActiveAgents: "显示活跃智能体",
+  showArchivedAgents: "显示已归档智能体",
+  createAgentDialog: {
+    title: "创建智能体",
+    description: "为您的 workspace 创建一个新的 AI 智能体",
+    nameLabel: "名称",
+    namePlaceholder: "例如：代码审查机器人",
+    descriptionLabel: "描述",
+    descriptionPlaceholder: "简要描述这个智能体的功能",
+    cancel: "取消",
+    creating: "创建中...",
+    create: "创建",
+  },
+};

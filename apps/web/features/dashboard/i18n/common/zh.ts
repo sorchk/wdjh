@@ -2,6 +2,7 @@ import type { CommonDict } from "../types";
 
 export const zh: CommonDict = {
   sidebar: {
+    search: "搜索",
     inbox: "收件箱",
     myIssues: "我的问题",
     issues: "问题",

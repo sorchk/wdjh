@@ -80,6 +80,15 @@ func generateCode() (string, error) {
 	return fmt.Sprintf("%06d", n), nil
 }
 
+func acceptsEnglish(r *http.Request) bool {
+	acceptLang := r.Header.Get("Accept-Language")
+	if acceptLang == "" {
+		return false
+	}
+	acceptLang = strings.ToLower(acceptLang)
+	return strings.Contains(acceptLang, "en")
+}
+
 func (h *Handler) issueJWT(user db.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":   uuidToString(user.ID),
@@ -688,11 +697,15 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !auth.CheckPassword(oldPassword, passwordHash) {
-		writeError(w, http.StatusBadRequest, "原密码不正确")
+		if acceptsEnglish(r) {
+			writeError(w, http.StatusBadRequest, "incorrect password")
+		} else {
+			writeError(w, http.StatusBadRequest, "原密码不正确")
+		}
 		return
 	}
 
-	valid, errMsg := auth.ValidatePasswordComplexity(newPassword)
+	valid, errMsg := auth.ValidatePasswordComplexity(newPassword, acceptsEnglish(r))
 	if !valid {
 		writeError(w, http.StatusBadRequest, errMsg)
 		return
@@ -711,5 +724,9 @@ func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	slog.Info("password changed", append(logger.RequestAttrs(r), "user_id", userID)...)
-	writeJSON(w, http.StatusOK, map[string]string{"message": "密码修改成功"})
+	if acceptsEnglish(r) {
+		writeJSON(w, http.StatusOK, map[string]string{"message": "password changed successfully"})
+	} else {
+		writeJSON(w, http.StatusOK, map[string]string{"message": "密码修改成功"})
+	}
 }

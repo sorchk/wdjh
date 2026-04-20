@@ -16,6 +16,13 @@ var (
 	ErrPasswordNeedDigit     = "密码必须包含数字"
 	ErrPasswordNeedSpecial   = "密码必须包含特殊字符"
 	ErrPasswordTooSimple     = "密码必须包含至少2种以上字符类型（大写字母、小写字母、数字、特殊字符）"
+
+	ErrPasswordTooShortEn      = "password must be at least 8 characters"
+	ErrPasswordNeedUpperCaseEn = "password must contain uppercase letters"
+	ErrPasswordNeedLowerCaseEn = "password must contain lowercase letters"
+	ErrPasswordNeedDigitEn     = "password must contain digits"
+	ErrPasswordNeedSpecialEn   = "password must contain special characters"
+	ErrPasswordTooSimpleEn     = "password must contain at least 2 character types (uppercase, lowercase, digits, special characters)"
 )
 
 func HashPassword(password string) (string, error) {
@@ -28,8 +35,11 @@ func CheckPassword(password, hash string) bool {
 	return err == nil
 }
 
-func ValidatePasswordComplexity(password string) (bool, string) {
+func ValidatePasswordComplexity(password string, useEnglish bool) (bool, string) {
 	if len(password) < 8 {
+		if useEnglish {
+			return false, ErrPasswordTooShortEn
+		}
 		return false, ErrPasswordTooShort
 	}
 
@@ -62,6 +72,9 @@ func ValidatePasswordComplexity(password string) (bool, string) {
 	}
 
 	if count < 2 {
+		if useEnglish {
+			return false, ErrPasswordTooSimpleEn
+		}
 		return false, ErrPasswordTooSimple
 	}
 

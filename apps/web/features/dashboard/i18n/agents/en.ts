@@ -1,0 +1,30 @@
+import type { AgentsDict } from "../types";
+
+export const en: AgentsDict = {
+  agents: "Agents",
+  searchAgentPlaceholder: "Search agents...",
+  noAgentsYet: "No agents yet",
+  noActiveAgents: "No active agents",
+  noArchivedAgents: "No archived agents",
+  createAgent: "Create Agent",
+  selectAgentToViewDetails: "Select an agent to view details",
+  agentUpdated: "Agent updated",
+  failedToUpdateAgent: "Failed to update agent",
+  agentArchived: "Agent archived",
+  failedToArchiveAgent: "Failed to archive agent",
+  agentRestored: "Agent restored",
+  failedToRestoreAgent: "Failed to restore agent",
+  showActiveAgents: "Show active agents",
+  showArchivedAgents: "Show archived agents",
+  createAgentDialog: {
+    title: "Create Agent",
+    description: "Create a new AI agent for your workspace",
+    nameLabel: "Name",
+    namePlaceholder: "e.g. Code Review Bot",
+    descriptionLabel: "Description",
+    descriptionPlaceholder: "Brief description of what this agent does",
+    cancel: "Cancel",
+    creating: "Creating...",
+    create: "Create",
+  },
+};

@@ -10,10 +10,12 @@ import { toast } from "sonner";
 import { useAuthStore } from "@multica/core/auth";
 import { api } from "@multica/core/api";
 import { useFileUpload } from "@multica/core/hooks/use-file-upload";
+import { useLocale } from "@/features/dashboard/i18n";
 
 export function AccountTab() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
+  const { t } = useLocale();
 
   const [profileName, setProfileName] = useState(user?.name ?? "");
   const [profileSaving, setProfileSaving] = useState(false);
@@ -66,22 +68,22 @@ export function AccountTab() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      toast.error("两次输入的密码不一致");
+      toast.error(t.settings.password.passwordMismatch);
       return;
     }
     if (newPassword.length < 8) {
-      toast.error("密码长度至少8位");
+      toast.error(t.settings.password.passwordTooShort);
       return;
     }
     setPasswordSaving(true);
     try {
       await api.changePassword(oldPassword, newPassword);
-      toast.success("密码修改成功");
+      toast.success(t.settings.password.changeSuccess);
       setOldPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "密码修改失败");
+      toast.error(t.settings.password.changeFailed);
     } finally {
       setPasswordSaving(false);
     }
@@ -156,12 +158,12 @@ export function AccountTab() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold">修改密码</h2>
+        <h2 className="text-sm font-semibold">{t.settings.password.changePassword}</h2>
 
         <Card>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-xs text-muted-foreground">原密码</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.password.oldPassword}</Label>
               <Input
                 type="password"
                 value={oldPassword}
@@ -170,7 +172,7 @@ export function AccountTab() {
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">新密码</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.password.newPassword}</Label>
               <Input
                 type="password"
                 value={newPassword}
@@ -178,11 +180,11 @@ export function AccountTab() {
                 className="mt-1"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                密码必须包含至少2种字符类型（大写字母、小写字母、数字、特殊字符），长度8位以上
+                {t.settings.password.passwordRequirements}
               </p>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">确认新密码</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.password.confirmNewPassword}</Label>
               <Input
                 type="password"
                 value={confirmPassword}
@@ -197,7 +199,7 @@ export function AccountTab() {
                 disabled={passwordSaving || !oldPassword || !newPassword || !confirmPassword}
               >
                 <Save className="h-3 w-3" />
-                {passwordSaving ? "处理中..." : "修改密码"}
+                {passwordSaving ? t.settings.password.processing : t.settings.password.changePassword}
               </Button>
             </div>
           </CardContent>
