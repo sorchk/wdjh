@@ -19,6 +19,7 @@ export type DashboardDict = {
   skills: SkillsDict;
   invite: InviteDict;
   workspace: WorkspaceDict;
+  auth: AuthDict;
 };
 
 export type CommonDict = {
@@ -353,6 +354,64 @@ export type SettingsDict = {
     processing: string;
     changeSuccess: string;
     changeFailed: string;
+  };
+};
+
+export type AuthDict = {
+  login: {
+    signIn: string;
+    enterCredentials: string;
+    email: string;
+    emailPlaceholder: string;
+    password: string;
+    passwordPlaceholder: string;
+    signInButton: string;
+    signingIn: string;
+    authorizeCli: string;
+    allowCliAccess: string;
+    useDifferentAccount: string;
+  };
+  init: {
+    initializeAdmin: string;
+    createAdminAccount: string;
+    email: string;
+    emailPlaceholder: string;
+    password: string;
+    passwordPlaceholder: string;
+    confirmPassword: string;
+    confirmPasswordPlaceholder: string;
+    createButton: string;
+    creating: string;
+    emailRequired: string;
+    passwordTooShort: string;
+    passwordsDoNotMatch: string;
+    initFailed: string;
+  };
+  invite: {
+    back: string;
+    logOut: string;
+    invitationNotFound: string;
+    invitationNotFoundDesc: string;
+    goToDashboard: string;
+    joinedWorkspace: string;
+    redirecting: string;
+    invitationDeclined: string;
+    declinedDesc: string;
+    joinWorkspace: string;
+    invitedYou: string;
+    asAdmin: string;
+    asMember: string;
+    alreadyHandled: string;
+    expired: string;
+    decline: string;
+    declining: string;
+    accept: string;
+    acceptAndJoin: string;
+    joining: string;
+    failedToAccept: string;
+    failedToDecline: string;
+    welcomeToMultica: string;
+    createWorkspaceToGetStarted: string;
   };
 };
 
