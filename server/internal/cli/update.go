@@ -132,9 +132,9 @@ func UpdateViaDownload(targetVersion string) (string, error) {
 	}
 
 	// Extract the binary from the archive.
-	binaryName := "wdjh"
+	binaryName := "multica"
 	if runtime.GOOS == "windows" {
-		binaryName = "wdjh.exe"
+		binaryName = "multica.exe"
 	}
 	var binaryData []byte
 	if runtime.GOOS == "windows" {
@@ -148,7 +148,7 @@ func UpdateViaDownload(targetVersion string) (string, error) {
 
 	// Atomic replace: write to temp file, then rename over the original.
 	dir := filepath.Dir(exePath)
-	tmpFile, err := os.CreateTemp(dir, "wdjh-update-*")
+	tmpFile, err := os.CreateTemp(dir, "multica-update-*")
 	if err != nil {
 		return "", fmt.Errorf("create temp file: %w", err)
 	}

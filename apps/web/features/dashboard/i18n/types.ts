@@ -171,6 +171,56 @@ export type IssuesDict = {
   tomorrow: string;
   nextWeek: string;
   clearDate: string;
+
+  // Create issue modal
+  newIssue: string;
+  newSubIssue: string;
+  collapse: string;
+  expand: string;
+  close: string;
+  issueTitlePlaceholder: string;
+  addDescriptionPlaceholder: string;
+  creating: string;
+  createIssue: string;
+  issueCreated: string;
+  viewIssue: string;
+  failedToCreateIssue: string;
+
+  // Create workspace modal
+  createNewWorkspace: string;
+  workspaceDescription: string;
+  back: string;
+
+  // Create workspace form
+  workspaceName: string;
+  workspaceUrl: string;
+  workspaceUrlPrefix: string;
+  workspaceNamePlaceholder: string;
+  workspaceUrlPlaceholder: string;
+  creatingWorkspace: string;
+  createWorkspace: string;
+  workspaceSlugFormatError: string;
+  workspaceSlugConflictError: string;
+  failedToCreateWorkspace: string;
+  chooseDifferentWorkspaceUrl: string;
+
+  // Create project modal
+  newProject: string;
+  collapseProject: string;
+  expandProject: string;
+  closeProject: string;
+  chooseIcon: string;
+  projectTitlePlaceholder: string;
+  addDescriptionProject: string;
+  noLead: string;
+  assignLead: string;
+  membersLabel: string;
+  agentsLabel: string;
+  noResultsProject: string;
+  creatingProject: string;
+  createProject: string;
+  projectCreated: string;
+  failedToCreateProject: string;
 };
 
 export type ProjectsDict = Record<string, unknown>;

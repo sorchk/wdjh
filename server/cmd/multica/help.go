@@ -110,7 +110,7 @@ func init() {
 var rootHelpTemplate = `Work seamlessly with Multica from the command line.
 
 USAGE
-  wdjh <command> <subcommand> [flags]
+  multica <command> <subcommand> [flags]
 {{range .Groups}}
 {{.Title}}
 {{formatCommandList (commandsInGroup $.Commands .ID)}}
@@ -118,17 +118,17 @@ USAGE
 FLAGS
 {{.LocalFlags.FlagUsages}}
 EXAMPLES
-  $ wdjh login
-  $ wdjh issue list --output json
-  $ wdjh daemon start
-  $ wdjh agent list --output json
+  $ multica login
+  $ multica issue list --output json
+  $ multica daemon start
+  $ multica agent list --output json
 
 ENVIRONMENT VARIABLES
   MULTICA_SERVER_URL    Override the default server URL
   MULTICA_WORKSPACE_ID  Set the active workspace
 
 LEARN MORE
-  Use ` + "`wdjh <command> <subcommand> --help`" + ` for more information about a command.
+  Use ` + "`multica <command> <subcommand> --help`" + ` for more information about a command.
 `
 
 var subHelpTemplate = `{{.Short}}
@@ -168,5 +168,5 @@ EXAMPLES
 {{- end}}
 
 LEARN MORE
-  Use ` + "`wdjh <command> <subcommand> --help`" + ` for more information about a command.
+  Use ` + "`{{.CommandPath}} <command> --help`" + ` for more information about a command.
 `

@@ -1,12 +1,12 @@
 version: 2
 
-project_name: wdjh
+project_name: multica
 
 builds:
-  - id: wdjh
+  - id: multica
     main: ./cmd/multica
     dir: server
-    binary: wdjh
+    binary: multica
     ldflags:
       - -s -w
       - -X main.version={{.Version}}
@@ -47,7 +47,7 @@ changelog:
       - "^chore:"
 
 brews:
-  - name: wdjh
+  - name: multica
     repository:
       owner: multica-ai
       name: homebrew-tap
@@ -55,9 +55,9 @@ brews:
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: Formula
     homepage: "https://github.com/multica-ai/wdjh"
-    description: "wdjh CLI — local agent runtime and management tool for the wdjh platform"
+    description: "multica CLI — local agent runtime and management tool for the multica platform"
     license: "Apache-2.0"
     install: |
-      bin.install "wdjh"
+      bin.install "multica"
     test: |
-      system "#{bin}/wdjh", "version"
+      system "#{bin}/multica", "version"

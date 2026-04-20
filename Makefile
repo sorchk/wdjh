@@ -184,12 +184,12 @@ server:
 	cd server && go run ./cmd/server
 
 daemon:
-	@$(MAKE) wdjh MULTICA_ARGS="daemon restart --profile local"
+	@$(MAKE) multica MULTICA_ARGS="daemon restart --profile local"
 
 cli:
-	@$(MAKE) wdjh MULTICA_ARGS="$(MULTICA_ARGS)"
+	@$(MAKE) multica MULTICA_ARGS="$(MULTICA_ARGS)"
 
-wdjh:
+multica:
 	cd server && go run ./cmd/multica $(MULTICA_ARGS)
 
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
@@ -198,7 +198,7 @@ DATE    ?= $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 build:
 	cd server && go build -o bin/server ./cmd/server
-	cd server && go build -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" -o bin/wdjh ./cmd/multica
+	cd server && go build -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" -o bin/multica ./cmd/multica
 	cd server && go build -o bin/migrate ./cmd/migrate
 
 test:

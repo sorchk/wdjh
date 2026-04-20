@@ -12,11 +12,10 @@ import {
 } from "@multica/ui/components/ui/dialog";
 import { paths } from "@multica/core/paths";
 import { CreateWorkspaceForm } from "../workspace/create-workspace-form";
+import { useLocale } from "@/features/dashboard/i18n";
 
 export function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
-  // This modal is full-screen, so it covers the app titlebar. On macOS desktop
-  // we hide the traffic lights for its lifetime so the Back button in the top-
-  // left corner isn't stolen by the native controls' hit-test. No-op elsewhere.
+  const { t } = useLocale();
   useImmersiveMode();
   const router = useNavigation();
 
@@ -49,27 +48,21 @@ export function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
           onClick={onClose}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t.issues.back}
         </Button>
 
         <div className="flex w-full max-w-md flex-col items-center gap-6">
           <div className="text-center">
             <DialogTitle className="text-2xl font-semibold">
-              Create a new workspace
+              {t.issues.createNewWorkspace}
             </DialogTitle>
             <DialogDescription className="mt-2">
-              Workspaces are shared environments where teams can work on
-              projects and issues.
+              {t.issues.workspaceDescription}
             </DialogDescription>
           </div>
           <CreateWorkspaceForm
             onSuccess={(newWs) => {
               onClose();
-              // Navigate INTO the new workspace. The mutation's own onSuccess
-              // (in core/workspace/mutations.ts) runs before this callback and
-              // has already seeded the workspace list cache, so the destination
-              // [workspaceSlug]/layout will resolve newWs.slug → workspace
-              // synchronously without a loading flash.
               router.push(paths.workspace(newWs.slug).issues());
             }}
           />
