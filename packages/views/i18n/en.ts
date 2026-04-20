@@ -1,6 +1,6 @@
-import type { InviteDict, WorkspaceDict } from "./types";
+import type { InviteDict, WorkspaceDict, ProjectsDict } from "./types";
 
-export const en: InviteDict & WorkspaceDict = {
+export const en: InviteDict & WorkspaceDict & ProjectsDict = {
   invitationNotFound: "Invitation not found",
   invitationNotFoundDesc:
     "This invitation may have expired, been revoked, or doesn't belong to your account.",
@@ -25,4 +25,21 @@ export const en: InviteDict & WorkspaceDict = {
   logOut: "Log out",
   welcome: "Welcome to Multica",
   createWorkspace: "Create your workspace to get started.",
+  projects: "Projects",
+  newProject: "New project",
+  noProjectsYet: "No projects yet",
+  createYourFirstProject: "Create your first project",
+  noLead: "No lead",
+  members: "Members",
+  agents: "Agents",
+  noResults: "No results",
+  name: "Name",
+  priority: "Priority",
+  status: "Status",
+  progress: "Progress",
+  lead: "Lead",
+  created: "Created",
+  today: "Today",
+  daysAgo: (n: number) => (n === 1 ? "1d ago" : `${n}d ago`),
+  monthsAgo: (n: number) => `${n}mo ago`,
 };

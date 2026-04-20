@@ -28,3 +28,23 @@ export type WorkspaceDict = {
   back: string;
   logOut: string;
 };
+
+export type ProjectsDict = {
+  projects: string;
+  newProject: string;
+  noProjectsYet: string;
+  createYourFirstProject: string;
+  noLead: string;
+  members: string;
+  agents: string;
+  noResults: string;
+  name: string;
+  priority: string;
+  status: string;
+  progress: string;
+  lead: string;
+  created: string;
+  today: string;
+  daysAgo: (n: number) => string;
+  monthsAgo: (n: number) => string;
+};
