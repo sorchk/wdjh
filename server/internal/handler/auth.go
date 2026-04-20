@@ -648,3 +648,68 @@ func (h *Handler) UpdateMe(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, userToResponse(updatedUser))
 }
+
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+func (h *Handler) ChangePassword(w http.ResponseWriter, r *http.Request) {
+	userID, ok := requireUserID(w, r)
+	if !ok {
+		return
+	}
+
+	var req ChangePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	oldPassword := auth.SanitizePassword(req.OldPassword)
+	newPassword := auth.SanitizePassword(req.NewPassword)
+
+	if oldPassword == "" || newPassword == "" {
+		writeError(w, http.StatusBadRequest, "old_password and new_password are required")
+		return
+	}
+
+	user, err := h.Queries.GetUser(r.Context(), parseUUID(userID))
+	if err != nil {
+		writeError(w, http.StatusNotFound, "user not found")
+		return
+	}
+
+	var passwordHash string
+	err = h.DB.QueryRow(r.Context(), `SELECT password_hash FROM "user" WHERE id = $1`, user.ID).Scan(&passwordHash)
+	if err != nil || passwordHash == "" {
+		writeError(w, http.StatusBadRequest, "user has no password set")
+		return
+	}
+
+	if !auth.CheckPassword(oldPassword, passwordHash) {
+		writeError(w, http.StatusBadRequest, "原密码不正确")
+		return
+	}
+
+	valid, errMsg := auth.ValidatePasswordComplexity(newPassword)
+	if !valid {
+		writeError(w, http.StatusBadRequest, errMsg)
+		return
+	}
+
+	newHash, err := auth.HashPassword(newPassword)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to hash password")
+		return
+	}
+
+	_, err = h.DB.Exec(r.Context(), `UPDATE "user" SET password_hash = $1 WHERE id = $2`, newHash, user.ID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to update password")
+		return
+	}
+
+	slog.Info("password changed", append(logger.RequestAttrs(r), "user_id", userID)...)
+	writeJSON(w, http.StatusOK, map[string]string{"message": "密码修改成功"})
+}

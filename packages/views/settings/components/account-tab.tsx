@@ -20,6 +20,11 @@ export function AccountTab() {
   const { upload, uploading } = useFileUpload(api);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+
   useEffect(() => {
     setProfileName(user?.name ?? "");
   }, [user]);
@@ -34,7 +39,6 @@ export function AccountTab() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // Reset input so the same file can be re-selected
     e.target.value = "";
     try {
       const result = await upload(file);
@@ -60,6 +64,29 @@ export function AccountTab() {
     }
   };
 
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("两次输入的密码不一致");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("密码长度至少8位");
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      await api.changePassword(oldPassword, newPassword);
+      toast.success("密码修改成功");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "密码修改失败");
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <section className="space-y-4">
@@ -67,7 +94,6 @@ export function AccountTab() {
 
         <Card>
           <CardContent className="space-y-4">
-            {/* Avatar upload */}
             <div className="flex items-center gap-4">
               <button
                 type="button"
@@ -123,6 +149,55 @@ export function AccountTab() {
               >
                 <Save className="h-3 w-3" />
                 {profileSaving ? "Updating..." : "Update Profile"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-sm font-semibold">修改密码</h2>
+
+        <Card>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-xs text-muted-foreground">原密码</Label>
+              <Input
+                type="password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">新密码</Label>
+              <Input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                密码必须包含至少2种字符类型（大写字母、小写字母、数字、特殊字符），长度8位以上
+              </p>
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">确认新密码</Label>
+              <Input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-1">
+              <Button
+                size="sm"
+                onClick={handlePasswordChange}
+                disabled={passwordSaving || !oldPassword || !newPassword || !confirmPassword}
+              >
+                <Save className="h-3 w-3" />
+                {passwordSaving ? "处理中..." : "修改密码"}
               </Button>
             </div>
           </CardContent>
