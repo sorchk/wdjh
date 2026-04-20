@@ -12,6 +12,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Input } from "@multica/ui/components/ui/input";
 import { Button } from "@multica/ui/components/ui/button";
 import { Label } from "@multica/ui/components/ui/label";
+import { useLocale } from "@/features/dashboard/i18n";
 
 type Step = "credentials" | "cli_confirm";
 
@@ -21,6 +22,7 @@ function redirectToCliCallback(url: string, token: string, state: string) {
 }
 
 function LoginPageContent() {
+  const { t } = useLocale();
   const router = useRouter();
   const qc = useQueryClient();
   const user = useAuthStore((s) => s.user);
@@ -82,7 +84,7 @@ function LoginPageContent() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Invalid credentials");
+        throw new Error(data.error || t.auth.login.invalidCredentials);
       }
 
       const data = await res.json();
@@ -104,7 +106,7 @@ function LoginPageContent() {
         first ? paths.workspace(first.slug).issues() : paths.newWorkspace(),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t.auth.login.loginFailed);
     } finally {
       setLoading(false);
     }
@@ -126,7 +128,7 @@ function LoginPageContent() {
       }
       redirectToCliCallback(cliCallbackRef.current.url, token, cliCallbackRef.current.state);
     } catch {
-      setError("Failed to authorize CLI. Please log in again.");
+      setError(t.auth.login.failedToAuthorizeCli);
       setExistingUser(null);
       setStep("credentials");
       setLoading(false);
@@ -138,13 +140,9 @@ function LoginPageContent() {
       <div className="flex min-h-svh items-center justify-center">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Authorize CLI</CardTitle>
+            <CardTitle className="text-2xl">{t.auth.login.authorize}</CardTitle>
             <CardDescription>
-              Allow the CLI to access Multica as{" "}
-              <span className="font-medium text-foreground">
-                {existingUser.email}
-              </span>
-              ?
+              {t.auth.login.allowAccess(existingUser.email)}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
@@ -154,7 +152,7 @@ function LoginPageContent() {
               className="w-full"
               size="lg"
             >
-              {loading ? "Authorizing..." : "Authorize"}
+              {loading ? t.auth.login.authorizing : t.auth.login.authorize}
             </Button>
             <Button
               variant="ghost"
@@ -165,7 +163,7 @@ function LoginPageContent() {
                 setStep("credentials");
               }}
             >
-              Use a different account
+              {t.auth.login.useDifferentAccount}
             </Button>
           </CardContent>
         </Card>
@@ -177,19 +175,19 @@ function LoginPageContent() {
     <div className="flex min-h-svh items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Sign in</CardTitle>
+          <CardTitle className="text-2xl">{t.auth.login.signIn}</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account
+            {t.auth.login.enterCredentials}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form id="login-form" onSubmit={handleCredentialsLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.auth.login.email}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t.auth.login.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoFocus
@@ -197,11 +195,11 @@ function LoginPageContent() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.auth.login.password}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t.auth.login.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -220,7 +218,7 @@ function LoginPageContent() {
             size="lg"
             disabled={!email || !password || loading}
           >
-            {loading ? "Signing in..." : "Sign in"}
+            {loading ? t.auth.login.signingIn : t.auth.login.signIn}
           </Button>
         </CardFooter>
       </Card>
