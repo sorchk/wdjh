@@ -46,5 +46,5 @@ multica daemon start
 ```
 
 # 源码使用注意
-本软件基于Multica（https://multica.io） 修改开发。请遵守Multica项目的开源协议。  
+本软件基于Multica (https://multica.io) 修改开发。请遵守Multica项目的开源协议。  
 This software is developed based on Multica (https://multica.io). Please comply with the open-source license of the Multica project.
