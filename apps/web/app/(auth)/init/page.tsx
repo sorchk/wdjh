@@ -8,8 +8,10 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Label } from "@multica/ui/components/ui/label";
 import { useAuthStore } from "@multica/core/auth";
 import { api } from "@multica/core/api";
+import { useLocale } from "@/features/dashboard/i18n";
 
 export default function InitPage() {
+  const { t } = useLocale();
   const router = useRouter();
   const setUser = useAuthStore((s) => s.setUser);
   const [email, setEmail] = useState("");
@@ -23,17 +25,17 @@ export default function InitPage() {
     setError("");
 
     if (!email || !password) {
-      setError("Email and password are required");
+      setError(t.auth.init.emailAndPasswordRequired);
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(t.auth.init.passwordMinLength);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t.auth.init.passwordsDoNotMatch);
       return;
     }
 
@@ -48,7 +50,7 @@ export default function InitPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Failed to initialize admin");
+        throw new Error(data.error || t.auth.init.failedToInitializeAdmin);
       }
 
       const data = await res.json();
@@ -58,7 +60,7 @@ export default function InitPage() {
 
       router.push("/login");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to initialize admin");
+      setError(err instanceof Error ? err.message : t.auth.init.failedToInitializeAdmin);
     } finally {
       setLoading(false);
     }
@@ -68,19 +70,19 @@ export default function InitPage() {
     <div className="flex min-h-svh items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Initialize Admin</CardTitle>
+          <CardTitle className="text-2xl">{t.auth.init.initializeAdmin}</CardTitle>
           <CardDescription>
-            Create your administrator account to get started
+            {t.auth.init.createAdminAccount}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form id="init-form" onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.auth.init.email}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@example.com"
+                placeholder={t.auth.init.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoFocus
@@ -88,22 +90,22 @@ export default function InitPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.auth.init.password}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t.auth.init.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Label htmlFor="confirm-password">{t.auth.init.confirmPassword}</Label>
               <Input
                 id="confirm-password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t.auth.init.passwordPlaceholder}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -122,7 +124,7 @@ export default function InitPage() {
             size="lg"
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create Admin Account"}
+            {loading ? t.auth.init.creating : t.auth.init.createAdminAccountButton}
           </Button>
         </CardFooter>
       </Card>

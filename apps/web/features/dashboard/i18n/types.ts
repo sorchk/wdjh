@@ -19,6 +19,7 @@ export type DashboardDict = {
   skills: SkillsDict;
   invite: InviteDict;
   workspace: WorkspaceDict;
+  auth: AuthDict;
 };
 
 export type CommonDict = {
@@ -361,3 +362,45 @@ export type InboxDict = Record<string, unknown>;
 export type RuntimesDict = Record<string, unknown>;
 export type InviteDict = Record<string, unknown>;
 export type WorkspaceDict = Record<string, unknown>;
+
+export type AuthDict = {
+  login: {
+    signIn: string;
+    enterCredentials: string;
+    email: string;
+    emailPlaceholder: string;
+    password: string;
+    passwordPlaceholder: string;
+    signingIn: string;
+    authorize: string;
+    authorizing: string;
+    useDifferentAccount: string;
+    invalidCredentials: string;
+    loginFailed: string;
+    failedToAuthorizeCli: string;
+    allowAccess: (email: string) => string;
+  };
+  init: {
+    initializeAdmin: string;
+    createAdminAccount: string;
+    email: string;
+    emailPlaceholder: string;
+    password: string;
+    passwordPlaceholder: string;
+    confirmPassword: string;
+    creating: string;
+    createAdminAccountButton: string;
+    emailAndPasswordRequired: string;
+    passwordMinLength: string;
+    passwordsDoNotMatch: string;
+    failedToInitializeAdmin: string;
+  };
+  invite: {
+    acceptInvitation: string;
+    loading: string;
+  };
+  workspaces: {
+    newWorkspace: string;
+    loading: string;
+  };
+};
