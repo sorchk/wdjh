@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useCallback } from "react";
-import type { InviteDict, WorkspaceDict, ProjectsDict } from "./types";
+import type { InviteDict, WorkspaceDict, ProjectsDict, InboxDict } from "./types";
 import { en } from "./en";
 import { zh } from "./zh";
 
@@ -12,7 +12,7 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 type LocaleContextValue = {
   locale: Locale;
-  t: InviteDict & WorkspaceDict & ProjectsDict;
+  t: InviteDict & WorkspaceDict & ProjectsDict & InboxDict;
   setLocale: (locale: Locale) => void;
 };
 
@@ -38,7 +38,7 @@ export function LocaleProvider({
     document.cookie = `${COOKIE_NAME}=${l}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
   }, []);
 
-  const dictionaries: Record<Locale, InviteDict & WorkspaceDict & ProjectsDict> = { en, zh };
+  const dictionaries: Record<Locale, InviteDict & WorkspaceDict & ProjectsDict & InboxDict> = { en, zh };
 
   return (
     <LocaleContext.Provider value={{ locale, t: dictionaries[locale], setLocale }}>

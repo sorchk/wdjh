@@ -48,3 +48,21 @@ export type ProjectsDict = {
   daysAgo: (n: number) => string;
   monthsAgo: (n: number) => string;
 };
+
+export type InboxDict = {
+  inbox: string;
+  noNotifications: string;
+  failedToMarkAsRead: string;
+  failedToArchive: string;
+  failedToMarkAllAsRead: string;
+  failedToArchiveAll: string;
+  failedToArchiveReadItems: string;
+  failedToArchiveCompleted: string;
+  markAllAsRead: string;
+  archiveAll: string;
+  archiveAllRead: string;
+  archiveCompleted: string;
+  yourInboxIsEmpty: string;
+  selectANotificationToViewDetails: string;
+  archive: string;
+};

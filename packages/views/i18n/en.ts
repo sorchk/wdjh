@@ -1,6 +1,6 @@
-import type { InviteDict, WorkspaceDict, ProjectsDict } from "./types";
+import type { InviteDict, WorkspaceDict, ProjectsDict, InboxDict } from "./types";
 
-export const en: InviteDict & WorkspaceDict & ProjectsDict = {
+export const en: InviteDict & WorkspaceDict & ProjectsDict & InboxDict = {
   invitationNotFound: "Invitation not found",
   invitationNotFoundDesc:
     "This invitation may have expired, been revoked, or doesn't belong to your account.",
@@ -42,4 +42,19 @@ export const en: InviteDict & WorkspaceDict & ProjectsDict = {
   today: "Today",
   daysAgo: (n: number) => (n === 1 ? "1d ago" : `${n}d ago`),
   monthsAgo: (n: number) => `${n}mo ago`,
+  inbox: "Inbox",
+  noNotifications: "No notifications",
+  failedToMarkAsRead: "Failed to mark as read",
+  failedToArchive: "Failed to archive",
+  failedToMarkAllAsRead: "Failed to mark all as read",
+  failedToArchiveAll: "Failed to archive all",
+  failedToArchiveReadItems: "Failed to archive read items",
+  failedToArchiveCompleted: "Failed to archive completed",
+  markAllAsRead: "Mark all as read",
+  archiveAll: "Archive all",
+  archiveAllRead: "Archive all read",
+  archiveCompleted: "Archive completed",
+  yourInboxIsEmpty: "Your inbox is empty",
+  selectANotificationToViewDetails: "Select a notification to view details",
+  archive: "Archive",
 };
