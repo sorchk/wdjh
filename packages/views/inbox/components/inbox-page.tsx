@@ -48,10 +48,8 @@ import { useIsMobile } from "@multica/ui/hooks/use-mobile";
 import { PageHeader } from "../../layout/page-header";
 import { InboxListItem, timeAgo } from "./inbox-list-item";
 import { typeLabels } from "./inbox-detail-label";
-import { useLocale } from "@multica/views/i18n";
 
 export function InboxPage() {
-  const { t } = useLocale() as unknown as { t: import("@multica/views/i18n").InboxDict & { archive: string; failedToMarkAsRead: string; failedToArchive: string; failedToMarkAllAsRead: string; failedToArchiveAll: string; failedToArchiveReadItems: string; failedToArchiveCompleted: string; yourInboxIsEmpty: string; selectANotificationToViewDetails: string } };
   const { searchParams, replace } = useNavigation();
   const urlIssue = searchParams.get("issue") ?? "";
   const wsPaths = useWorkspacePaths();
@@ -105,7 +103,7 @@ export function InboxPage() {
     setSelectedKey(item.issue_id ?? item.id);
     if (!item.read) {
       markReadMutation.mutate(item.id, {
-        onError: () => toast.error(t.failedToMarkAsRead),
+        onError: () => toast.error("Failed to mark as read"),
       });
     }
   };
@@ -114,21 +112,21 @@ export function InboxPage() {
     const archived = items.find((i) => i.id === id);
     if (archived && (archived.issue_id ?? archived.id) === selectedKey) setSelectedKey("");
     archiveMutation.mutate(id, {
-      onError: () => toast.error(t.failedToArchive),
+      onError: () => toast.error("Failed to archive"),
     });
   };
 
   // Batch operations
   const handleMarkAllRead = () => {
     markAllReadMutation.mutate(undefined, {
-      onError: () => toast.error(t.failedToMarkAllAsRead),
+      onError: () => toast.error("Failed to mark all as read"),
     });
   };
 
   const handleArchiveAll = () => {
     setSelectedKey("");
     archiveAllMutation.mutate(undefined, {
-      onError: () => toast.error(t.failedToArchiveAll),
+      onError: () => toast.error("Failed to archive all"),
     });
   };
 
@@ -136,14 +134,14 @@ export function InboxPage() {
     const readKeys = items.filter((i) => i.read).map((i) => i.issue_id ?? i.id);
     if (readKeys.includes(selectedKey)) setSelectedKey("");
     archiveAllReadMutation.mutate(undefined, {
-      onError: () => toast.error(t.failedToArchiveReadItems),
+      onError: () => toast.error("Failed to archive read items"),
     });
   };
 
   const handleArchiveCompleted = () => {
     setSelectedKey("");
     archiveCompletedMutation.mutate(undefined, {
-      onError: () => toast.error(t.failedToArchiveCompleted),
+      onError: () => toast.error("Failed to archive completed"),
     });
   };
 
@@ -152,7 +150,7 @@ export function InboxPage() {
   const listHeader = (
     <PageHeader className="justify-between">
       <div className="flex items-center gap-2">
-        <h1 className="text-sm font-semibold">{t.inbox}</h1>
+        <h1 className="text-sm font-semibold">Inbox</h1>
         {unreadCount > 0 && (
           <span className="text-xs text-muted-foreground">
             {unreadCount}
@@ -174,20 +172,20 @@ export function InboxPage() {
         <DropdownMenuContent align="end" className="w-auto">
           <DropdownMenuItem onClick={handleMarkAllRead}>
             <CheckCheck className="h-4 w-4" />
-            {t.markAllAsRead}
+            Mark all as read
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleArchiveAll}>
             <Archive className="h-4 w-4" />
-            {t.archiveAll}
+            Archive all
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleArchiveAllRead}>
             <BookCheck className="h-4 w-4" />
-            {t.archiveAllRead}
+            Archive all read
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleArchiveCompleted}>
             <ListChecks className="h-4 w-4" />
-            {t.archiveCompleted}
+            Archive completed
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -197,7 +195,7 @@ export function InboxPage() {
   const listBody = items.length === 0 ? (
     <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
       <Inbox className="mb-3 h-8 w-8 text-muted-foreground/50" />
-      <p className="text-sm">{t.noNotifications}</p>
+      <p className="text-sm">No notifications</p>
     </div>
   ) : (
     <div>
@@ -242,7 +240,7 @@ export function InboxPage() {
           onClick={() => handleArchive(selected.id)}
         >
           <Archive className="mr-1.5 h-3.5 w-3.5" />
-          {t.archive}
+          Archive
         </Button>
       </div>
     </div>
@@ -284,7 +282,7 @@ export function InboxPage() {
               className="gap-1.5 text-muted-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
-              {t.inbox}
+              Inbox
             </Button>
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto">
@@ -357,8 +355,8 @@ export function InboxPage() {
             <Inbox className="mb-3 h-10 w-10 text-muted-foreground/30" />
             <p className="text-sm">
               {items.length === 0
-                ? t.yourInboxIsEmpty
-                : t.selectANotificationToViewDetails}
+                ? "Your inbox is empty"
+                : "Select a notification to view details"}
             </p>
           </div>
         )}

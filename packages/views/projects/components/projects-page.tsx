@@ -36,20 +36,18 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@multica/ui/components/
 import type { Project, ProjectStatus, ProjectPriority, UpdateProjectRequest } from "@multica/core/types";
 import { PageHeader } from "../../layout/page-header";
 import { PriorityIcon } from "../../issues/components/priority-icon";
-import { useLocale } from "@multica/views/i18n";
-import type { ProjectsDict } from "@multica/views/i18n";
 
-function formatRelativeDate(date: string, t: ProjectsDict): string {
+function formatRelativeDate(date: string): string {
   const diff = Date.now() - new Date(date).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days < 1) return t.today;
-  if (days === 1) return t.daysAgo(1);
-  if (days < 30) return t.daysAgo(days);
+  if (days < 1) return "Today";
+  if (days === 1) return "1d ago";
+  if (days < 30) return `${days}d ago`;
   const months = Math.floor(days / 30);
-  return t.monthsAgo(months);
+  return `${months}mo ago`;
 }
 
-function ProjectRow({ project, t }: { project: Project; t: ProjectsDict }) {
+function ProjectRow({ project }: { project: Project }) {
   const wsId = useWorkspaceId();
   const wsPaths = useWorkspacePaths();
   const statusCfg = PROJECT_STATUS_CONFIG[project.status];
@@ -179,11 +177,11 @@ function ProjectRow({ project, t }: { project: Project; t: ProjectsDict }) {
               className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
             >
               <UserMinus className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-muted-foreground">{t.noLead}</span>
+              <span className="text-muted-foreground">No lead</span>
             </button>
             {filteredMembers.length > 0 && (
               <>
-                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.members}</div>
+                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Members</div>
                 {filteredMembers.map((m) => (
                   <button
                     type="button"
@@ -199,7 +197,7 @@ function ProjectRow({ project, t }: { project: Project; t: ProjectsDict }) {
             )}
             {filteredAgents.length > 0 && (
               <>
-                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.agents}</div>
+                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Agents</div>
                 {filteredAgents.map((a) => (
                   <button
                     type="button"
@@ -214,7 +212,7 @@ function ProjectRow({ project, t }: { project: Project; t: ProjectsDict }) {
               </>
             )}
             {filteredMembers.length === 0 && filteredAgents.length === 0 && leadFilter && (
-              <div className="px-2 py-3 text-center text-sm text-muted-foreground">{t.noResults}</div>
+              <div className="px-2 py-3 text-center text-sm text-muted-foreground">No results</div>
             )}
           </div>
         </PopoverContent>
@@ -222,7 +220,7 @@ function ProjectRow({ project, t }: { project: Project; t: ProjectsDict }) {
 
       {/* Created */}
       <span className="w-20 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-        {formatRelativeDate(project.created_at, t)}
+        {formatRelativeDate(project.created_at)}
       </span>
     </div>
   );
@@ -230,7 +228,6 @@ function ProjectRow({ project, t }: { project: Project; t: ProjectsDict }) {
 
 
 export function ProjectsPage() {
-  const { t } = useLocale() as unknown as { t: ProjectsDict };
   const wsId = useWorkspaceId();
   const { data: projects = [], isLoading } = useQuery(projectListOptions(wsId));
   const openCreateProject = () => useModalStore.getState().open("create-project");
@@ -241,14 +238,14 @@ export function ProjectsPage() {
       <PageHeader className="justify-between px-5">
         <div className="flex items-center gap-2">
           <FolderKanban className="h-4 w-4 text-muted-foreground" />
-          <h1 className="text-sm font-medium">{t.projects}</h1>
+          <h1 className="text-sm font-medium">Projects</h1>
           {!isLoading && projects.length > 0 && (
             <span className="text-xs text-muted-foreground tabular-nums">{projects.length}</span>
           )}
         </div>
         <Button size="sm" variant="outline" onClick={openCreateProject}>
           <Plus className="h-3.5 w-3.5 mr-1" />
-          {t.newProject}
+          New project
         </Button>
       </PageHeader>
 
@@ -274,9 +271,9 @@ export function ProjectsPage() {
         ) : projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
             <FolderKanban className="h-10 w-10 mb-3 opacity-30" />
-            <p className="text-sm">{t.noProjectsYet}</p>
+            <p className="text-sm">No projects yet</p>
             <Button size="sm" variant="outline" className="mt-3" onClick={openCreateProject}>
-              {t.createYourFirstProject}
+              Create your first project
             </Button>
           </div>
         ) : (
@@ -285,16 +282,16 @@ export function ProjectsPage() {
             <div className="sticky top-0 z-[1] flex h-8 items-center gap-2 border-b bg-muted/30 px-5 text-xs font-medium text-muted-foreground">
               {/* Icon spacer + Name */}
               <span className="shrink-0 w-[24px]" />
-              <span className="min-w-0 flex-1">{t.name}</span>
-              <span className="w-24 text-center shrink-0">{t.priority}</span>
-              <span className="w-28 text-center shrink-0">{t.status}</span>
-              <span className="w-24 text-center shrink-0">{t.progress}</span>
-              <span className="w-10 text-center shrink-0">{t.lead}</span>
-              <span className="w-20 text-right shrink-0">{t.created}</span>
+              <span className="min-w-0 flex-1">Name</span>
+              <span className="w-24 text-center shrink-0">Priority</span>
+              <span className="w-28 text-center shrink-0">Status</span>
+              <span className="w-24 text-center shrink-0">Progress</span>
+              <span className="w-10 text-center shrink-0">Lead</span>
+              <span className="w-20 text-right shrink-0">Created</span>
             </div>
             {/* Rows */}
             {projects.map((project) => (
-              <ProjectRow key={project.id} project={project} t={t} />
+              <ProjectRow key={project.id} project={project} />
             ))}
           </>
         )}

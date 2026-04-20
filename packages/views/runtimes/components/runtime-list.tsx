@@ -13,7 +13,6 @@ import {
 import { ActorAvatar } from "../../common/actor-avatar";
 import { PageHeader } from "../../layout/page-header";
 import { ProviderLogo } from "./provider-logo";
-import { useLocale } from "@multica/views/i18n";
 
 type RuntimeFilter = "mine" | "all";
 
@@ -94,7 +93,6 @@ export function RuntimeList({
 }) {
   const wsId = useWorkspaceId();
   const { data: members = [] } = useQuery(memberListOptions(wsId));
-  const { t } = useLocale() as unknown as { t: import("@multica/views/i18n").RuntimesDict };
 
   const getOwnerMember = (ownerId: string | null) => {
     if (!ownerId) return null;
@@ -124,7 +122,7 @@ export function RuntimeList({
   return (
     <div className="overflow-y-auto h-full border-r">
       <PageHeader className="justify-between">
-        <h1 className="text-sm font-semibold">{t.runtimes}</h1>
+        <h1 className="text-sm font-semibold">Runtimes</h1>
         <span className="text-xs text-muted-foreground">
           {filteredRuntimes.filter((r) => r.status === "online").length}/
           {filteredRuntimes.length} online
@@ -207,7 +205,7 @@ export function RuntimeList({
         <div className="flex flex-col items-center justify-center px-4 py-12">
           <Server className="h-8 w-8 text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">
-            {filter === "mine" ? t.noRuntimesOwnedByYou : ownerFilter ? t.noRuntimesForThisOwner : t.noRuntimesRegistered}
+            {filter === "mine" ? "No runtimes owned by you" : ownerFilter ? "No runtimes for this owner" : "No runtimes registered"}
           </p>
           <p className="mt-1 text-xs text-muted-foreground text-center">
             Run{" "}

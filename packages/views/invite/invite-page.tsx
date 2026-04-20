@@ -14,7 +14,6 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Card, CardContent } from "@multica/ui/components/ui/card";
 import { Skeleton } from "@multica/ui/components/ui/skeleton";
 import { ArrowLeft, LogOut, Users, Check, X } from "lucide-react";
-import { useLocale } from "@multica/views/i18n";
 
 export interface InvitePageProps {
   invitationId: string;
@@ -37,7 +36,6 @@ export interface InvitePageProps {
 export function InvitePage({ invitationId, onBack }: InvitePageProps) {
   const { push } = useNavigation();
   const qc = useQueryClient();
-  const { t } = useLocale();
   const [accepting, setAccepting] = useState(false);
   const [declining, setDeclining] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +72,7 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
         : fallbackDest;
       setTimeout(() => push(dest), 1000);
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.failedToAccept);
+      setError(e instanceof Error ? e.message : "Failed to accept invitation");
     } finally {
       setAccepting(false);
     }
@@ -88,7 +86,7 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
       setDone("declined");
       qc.invalidateQueries({ queryKey: workspaceKeys.myInvitations() });
     } catch (e) {
-      setError(e instanceof Error ? e.message : t.failedToDecline);
+      setError(e instanceof Error ? e.message : "Failed to decline invitation");
     } finally {
       setDeclining(false);
     }
@@ -117,12 +115,12 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <X className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h2 className="text-lg font-semibold">{t.invitationNotFound}</h2>
+            <h2 className="text-lg font-semibold">Invitation not found</h2>
             <p className="text-sm text-muted-foreground text-center">
-              {t.invitationNotFoundDesc}
+              This invitation may have expired, been revoked, or doesn&apos;t belong to your account.
             </p>
             <Button variant="outline" onClick={() => push(fallbackDest)}>
-              {t.goToDashboard}
+              Go to dashboard
             </Button>
           </CardContent>
         </Card>
@@ -138,8 +136,8 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <Check className="h-6 w-6 text-primary" />
             </div>
-            <h2 className="text-lg font-semibold">{t.youJoined(invitation.workspace_name ?? "")}</h2>
-            <p className="text-sm text-muted-foreground">{t.redirecting}</p>
+            <h2 className="text-lg font-semibold">You joined {invitation.workspace_name}!</h2>
+            <p className="text-sm text-muted-foreground">Redirecting to workspace...</p>
           </CardContent>
         </Card>
       </InviteShell>
@@ -151,10 +149,10 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
       <InviteShell onBack={onBack}>
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center gap-4 py-12">
-            <h2 className="text-lg font-semibold">{t.invitationDeclined}</h2>
-            <p className="text-sm text-muted-foreground">{t.wontBeAdded}</p>
+            <h2 className="text-lg font-semibold">Invitation declined</h2>
+            <p className="text-sm text-muted-foreground">You won&apos;t be added to this workspace.</p>
             <Button variant="outline" onClick={() => push(fallbackDest)}>
-              {t.goToDashboard}
+              Go to dashboard
             </Button>
           </CardContent>
         </Card>
@@ -175,21 +173,21 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
 
           <div className="text-center space-y-2">
             <h2 className="text-xl font-semibold">
-              {t.joinWorkspace(invitation.workspace_name ?? "")}
+              Join {invitation.workspace_name ?? "workspace"}
             </h2>
             <p className="text-sm text-muted-foreground">
               <strong>{invitation.inviter_name || invitation.inviter_email}</strong>{" "}
-              {t.invitedAs(invitation.role === "admin" ? t.invitedAsAdmin : t.invitedAsMember)}.
+              invited you to join as {invitation.role === "admin" ? "an admin" : "a member"}.
             </p>
           </div>
 
           {isAlreadyHandled ? (
             <div className="text-sm text-muted-foreground">
-              {t.alreadyHandled(invitation.status)}
+              This invitation has already been {invitation.status}.
             </div>
           ) : isExpired ? (
             <div className="text-sm text-muted-foreground">
-              {t.expired}
+              This invitation has expired.
             </div>
           ) : (
             <div className="flex gap-3 w-full">
@@ -199,14 +197,14 @@ export function InvitePage({ invitationId, onBack }: InvitePageProps) {
                 onClick={handleDecline}
                 disabled={accepting || declining}
               >
-                {declining ? t.declining : t.decline}
+                {declining ? "Declining..." : "Decline"}
               </Button>
               <Button
                 className="flex-1"
                 onClick={handleAccept}
                 disabled={accepting || declining}
               >
-                {accepting ? t.joining : t.acceptAndJoin}
+                {accepting ? "Joining..." : "Accept & Join"}
               </Button>
             </div>
           )}
@@ -233,7 +231,6 @@ function InviteShell({
   children: ReactNode;
 }) {
   const logout = useLogout();
-  const { t } = useLocale();
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center bg-background px-6 py-12">
       {onBack && (
@@ -244,7 +241,7 @@ function InviteShell({
           onClick={onBack}
         >
           <ArrowLeft />
-          {t.back}
+          Back
         </Button>
       )}
       <Button
@@ -254,7 +251,7 @@ function InviteShell({
         onClick={logout}
       >
         <LogOut />
-        {t.logOut}
+        Log out
       </Button>
       {children}
     </div>

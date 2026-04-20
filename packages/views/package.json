@@ -38,8 +38,7 @@
     "./chat": "./chat/index.ts",
     "./settings": "./settings/index.ts",
     "./invite": "./invite/index.ts",
-    "./platform": "./platform/index.ts",
-    "./i18n": "./i18n/index.ts"
+    "./platform": "./platform/index.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

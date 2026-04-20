@@ -7,7 +7,6 @@ import { useAuthStore } from "@multica/core/auth";
 import { paths } from "@multica/core/paths";
 import { workspaceListOptions } from "@multica/core/workspace/queries";
 import { NewWorkspacePage } from "@multica/views/workspace/new-workspace-page";
-import { LocaleProvider } from "@multica/views/i18n";
 
 export default function Page() {
   const router = useRouter();
@@ -24,15 +23,16 @@ export default function Page() {
 
   if (isLoading || !user) return null;
 
+  // Back goes to the root path — the workspace layout redirects from
+  // there to the user's default workspace. Only show Back when there's
+  // somewhere to go back to (user already has at least one workspace).
   const onBack =
     wsList.length > 0 ? () => router.push(paths.root()) : undefined;
 
   return (
-    <LocaleProvider>
-      <NewWorkspacePage
-        onSuccess={(ws) => router.push(paths.workspace(ws.slug).issues())}
-        onBack={onBack}
-      />
-    </LocaleProvider>
+    <NewWorkspacePage
+      onSuccess={(ws) => router.push(paths.workspace(ws.slug).issues())}
+      onBack={onBack}
+    />
   );
 }

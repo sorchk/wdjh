@@ -357,74 +357,6 @@ export type SettingsDict = {
   };
 };
 
-export type ProjectsDict = {
-  projects: string;
-  newProject: string;
-  noProjectsYet: string;
-  createYourFirstProject: string;
-  noLead: string;
-  members: string;
-  agents: string;
-  noResults: string;
-  name: string;
-  priority: string;
-  status: string;
-  progress: string;
-  lead: string;
-  created: string;
-  today: string;
-  daysAgo: (n: number) => string;
-  monthsAgo: (n: number) => string;
-};
-export type InboxDict = {
-  inbox: string;
-  noNotifications: string;
-  failedToMarkAsRead: string;
-  failedToArchive: string;
-  failedToMarkAllAsRead: string;
-  failedToArchiveAll: string;
-  failedToArchiveReadItems: string;
-  failedToArchiveCompleted: string;
-  markAllAsRead: string;
-  archiveAll: string;
-  archiveAllRead: string;
-  archiveCompleted: string;
-  yourInboxIsEmpty: string;
-  selectANotificationToViewDetails: string;
-  archive: string;
-};
-export type RuntimesDict = {
-  runtimes: string;
-  selectARuntimeToViewDetails: string;
-  noRuntimesOwnedByYou: string;
-  noRuntimesForThisOwner: string;
-  noRuntimesRegistered: string;
-};
-export type InviteDict = {
-  invitationNotFound: string;
-  invitationNotFoundDesc: string;
-  goToDashboard: string;
-  youJoined: (name: string) => string;
-  redirecting: string;
-  invitationDeclined: string;
-  wontBeAdded: string;
-  joinWorkspace: (name: string) => string;
-  invitedAsAdmin: string;
-  invitedAsMember: string;
-  invitedAs: (role: string) => string;
-  alreadyHandled: (status: string) => string;
-  expired: string;
-  declining: string;
-  decline: string;
-  joining: string;
-  acceptAndJoin: string;
-  back: string;
-  failedToAccept: string;
-  failedToDecline: string;
-  logOut: string;
-};
-export type WorkspaceDict = Record<string, unknown>;
-
 export type AuthDict = {
   login: {
     signIn: string;
@@ -433,14 +365,11 @@ export type AuthDict = {
     emailPlaceholder: string;
     password: string;
     passwordPlaceholder: string;
+    signInButton: string;
     signingIn: string;
-    authorize: string;
-    authorizing: string;
+    authorizeCli: string;
+    allowCliAccess: string;
     useDifferentAccount: string;
-    invalidCredentials: string;
-    loginFailed: string;
-    failedToAuthorizeCli: string;
-    allowAccess: (email: string) => string;
   };
   init: {
     initializeAdmin: string;
@@ -450,19 +379,44 @@ export type AuthDict = {
     password: string;
     passwordPlaceholder: string;
     confirmPassword: string;
+    confirmPasswordPlaceholder: string;
+    createButton: string;
     creating: string;
-    createAdminAccountButton: string;
-    emailAndPasswordRequired: string;
-    passwordMinLength: string;
+    emailRequired: string;
+    passwordTooShort: string;
     passwordsDoNotMatch: string;
-    failedToInitializeAdmin: string;
+    initFailed: string;
   };
   invite: {
-    acceptInvitation: string;
-    loading: string;
-  };
-  workspaces: {
-    newWorkspace: string;
-    loading: string;
+    back: string;
+    logOut: string;
+    invitationNotFound: string;
+    invitationNotFoundDesc: string;
+    goToDashboard: string;
+    joinedWorkspace: string;
+    redirecting: string;
+    invitationDeclined: string;
+    declinedDesc: string;
+    joinWorkspace: string;
+    invitedYou: string;
+    asAdmin: string;
+    asMember: string;
+    alreadyHandled: string;
+    expired: string;
+    decline: string;
+    declining: string;
+    accept: string;
+    acceptAndJoin: string;
+    joining: string;
+    failedToAccept: string;
+    failedToDecline: string;
+    welcomeToMultica: string;
+    createWorkspaceToGetStarted: string;
   };
 };
+
+export type ProjectsDict = Record<string, unknown>;
+export type InboxDict = Record<string, unknown>;
+export type RuntimesDict = Record<string, unknown>;
+export type InviteDict = Record<string, unknown>;
+export type WorkspaceDict = Record<string, unknown>;
