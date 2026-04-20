@@ -168,5 +168,5 @@ EXAMPLES
 {{- end}}
 
 LEARN MORE
-  Use ` + "`{{.CommandPath}} <command> --help`" + ` for more information about a command.
+  Use ` + "`multica <command> <subcommand> --help`" + ` for more information about a command.
 `

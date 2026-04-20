@@ -175,8 +175,6 @@ check-worktree:
 dev:
 	@bash scripts/dev.sh
 
-
-
 # Go server only
 server:
 	$(REQUIRE_ENV)

@@ -50,10 +50,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://wdjh.ai"),
+  metadataBase: new URL("https://www.multica.ai"),
   title: {
-    default: "wdjh — Project Management for Human + Agent Teams",
-    template: "%s | wdjh",
+    default: "Multica — Project Management for Human + Agent Teams",
+    template: "%s | Multica",
   },
   description:
     "Open-source platform that turns coding agents into real teammates. Assign tasks, track progress, compound skills.",
@@ -68,8 +68,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    site: "@wdjh_hq",
-    creator: "@wdjh_hq",
+    site: "@multica_hq",
+    creator: "@multica_hq",
   },
   alternates: {
     canonical: "/",

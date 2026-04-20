@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-const defaultCLIConfigPath = ".wdjh/config.json"
+const defaultCLIConfigPath = ".multica/config.json"
 
 // CLIConfig holds persistent CLI settings.
 type CLIConfig struct {
@@ -34,7 +34,7 @@ func CLIConfigPathForProfile(profile string) (string, error) {
 	if profile == "" {
 		return filepath.Join(home, defaultCLIConfigPath), nil
 	}
-	return filepath.Join(home, ".wdjh", "profiles", profile, "config.json"), nil
+	return filepath.Join(home, ".multica", "profiles", profile, "config.json"), nil
 }
 
 // ProfileDir returns the base directory for a profile's state files (pid, log).
@@ -45,9 +45,9 @@ func ProfileDir(profile string) (string, error) {
 		return "", fmt.Errorf("resolve profile dir: %w", err)
 	}
 	if profile == "" {
-		return filepath.Join(home, ".wdjh"), nil
+		return filepath.Join(home, ".multica"), nil
 	}
-	return filepath.Join(home, ".wdjh", "profiles", profile), nil
+	return filepath.Join(home, ".multica", "profiles", profile), nil
 }
 
 // LoadCLIConfig reads the CLI config from disk (default profile).
