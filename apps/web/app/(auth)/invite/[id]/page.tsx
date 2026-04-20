@@ -7,6 +7,7 @@ import { useAuthStore } from "@multica/core/auth";
 import { paths } from "@multica/core/paths";
 import { workspaceListOptions } from "@multica/core/workspace/queries";
 import { InvitePage } from "@multica/views/invite";
+import { LocaleProvider } from "@multica/views/i18n";
 
 export default function InviteAcceptPage() {
   const router = useRouter();
@@ -18,7 +19,6 @@ export default function InviteAcceptPage() {
     enabled: !!user,
   });
 
-  // Redirect to login if not authenticated, with a redirect back to this page.
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace(
@@ -32,5 +32,9 @@ export default function InviteAcceptPage() {
   const onBack =
     wsList.length > 0 ? () => router.push(paths.root()) : undefined;
 
-  return <InvitePage invitationId={params.id} onBack={onBack} />;
+  return (
+    <LocaleProvider>
+      <InvitePage invitationId={params.id} onBack={onBack} />
+    </LocaleProvider>
+  );
 }
