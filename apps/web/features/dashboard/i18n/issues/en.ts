@@ -100,6 +100,14 @@ export const en: IssuesDict = {
   agents_scope: "Agents",
   scopeAgentsDescription: "Issues assigned to AI agents",
 
+  // My issues scopes
+  scopeAssigned: "Assigned",
+  scopeCreated: "Created",
+  scopeMyAgents: "My Agents",
+  scopeAssignedDescription: "Issues assigned to me",
+  scopeCreatedDescription: "Issues I created",
+  scopeMyAgentsDescription: "Issues assigned to my agents",
+
   // Filter labels
   filter: "Filter",
   filterPlaceholder: "Filter...",

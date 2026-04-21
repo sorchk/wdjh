@@ -120,6 +120,13 @@ export type IssuesDict = {
   scopeMembersDescription: string;
   agents_scope: string;
   scopeAgentsDescription: string;
+  // My issues scopes
+  scopeAssigned: string;
+  scopeCreated: string;
+  scopeMyAgents: string;
+  scopeAssignedDescription: string;
+  scopeCreatedDescription: string;
+  scopeMyAgentsDescription: string;
   // Filter labels
   filter: string;
   filterPlaceholder: string;
