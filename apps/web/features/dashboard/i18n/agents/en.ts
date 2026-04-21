@@ -16,6 +16,11 @@ export const en: AgentsDict = {
   failedToRestoreAgent: "Failed to restore agent",
   showActiveAgents: "Show active agents",
   showArchivedAgents: "Show archived agents",
+  archived: "Archived",
+  cloud: "Cloud",
+  local: "Local",
+  restore: "Restore",
+  archiveAgent: "Archive Agent",
   createAgentDialog: {
     title: "Create Agent",
     description: "Create a new AI agent for your workspace",
@@ -23,8 +28,145 @@ export const en: AgentsDict = {
     namePlaceholder: "e.g. Code Review Bot",
     descriptionLabel: "Description",
     descriptionPlaceholder: "Brief description of what this agent does",
+    visibility: "Visibility",
+    workspace: "Workspace",
+    workspaceMembersCanAssign: "All members can assign",
+    private: "Private",
+    onlyYouCanAssign: "Only you can assign",
+    runtime: "Runtime",
+    mine: "Mine",
+    all: "All",
+    loadingRuntimes: "Loading runtimes...",
+    noRuntimeAvailable: "No runtime available",
+    registerRuntimeBeforeCreating: "Register a runtime before creating an agent",
     cancel: "Cancel",
     creating: "Creating...",
     create: "Create",
+  },
+  tabs: {
+    instructions: "Instructions",
+    skills: "Skills",
+    tasks: "Tasks",
+    env: "Environment",
+    customArgs: "Custom Args",
+    settings: "Settings",
+  },
+  instructionsTab: {
+    title: "Agent Instructions",
+    description:
+      "Define this agent's identity and working style. These instructions are injected into the agent's context for every task.",
+    placeholder: `Define this agent's role, expertise, and working style.
+
+Example:
+You are a frontend engineer specializing in React and TypeScript.
+
+## Working Style
+- Write small, focused PRs — one commit per logical change
+- Prefer composition over inheritance
+- Always add unit tests for new components
+
+## Constraints
+- Do not modify shared/ types without explicit approval
+- Follow the existing component patterns in features/`,
+    noInstructionsSet: "No instructions set",
+    characters: "characters",
+    save: "Save",
+    saving: "Saving...",
+  },
+  skillsTab: {
+    title: "Skills",
+    description: "Workspace skills assigned to this agent.",
+    addSkill: "Add Skill",
+    addWorkspaceSkill: "Add Workspace Skill",
+    localSkillsInfo:
+      "Local runtime skills (from your CLI's skills directory) are always available automatically — no need to add them here.",
+    noSkillsAssigned: "No skills assigned",
+    noSkillsAssignedDesc:
+      "Add workspace skills to share team knowledge with this agent. Local skills are already used automatically.",
+    allWorkspaceSkillsAssigned: "All workspace skills are already assigned.",
+    selectSkillToAssign: "Select a skill to assign to this agent.",
+    failedToAddSkill: "Failed to add skill",
+    failedToRemoveSkill: "Failed to remove skill",
+    cancel: "Cancel",
+  },
+  tasksTab: {
+    title: "Task Queue",
+    description: "Issues assigned to this agent and their execution status.",
+    noTasksInQueue: "No tasks in queue",
+    noTasksInQueueDesc: "Assign an issue to this agent to get started.",
+    queued: "Queued",
+    dispatched: "Dispatched",
+    running: "Running",
+    completed: "Completed",
+    failed: "Failed",
+    cancelled: "Cancelled",
+    started: "Started",
+    dispatchedLabel: "Dispatched",
+    completedLabel: "Completed",
+    failedLabel: "Failed",
+    queuedLabel: "Queued",
+  },
+  settingsTab: {
+    avatar: "Avatar",
+    clickToUploadAvatar: "Click to upload avatar",
+    name: "Name",
+    description: "Description",
+    descriptionPlaceholder: "What does this agent do?",
+    visibility: "Visibility",
+    workspace: "Workspace",
+    workspaceMembersCanAssign: "All members can assign",
+    private: "Private",
+    onlyYouCanAssign: "Only you can assign",
+    maxConcurrentTasks: "Max Concurrent Tasks",
+    runtime: "Runtime",
+    mine: "Mine",
+    all: "All",
+    avatarUpdated: "Avatar updated",
+    failedToUploadAvatar: "Failed to upload avatar",
+    nameRequired: "Name is required",
+    settingsSaved: "Settings saved",
+    failedToSaveSettings: "Failed to save settings",
+    saveChanges: "Save Changes",
+    saving: "Saving...",
+  },
+  envTab: {
+    title: "Environment Variables",
+    description:
+      "Injected into the agent process at launch (e.g. ANTHROPIC_API_KEY, ANTHROPIC_BASE_URL)",
+    readOnlyDescription:
+      "Injected into the agent process at launch. Values are hidden — only the agent owner or workspace admin can view and edit them.",
+    add: "Add",
+    keyPlaceholder: "KEY",
+    valuePlaceholder: "value",
+    duplicateKeyError: "Duplicate environment variable keys",
+    environmentVariablesSaved: "Environment variables saved",
+    failedToSaveEnvironmentVariables: "Failed to save environment variables",
+    save: "Save",
+    saving: "Saving...",
+    noEnvironmentVariablesConfigured: "No environment variables configured.",
+  },
+  customArgsTab: {
+    title: "Custom Arguments",
+    description:
+      "Additional CLI arguments appended to the agent command at launch. Supported flags depend on the agent's CLI.",
+    launchMode: "Launch mode",
+    add: "Add",
+    flagPlaceholder: "--flag value",
+    customArgumentsSaved: "Custom arguments saved",
+    failedToSaveCustomArguments: "Failed to save custom arguments",
+    save: "Save",
+    saving: "Saving...",
+  },
+  config: {
+    idle: "Idle",
+    working: "Working",
+    blocked: "Blocked",
+    error: "Error",
+    offline: "Offline",
+  },
+  modelDropdown: {
+    model: "Model",
+    selectModel: "Select Model",
+    noModelsAvailable: "No models available",
   },
 };
