@@ -12,11 +12,13 @@ import {
 import { Skeleton } from "@multica/ui/components/ui/skeleton";
 import { useAuthStore } from "@multica/core/auth";
 import { useWorkspaceId } from "@multica/core/hooks";
+import { useLocale } from "@/features/dashboard/i18n";
 import { runtimeListOptions, runtimeKeys } from "@multica/core/runtimes/queries";
 import { useUpdatableRuntimeIds } from "@multica/core/runtimes/hooks";
 import { useWSEvent } from "@multica/core/realtime";
 import { RuntimeList } from "./runtime-list";
 import { RuntimeDetail } from "./runtime-detail";
+import type { RuntimesDict } from "@/features/dashboard/i18n/types";
 
 type RuntimeFilter = "mine" | "all";
 
@@ -32,6 +34,8 @@ export default function RuntimesPage({ topSlot }: RuntimesPageProps = {}) {
   const [filter, setFilter] = useState<RuntimeFilter>("mine");
   const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState("");
+  const { t } = useLocale();
+  const runtimesT = t.runtimes as RuntimesDict;
 
   const ownerParam = filter === "mine" ? "me" as const : undefined;
   const { data: runtimes = [], isLoading: fetching } = useQuery(runtimeListOptions(wsId, ownerParam));
@@ -115,6 +119,7 @@ export default function RuntimesPage({ topSlot }: RuntimesPageProps = {}) {
             ownerFilter={ownerFilter}
             onOwnerFilterChange={setOwnerFilter}
             updatableIds={updatableIds}
+            runtimesT={runtimesT}
           />
         </ResizablePanel>
 
@@ -122,11 +127,11 @@ export default function RuntimesPage({ topSlot }: RuntimesPageProps = {}) {
 
         <ResizablePanel id="detail" minSize="50%">
           {selected ? (
-            <RuntimeDetail key={selected.id} runtime={selected} />
+            <RuntimeDetail key={selected.id} runtime={selected} runtimesT={runtimesT} />
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
               <Server className="h-10 w-10 text-muted-foreground/30" />
-              <p className="mt-3 text-sm">Select a runtime to view details</p>
+              <p className="mt-3 text-sm">{runtimesT.selectRuntimeHint}</p>
             </div>
           )}
         </ResizablePanel>

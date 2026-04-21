@@ -1,6 +1,7 @@
 import { Server, ArrowUpCircle, ChevronDown, Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { AgentRuntime, MemberWithUser } from "@multica/core/types";
+import type { RuntimesDict } from "@/features/dashboard/i18n/types";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { memberListOptions } from "@multica/core/workspace/queries";
 import {
@@ -22,12 +23,14 @@ function RuntimeListItem({
   ownerMember,
   hasUpdate,
   onClick,
+  t,
 }: {
   runtime: AgentRuntime;
   isSelected: boolean;
   ownerMember: MemberWithUser | null;
   hasUpdate: boolean;
   onClick: () => void;
+  t: RuntimesDict;
 }) {
   return (
     <button
@@ -58,7 +61,7 @@ function RuntimeListItem({
       </div>
       <div className="flex items-center gap-1.5 shrink-0">
         {hasUpdate && (
-          <span title="Update available">
+          <span title={t.available}>
             <ArrowUpCircle className="h-3.5 w-3.5 text-info" />
           </span>
         )}
@@ -81,6 +84,7 @@ export function RuntimeList({
   ownerFilter,
   onOwnerFilterChange,
   updatableIds,
+  runtimesT,
 }: {
   runtimes: AgentRuntime[];
   selectedId: string;
@@ -90,6 +94,7 @@ export function RuntimeList({
   ownerFilter: string | null;
   onOwnerFilterChange: (ownerId: string | null) => void;
   updatableIds?: Set<string>;
+  runtimesT: RuntimesDict;
 }) {
   const wsId = useWorkspaceId();
   const { data: members = [] } = useQuery(memberListOptions(wsId));
@@ -122,10 +127,10 @@ export function RuntimeList({
   return (
     <div className="overflow-y-auto h-full border-r">
       <PageHeader className="justify-between">
-        <h1 className="text-sm font-semibold">Runtimes</h1>
+        <h1 className="text-sm font-semibold">{runtimesT.pageTitle}</h1>
         <span className="text-xs text-muted-foreground">
           {filteredRuntimes.filter((r) => r.status === "online").length}/
-          {filteredRuntimes.length} online
+          {filteredRuntimes.length} {runtimesT.online}
         </span>
       </PageHeader>
 
@@ -141,7 +146,7 @@ export function RuntimeList({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            Mine
+            {runtimesT.mine}
           </button>
           <button
             onClick={() => { onFilterChange("all"); onOwnerFilterChange(null); }}
@@ -151,7 +156,7 @@ export function RuntimeList({
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            All
+            {runtimesT.all}
           </button>
         </div>
 
@@ -169,7 +174,7 @@ export function RuntimeList({
                   <span className="max-w-20 truncate">{selectedOwner.name}</span>
                 </>
               ) : (
-                <span>Owner</span>
+                <span>{runtimesT.owner}</span>
               )}
               <ChevronDown className="h-3 w-3 opacity-50" />
             </DropdownMenuTrigger>
@@ -178,7 +183,7 @@ export function RuntimeList({
                 onClick={() => onOwnerFilterChange(null)}
                 className="flex items-center justify-between"
               >
-                <span className="text-xs">All owners</span>
+                <span className="text-xs">{runtimesT.allOwners}</span>
                 {!ownerFilter && <Check className="h-3.5 w-3.5 text-foreground" />}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -205,14 +210,10 @@ export function RuntimeList({
         <div className="flex flex-col items-center justify-center px-4 py-12">
           <Server className="h-8 w-8 text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">
-            {filter === "mine" ? "No runtimes owned by you" : ownerFilter ? "No runtimes for this owner" : "No runtimes registered"}
+            {filter === "mine" ? runtimesT.noRuntimesOwned : ownerFilter ? runtimesT.noRuntimesForOwner : runtimesT.noRuntimesRegistered}
           </p>
           <p className="mt-1 text-xs text-muted-foreground text-center">
-            Run{" "}
-            <code className="rounded bg-muted px-1 py-0.5">
-              multica daemon start
-            </code>{" "}
-            to register a local runtime.
+            {runtimesT.registerRuntimeHint}
           </p>
         </div>
       ) : (
@@ -225,6 +226,7 @@ export function RuntimeList({
               ownerMember={getOwnerMember(runtime.owner_id)}
               hasUpdate={updatableIds?.has(runtime.id) ?? false}
               onClick={() => onSelect(runtime.id)}
+              t={runtimesT}
             />
           ))}
         </div>

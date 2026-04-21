@@ -304,6 +304,9 @@ export type IssuesDict = {
   showDueDate: string;
   showProject: string;
   showSubIssueProgress: string;
+
+  // Filter priority labels (status labels already exist as picker labels)
+  priorityNone: string;
 };
 
 export type AgentsDict = {
@@ -923,6 +926,91 @@ export type InboxDict = {
   failedToMarkAsRead: string;
   failedToArchive: string;
 };
-export type RuntimesDict = Record<string, unknown>;
+export type RuntimesDict = {
+  // Page title
+  pageTitle: string;
+  // Header
+  onlineCount: string;
+  // Filter tabs
+  mine: string;
+  all: string;
+  // Owner filter
+  owner: string;
+  allOwners: string;
+  // Empty states
+  noRuntimesOwned: string;
+  noRuntimesForOwner: string;
+  noRuntimesRegistered: string;
+  registerRuntimeHint: string;
+  // Detail panel
+  selectRuntimeHint: string;
+  runtimeMode: string;
+  provider: string;
+  status: string;
+  lastSeen: string;
+  ownerLabel: string;
+  device: string;
+  daemonId: string;
+  created: string;
+  updated: string;
+  // Sections
+  cliVersion: string;
+  connectionTest: string;
+  tokenUsage: string;
+  metadata: string;
+  // Status
+  online: string;
+  offline: string;
+  // Runtime modes
+  local: string;
+  cloud: string;
+  // Ping section
+  testConnection: string;
+  testing: string;
+  waitingForDaemon: string;
+  runningTest: string;
+  connected: string;
+  pingFailed: string;
+  pingTimeout: string;
+  seconds: string;
+  // Update section
+  cliVersionLabel: string;
+  unknown: string;
+  latest: string;
+  available: string;
+  update: string;
+  waitingForDaemonUpdate: string;
+  updating: string;
+  updateComplete: string;
+  updateFailed: string;
+  updateTimeout: string;
+  retry: string;
+  managedByDesktop: string;
+  // Usage section
+  days: string;
+  input: string;
+  output: string;
+  cacheRead: string;
+  cacheWrite: string;
+  estimatedCost: string;
+  noUsageData: string;
+  date: string;
+  model: string;
+  // Delete dialog
+  deleteRuntime: string;
+  deleteRuntimeConfirmation: string;
+  cancel: string;
+  delete: string;
+  deleting: string;
+  // Toast messages
+  runtimeDeleted: string;
+  failedToDeleteRuntime: string;
+  // Last seen
+  justNow: string;
+  minutesAgo: string;
+  hoursAgo: string;
+  daysAgo: string;
+  never: string;
+};
 export type InviteDict = Record<string, unknown>;
 export type WorkspaceDict = Record<string, unknown>;

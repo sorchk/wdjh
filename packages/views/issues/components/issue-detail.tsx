@@ -91,6 +91,7 @@ import { pinListOptions } from "@multica/core/pins";
 import { useCreatePin, useDeletePin } from "@multica/core/pins";
 
 import { ProgressRing } from "./progress-ring";
+import { useLocale } from "@/features/dashboard/i18n";
 
 function shortDate(date: string | null): string {
   if (!date) return "—";
@@ -750,7 +751,7 @@ export function IssueDetail({ issueId, onDelete, defaultSidebarOpen = true, layo
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <StatusIcon status={issue.status} className="h-3.5 w-3.5" />
-                    {i18n.status}
+                    {t.issues.status}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     {ALL_STATUSES.map((s) => (
@@ -759,7 +760,7 @@ export function IssueDetail({ issueId, onDelete, defaultSidebarOpen = true, layo
                         onClick={() => handleUpdateField({ status: s })}
                       >
                         <StatusIcon status={s} className="h-3.5 w-3.5" />
-                        {STATUS_CONFIG[s].label}
+                        {t.issues[`status${s.charAt(0).toUpperCase() + s.slice(1).replace('_', '')}` as keyof typeof t.issues] || STATUS_CONFIG[s].label}
                         {issue.status === s && <span className="ml-auto text-xs text-muted-foreground">✓</span>}
                       </DropdownMenuItem>
                     ))}
@@ -770,7 +771,7 @@ export function IssueDetail({ issueId, onDelete, defaultSidebarOpen = true, layo
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <PriorityIcon priority={issue.priority} />
-                    {i18n.priority}
+                    {t.issues.priority}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     {PRIORITY_ORDER.map((p) => (
@@ -780,7 +781,7 @@ export function IssueDetail({ issueId, onDelete, defaultSidebarOpen = true, layo
                       >
                         <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${PRIORITY_CONFIG[p].badgeBg} ${PRIORITY_CONFIG[p].badgeText}`}>
                           <PriorityIcon priority={p} className="h-3 w-3" inheritColor />
-                          {PRIORITY_CONFIG[p].label}
+                          {t.issues[`priority${p.charAt(0).toUpperCase() + p.slice(1)}` as keyof typeof t.issues] || PRIORITY_CONFIG[p].label}
                         </span>
                         {issue.priority === p && <span className="ml-auto text-xs text-muted-foreground">✓</span>}
                       </DropdownMenuItem>
