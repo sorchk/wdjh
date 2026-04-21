@@ -10,6 +10,7 @@ export const zh: AuthDict = {
     passwordPlaceholder: "••••••••",
     signInButton: "登录",
     signingIn: "正在登录...",
+    authorizing: "正在授权...",
     authorizeCli: "授权 CLI",
     allowCliAccess: "允许 CLI 以以下身份访问 Multica",
     useDifferentAccount: "使用其他账户",

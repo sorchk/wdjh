@@ -28,6 +28,7 @@ function LoginPageContent() {
   const setUser = useAuthStore((s) => s.setUser);
   const searchParams = useSearchParams();
   const { t: i18n } = useLocale();
+  const authDict = i18n.auth.login;
 
   const [step, setStep] = useState<Step>("credentials");
   const [email, setEmail] = useState("");
@@ -140,9 +141,9 @@ function LoginPageContent() {
       <div className="flex min-h-svh items-center justify-center">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">{i18n.login.authorizeCli}</CardTitle>
+            <CardTitle className="text-2xl">{authDict.authorizeCli}</CardTitle>
             <CardDescription>
-              {i18n.login.allowCliAccess}{" "}
+              {authDict.allowCliAccess}{" "}
               <span className="font-medium text-foreground">
                 {existingUser.email}
               </span>
@@ -156,7 +157,7 @@ function LoginPageContent() {
               className="w-full"
               size="lg"
             >
-              {loading ? i18n.login.authorizing || "Authorizing..." : i18n.login.authorizeCli}
+              {loading ? authDict.authorizing : authDict.authorizeCli}
             </Button>
             <Button
               variant="ghost"
@@ -167,7 +168,7 @@ function LoginPageContent() {
                 setStep("credentials");
               }}
             >
-              {i18n.login.useDifferentAccount}
+              {authDict.useDifferentAccount}
             </Button>
           </CardContent>
         </Card>
@@ -179,19 +180,19 @@ function LoginPageContent() {
     <div className="flex min-h-svh items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{i18n.login.signIn}</CardTitle>
+          <CardTitle className="text-2xl">{authDict.signIn}</CardTitle>
           <CardDescription>
-            {i18n.login.enterCredentials}
+            {authDict.enterCredentials}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form id="login-form" onSubmit={handleCredentialsLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{i18n.login.email}</Label>
+              <Label htmlFor="email">{authDict.email}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder={i18n.login.emailPlaceholder}
+                placeholder={authDict.emailPlaceholder}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoFocus
@@ -199,11 +200,11 @@ function LoginPageContent() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{i18n.login.password}</Label>
+              <Label htmlFor="password">{authDict.password}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder={i18n.login.passwordPlaceholder}
+                placeholder={authDict.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -222,7 +223,7 @@ function LoginPageContent() {
             size="lg"
             disabled={!email || !password || loading}
           >
-            {loading ? i18n.login.signingIn : i18n.login.signInButton}
+            {loading ? authDict.signingIn : authDict.signInButton}
           </Button>
         </CardFooter>
       </Card>

@@ -367,6 +367,7 @@ export type AuthDict = {
     passwordPlaceholder: string;
     signInButton: string;
     signingIn: string;
+    authorizing: string;
     authorizeCli: string;
     allowCliAccess: string;
     useDifferentAccount: string;

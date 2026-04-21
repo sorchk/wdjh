@@ -10,6 +10,7 @@ export const en: AuthDict = {
     passwordPlaceholder: "••••••••",
     signInButton: "Sign in",
     signingIn: "Signing in...",
+    authorizing: "Authorizing...",
     authorizeCli: "Authorize CLI",
     allowCliAccess: "Allow the CLI to access Multica as",
     useDifferentAccount: "Use a different account",
