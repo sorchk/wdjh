@@ -41,7 +41,6 @@ function LoginPageContent() {
 
   const cliCallbackRaw = searchParams.get("cli_callback");
   const cliState = searchParams.get("cli_state") || "";
-
   useEffect(() => {
     if (!cliCallbackRaw || !validateCliCallback(cliCallbackRaw)) return;
 
