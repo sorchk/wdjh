@@ -115,6 +115,7 @@ export type IssuesDict = {
   addDescription: string;
   // Filter scopes
   all: string;
+  assigned: string;
   scopeAllDescription: string;
   members_scope: string;
   scopeMembersDescription: string;
@@ -248,6 +249,25 @@ export type IssuesDict = {
   noIssuesInColumn: string;
   hiddenColumns: string;
   filterTooltip: string;
+
+  // List view
+  addIssueToList: string;
+  noIssuesInList: string;
+
+  // Sort options
+  sortByManual: string;
+  sortByPriority: string;
+  sortByDueDate: string;
+  sortByCreatedDate: string;
+  sortByTitle: string;
+
+  // Card property options
+  showPriority: string;
+  showDescription: string;
+  showAssignee: string;
+  showDueDate: string;
+  showProject: string;
+  showSubIssueProgress: string;
 };
 
 export type AgentsDict = {

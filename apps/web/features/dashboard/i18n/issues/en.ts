@@ -94,6 +94,7 @@ export const en: IssuesDict = {
 
   // Filter scopes
   all: "All",
+  assigned: "Assigned",
   scopeAllDescription: "All issues in this workspace",
   members_scope: "Members",
   scopeMembersDescription: "Issues assigned to team members",
@@ -238,4 +239,23 @@ export const en: IssuesDict = {
   noIssuesInColumn: "No issues",
   hiddenColumns: "Hidden columns",
   filterTooltip: "Filter",
+
+  // List view
+  addIssueToList: "Add issue",
+  noIssuesInList: "No issues",
+
+  // Sort options
+  sortByManual: "Manual",
+  sortByPriority: "Priority",
+  sortByDueDate: "Due date",
+  sortByCreatedDate: "Created date",
+  sortByTitle: "Title",
+
+  // Card property options
+  showPriority: "Priority",
+  showDescription: "Description",
+  showAssignee: "Assignee",
+  showDueDate: "Due date",
+  showProject: "Project",
+  showSubIssueProgress: "Sub-issue progress",
 };
