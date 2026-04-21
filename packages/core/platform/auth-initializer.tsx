@@ -4,12 +4,19 @@ import { useEffect, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getApi } from "../api";
 import { useAuthStore } from "../auth";
+import {
+  captureSignupSource,
+  identify as identifyAnalytics,
+  initAnalytics,
+  resetAnalytics,
+} from "../analytics";
 import { configStore } from "../config";
 import { workspaceKeys } from "../workspace/queries";
 import { createLogger } from "../logger";
 import { defaultStorage } from "./storage";
 import { setCurrentWorkspace } from "./workspace-storage";
 import type { StorageAdapter } from "../types/storage";
+import type { User } from "../types";
 
 const logger = createLogger("auth");
 
@@ -61,10 +68,35 @@ export function AuthInitializer({
       }).catch(() => {
         useAuthStore.setState({ isLoading: false });
         onLogout?.();
-      });
-      return;
-    }
+      }); 
 
+    // Fetch app config (CDN domain, PostHog key, …) in the background — non-blocking.
+    api
+      .getConfig()
+      .then((cfg) => {
+        if (cfg.cdn_domain) configStore.getState().setCdnDomain(cfg.cdn_domain);
+        if (cfg.posthog_key) {
+          initAnalytics({ key: cfg.posthog_key, host: cfg.posthog_host || "" });
+        }
+      })
+      .catch(() => {
+        /* config is optional — legacy file card matching degrades gracefully */
+      });
+
+ 
+ 
+    }
+   const onAuthSuccess = (user: User) => {
+      onLogin?.();
+      useAuthStore.setState({ user, isLoading: false });
+      identifyAnalytics(user.id, { email: user.email, name: user.name });
+    };
+
+    const onAuthFailure = () => {
+      onLogout?.();
+      resetAnalytics();
+      useAuthStore.setState({ user: null, isLoading: false });
+    };
     api.authCheck().then(({ has_users }) => {
       if (!has_users) {
         useAuthStore.setState({ isLoading: false });
@@ -86,6 +118,9 @@ export function AuthInitializer({
       .then(([user, wsList]) => {
         onLogin?.();
         useAuthStore.setState({ user, isLoading: false });
+        onAuthSuccess(user);
+        // Seed React Query cache so the URL-driven layout can resolve the
+        // slug without a second fetch.
         qc.setQueryData(workspaceKeys.list(), wsList);
       })
       .catch((err) => {
@@ -93,8 +128,7 @@ export function AuthInitializer({
         api.setToken(null);
         setCurrentWorkspace(null, null);
         storage.removeItem("multica_token");
-        onLogout?.();
-        useAuthStore.setState({ user: null, isLoading: false });
+        onAuthFailure();
       });
   }, []);
 
