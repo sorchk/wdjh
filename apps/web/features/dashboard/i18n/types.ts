@@ -692,7 +692,72 @@ export type AuthDict = {
   };
 };
 
-export type ProjectsDict = Record<string, unknown>;
+export type ProjectsDict = {
+  // Breadcrumbs & page titles
+  projects: string;
+  // Table headers
+  name: string;
+  priority: string;
+  status: string;
+  progress: string;
+  lead: string;
+  created: string;
+  // Actions
+  newProject: string;
+  createYourFirstProject: string;
+  // Empty state
+  noProjectsYet: string;
+  // Lead popover
+  assignLead: string;
+  noLead: string;
+  members: string;
+  agents: string;
+  noResults: string;
+  // Project detail sidebar
+  properties: string;
+  changeIcon: string;
+  projectTitle: string;
+  addDescription: string;
+  // Progress section
+  progressSection: string;
+  // Description section
+  description: string;
+  // Actions
+  deleteProject: string;
+  copyLink: string;
+  pinToSidebar: string;
+  unpinFromSidebar: string;
+  toggleSidebar: string;
+  // Delete dialog
+  deleteProjectTitle: string;
+  deleteProjectDescription: string;
+  cancel: string;
+  delete: string;
+  deleting: string;
+  projectDeleted: string;
+  // Toast messages
+  failedToDeleteProject: string;
+  failedToMoveIssue: string;
+  linkCopied: string;
+  // Create project modal
+  collapseProject: string;
+  expandProject: string;
+  closeProject: string;
+  chooseIcon: string;
+  projectTitlePlaceholder: string;
+  addDescriptionProject: string;
+  noResultsProject: string;
+  creatingProject: string;
+  createProject: string;
+  projectCreated: string;
+  failedToCreateProject: string;
+  // Project detail
+  projectNotFound: string;
+  noIssuesLinked: string;
+  noIssuesLinkedDescription: string;
+  // Sidebar labels
+  lead: string;
+};
 export type InboxDict = Record<string, unknown>;
 export type RuntimesDict = Record<string, unknown>;
 export type InviteDict = Record<string, unknown>;
