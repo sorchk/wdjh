@@ -164,6 +164,23 @@ export const en: IssuesDict = {
   nextWeek: "Next week",
   clearDate: "Clear date",
 
+  // Picker labels (used in create issue modal pickers)
+  noPriority: "No priority",
+  assignTo: "Assign to...",
+  priorityUrgent: "Urgent",
+  priorityHigh: "High",
+  priorityMedium: "Medium",
+  priorityLow: "Low",
+  statusBacklog: "Backlog",
+  statusTodo: "Todo",
+  statusInProgress: "In Progress",
+  statusInReview: "In Review",
+  statusDone: "Done",
+  statusBlocked: "Blocked",
+  statusCancelled: "Cancelled",
+  removeFromProject: "Remove from project",
+  noProjectsYet: "No projects yet",
+
   // Create issue modal
   newIssue: "New issue",
   newSubIssue: "New sub-issue",
