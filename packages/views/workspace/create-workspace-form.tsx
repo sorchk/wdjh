@@ -9,8 +9,6 @@ import { Card, CardContent } from "@multica/ui/components/ui/card";
 import { useCreateWorkspace } from "@multica/core/workspace/mutations";
 import type { Workspace } from "@multica/core/types";
 import {
-  WORKSPACE_SLUG_CONFLICT_ERROR,
-  WORKSPACE_SLUG_FORMAT_ERROR,
   WORKSPACE_SLUG_REGEX,
   isWorkspaceSlugConflict,
   nameToWorkspaceSlug,
