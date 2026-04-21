@@ -91,6 +91,7 @@ export const zh: IssuesDict = {
 
   // Filter scopes
   all: "全部",
+  assigned: "已分配",
   scopeAllDescription: "此工作区中的所有问题",
   members_scope: "成员",
   scopeMembersDescription: "分配给成员的问题",
@@ -234,4 +235,23 @@ export const zh: IssuesDict = {
   noIssuesInColumn: "暂无问题",
   hiddenColumns: "隐藏列",
   filterTooltip: "筛选",
+
+  // List view
+  addIssueToList: "添加问题",
+  noIssuesInList: "暂无问题",
+
+  // Sort options
+  sortByManual: "手动",
+  sortByPriority: "优先级",
+  sortByDueDate: "截止日期",
+  sortByCreatedDate: "创建日期",
+  sortByTitle: "标题",
+
+  // Card property options
+  showPriority: "优先级",
+  showDescription: "描述",
+  showAssignee: "处理人",
+  showDueDate: "截止日期",
+  showProject: "项目",
+  showSubIssueProgress: "子问题进度",
 };
