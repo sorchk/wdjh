@@ -16,6 +16,7 @@ import { sortIssues } from "../utils/sort";
 import { StatusIcon } from "./status-icon";
 import { ListRow, type ChildProgress } from "./list-row";
 import { InfiniteScrollSentinel } from "./infinite-scroll-sentinel";
+import { useLocale } from "@/features/dashboard/i18n";
 
 const EMPTY_PROGRESS_MAP = new Map<string, ChildProgress>();
 
@@ -36,6 +37,7 @@ export function ListView({
   myIssuesScope?: string;
   myIssuesFilter?: MyIssuesFilter;
 }) {
+  const { t } = useLocale();
   const sortBy = useViewStore((s) => s.sortBy);
   const sortDirection = useViewStore((s) => s.sortDirection);
   const listCollapsedStatuses = useViewStore(
@@ -141,7 +143,7 @@ export function ListView({
                     >
                       <Plus className="size-3.5" />
                     </TooltipTrigger>
-                    <TooltipContent>Add issue</TooltipContent>
+                    <TooltipContent>{t.issues.addIssueToList}</TooltipContent>
                   </Tooltip>
                 </div>
               </Accordion.Header>
@@ -157,7 +159,7 @@ export function ListView({
                   </>
                 ) : (
                   <p className="py-6 text-center text-xs text-muted-foreground">
-                    No issues
+                    {t.issues.noIssuesInList}
                   </p>
                 )}
               </Accordion.Panel>

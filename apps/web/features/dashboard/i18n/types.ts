@@ -115,6 +115,7 @@ export type IssuesDict = {
   addDescription: string;
   // Filter scopes
   all: string;
+  assigned: string;
   scopeAllDescription: string;
   members_scope: string;
   scopeMembersDescription: string;
@@ -255,6 +256,25 @@ export type IssuesDict = {
   noIssuesInColumn: string;
   hiddenColumns: string;
   filterTooltip: string;
+
+  // List view
+  addIssueToList: string;
+  noIssuesInList: string;
+
+  // Sort options
+  sortByManual: string;
+  sortByPriority: string;
+  sortByDueDate: string;
+  sortByCreatedDate: string;
+  sortByTitle: string;
+
+  // Card property options
+  showPriority: string;
+  showDescription: string;
+  showAssignee: string;
+  showDueDate: string;
+  showProject: string;
+  showSubIssueProgress: string;
 };
 
 export type AgentsDict = {
@@ -829,7 +849,51 @@ export type SearchDict = {
   typeToSearchIssuesAndProjects: string;
 };
 
-export type InboxDict = Record<string, unknown>;
+export type InboxDict = {
+  // Page title
+  inbox: string;
+  // List header
+  unreadCount: string;
+  // Menu items
+  markAllAsRead: string;
+  archiveAll: string;
+  archiveAllRead: string;
+  archiveCompleted: string;
+  // Empty state
+  noNotifications: string;
+  yourInboxIsEmpty: string;
+  selectNotificationToViewDetails: string;
+  // Type labels
+  issueAssigned: string;
+  unassigned: string;
+  assigneeChanged: string;
+  statusChanged: string;
+  priorityChanged: string;
+  dueDateChanged: string;
+  newComment: string;
+  mentioned: string;
+  reviewRequested: string;
+  taskCompleted: string;
+  taskFailed: string;
+  agentBlocked: string;
+  agentCompleted: string;
+  reacted: string;
+  // Detail labels
+  setStatusTo: string;
+  setPriorityTo: string;
+  assignedTo: string;
+  removedAssignee: string;
+  setDueDateTo: string;
+  removedDueDate: string;
+  reactedToYourComment: string;
+  // Actions
+  archive: string;
+  // Time
+  justNow: string;
+  // Toast messages
+  failedToMarkAsRead: string;
+  failedToArchive: string;
+};
 export type RuntimesDict = Record<string, unknown>;
 export type InviteDict = Record<string, unknown>;
 export type WorkspaceDict = Record<string, unknown>;

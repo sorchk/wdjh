@@ -16,4 +16,6 @@ export { en as settingsEn } from "./settings/en";
 export { zh as settingsZh } from "./settings/zh";
 export { en as searchEn } from "./search/en";
 export { zh as searchZh } from "./search/zh";
+export { en as inboxEn } from "./inbox/en";
+export { zh as inboxZh } from "./inbox/zh";
 export type { Locale, DashboardDict } from "./types";

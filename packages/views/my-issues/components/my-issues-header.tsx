@@ -130,8 +130,30 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
   const hasActiveFilters =
     getActiveFilterCount({ statusFilters, priorityFilters }) > 0;
 
-  const sortLabel =
-    SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? t.issues.manual;
+  const SORT_LABELS: Record<string, string> = {
+    position: t.issues.sortByManual,
+    priority: t.issues.sortByPriority,
+    due_date: t.issues.sortByDueDate,
+    created_at: t.issues.sortByCreatedDate,
+    title: t.issues.sortByTitle,
+  };
+
+  const CARD_PROPERTY_LABELS: Record<string, string> = {
+    priority: t.issues.showPriority,
+    description: t.issues.showDescription,
+    assignee: t.issues.showAssignee,
+    dueDate: t.issues.showDueDate,
+    project: t.issues.showProject,
+    childProgress: t.issues.showSubIssueProgress,
+  };
+
+  const sortLabel = SORT_LABELS[sortBy] ?? t.issues.manual;
+
+  const SCOPES: { value: MyIssuesScope; label: string; description: string }[] = [
+    { value: "assigned", label: t.issues.assigned, description: t.issues.scopeAllDescription },
+    { value: "created", label: t.issues.created, description: t.issues.scopeAllDescription },
+    { value: "agents", label: t.issues.agents, description: t.issues.scopeAgentsDescription },
+  ];
 
   return (
     <div className="flex h-12 shrink-0 items-center justify-between px-4">
@@ -179,7 +201,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
                 />
               }
             />
-            <TooltipContent side="bottom">{t.issues.filter}</TooltipContent>
+            <TooltipContent side="bottom">{t.issues.filterTooltip}</TooltipContent>
           </Tooltip>
           <DropdownMenuContent align="end" className="w-auto">
             {/* Status */}
@@ -307,7 +329,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
                         key={opt.value}
                         onClick={() => act.setSortBy(opt.value)}
                       >
-                        {opt.label}
+                        {SORT_LABELS[opt.value]}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -341,7 +363,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
                     key={opt.key}
                     className="flex cursor-pointer items-center justify-between"
                   >
-                    <span className="text-sm">{opt.label}</span>
+                    <span className="text-sm">{CARD_PROPERTY_LABELS[opt.key]}</span>
                     <Switch
                       size="sm"
                       checked={cardProperties[opt.key]}
