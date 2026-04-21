@@ -100,6 +100,15 @@ function useIssueCounts(allIssues: Issue[]) {
 // Scope config
 // ---------------------------------------------------------------------------
 
+function useScopes() {
+  const { t } = useLocale();
+  return [
+    { value: "assigned" as MyIssuesScope, label: t.issues.scopeAssigned, description: t.issues.scopeAssignedDescription },
+    { value: "created" as MyIssuesScope, label: t.issues.scopeCreated, description: t.issues.scopeCreatedDescription },
+    { value: "agents" as MyIssuesScope, label: t.issues.scopeMyAgents, description: t.issues.scopeMyAgentsDescription },
+  ];
+}
+
 // ---------------------------------------------------------------------------
 // MyIssuesHeader
 // ---------------------------------------------------------------------------
@@ -115,6 +124,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
   const scope = useStore(myIssuesViewStore, (s) => s.scope);
   const act = myIssuesViewStore.getState();
 
+  const scopes = useScopes();
   const counts = useIssueCounts(allIssues);
 
   const hasActiveFilters =
@@ -149,7 +159,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
     <div className="flex h-12 shrink-0 items-center justify-between px-4">
       {/* Left: scope buttons */}
       <div className="flex items-center gap-1">
-        {SCOPES.map((s) => (
+        {scopes.map((s) => (
           <Tooltip key={s.value}>
             <TooltipTrigger
               render={

@@ -98,6 +98,14 @@ export const zh: IssuesDict = {
   agents_scope: "Agent",
   scopeAgentsDescription: "分配给 AI Agent 的问题",
 
+  // My issues scopes
+  scopeAssigned: "已分配",
+  scopeCreated: "已创建",
+  scopeMyAgents: "我的 Agent",
+  scopeAssignedDescription: "分配给我的问题",
+  scopeCreatedDescription: "我创建的问题",
+  scopeMyAgentsDescription: "分配给我的 Agent 的问题",
+
   // Filter labels
   filter: "筛选",
   filterPlaceholder: "筛选...",
@@ -122,8 +130,8 @@ export const zh: IssuesDict = {
 
   // Count labels
   issue_s: "{count} 个问题",
-  issue_singular: "Issue",
-  issue_plural: "Issue",
+  issue_singular: "个问题",
+  issue_plural: "个问题",
 
   // Sub-issues
   subIssues: "子问题",
