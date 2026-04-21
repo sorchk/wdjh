@@ -37,7 +37,7 @@ import { useModalStore } from "@multica/core/modals";
 import { workspaceListOptions } from "@multica/core/workspace/queries";
 import { StatusIcon } from "../issues/components";
 import { STATUS_CONFIG } from "@multica/core/issues/config";
-import { PROJECT_STATUS_CONFIG } from "@multica/core/projects/config";
+import { useProjectStatusConfig } from "../projects/components/use-project-config";
 import type { ProjectStatus } from "@multica/core/types";
 import {
   Dialog,
@@ -138,6 +138,7 @@ interface SearchResults {
 
 export function SearchCommand() {
   const { t } = useLocale();
+  const { statusConfig } = useProjectStatusConfig();
   const { push, pathname, getShareableUrl } = useNavigation();
   const open = useSearchStore((s) => s.open);
   const setOpen = useSearchStore((s) => s.setOpen);
@@ -580,9 +581,9 @@ export function SearchCommand() {
                         <HighlightText text={project.title} query={query} />
                       </span>
                       <span
-                        className={`ml-auto text-xs shrink-0 ${PROJECT_STATUS_CONFIG[project.status as ProjectStatus]?.color ?? "text-muted-foreground"}`}
+                        className={`ml-auto text-xs shrink-0 ${statusConfig[project.status]?.color ?? "text-muted-foreground"}`}
                       >
-                        {PROJECT_STATUS_CONFIG[project.status as ProjectStatus]?.label ?? project.status}
+                        {statusConfig[project.status]?.label ?? project.status}
                       </span>
                     </div>
                     {project.match_source === "description" &&

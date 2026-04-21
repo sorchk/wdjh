@@ -6,11 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import { projectListOptions } from "@multica/core/projects/queries";
 import { useUpdateProject } from "@multica/core/projects/mutations";
 import {
-  PROJECT_STATUS_CONFIG,
-  PROJECT_STATUS_ORDER,
-  PROJECT_PRIORITY_CONFIG,
   PROJECT_PRIORITY_ORDER,
 } from "@multica/core/projects/config";
+import { useProjectStatusConfig, useProjectPriorityConfig } from "./use-project-config";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useWorkspacePaths } from "@multica/core/paths";
 import { memberListOptions, agentListOptions } from "@multica/core/workspace/queries";
@@ -51,13 +49,16 @@ function formatRelativeDate(date: string): string {
 function ProjectRow({ project }: { project: Project }) {
   const wsId = useWorkspaceId();
   const wsPaths = useWorkspacePaths();
-  const statusCfg = PROJECT_STATUS_CONFIG[project.status];
-  const priorityCfg = PROJECT_PRIORITY_CONFIG[project.priority];
+  const { statusConfig, statusOrder } = useProjectStatusConfig();
+  const { priorityConfig, priorityOrder } = useProjectPriorityConfig();
   const updateProject = useUpdateProject();
   const { data: members = [] } = useQuery(memberListOptions(wsId));
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
   const { getActorName } = useActorName();
   const { t } = useLocale();
+
+  const statusCfg = statusConfig[project.status];
+  const priorityCfg = priorityConfig[project.priority];
 
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadFilter, setLeadFilter] = useState("");
@@ -94,10 +95,10 @@ function ProjectRow({ project }: { project: Project }) {
           }
         />
         <DropdownMenuContent align="start" className="w-44">
-          {PROJECT_PRIORITY_ORDER.map((p) => (
+          {priorityOrder.map((p) => (
             <DropdownMenuItem key={p} onClick={() => handleUpdate({ priority: p as ProjectPriority })}>
               <PriorityIcon priority={p} />
-              <span>{PROJECT_PRIORITY_CONFIG[p].label}</span>
+              <span>{priorityConfig[p].label}</span>
               {p === project.priority && <Check className="ml-auto h-3.5 w-3.5" />}
             </DropdownMenuItem>
           ))}
@@ -117,10 +118,10 @@ function ProjectRow({ project }: { project: Project }) {
           }
         />
         <DropdownMenuContent align="start" className="w-44">
-          {PROJECT_STATUS_ORDER.map((s) => (
+          {statusOrder.map((s) => (
             <DropdownMenuItem key={s} onClick={() => handleUpdate({ status: s as ProjectStatus })}>
-              <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[s].dotColor)} />
-              <span>{PROJECT_STATUS_CONFIG[s].label}</span>
+              <span className={cn("size-2 rounded-full", statusConfig[s].dotColor)} />
+              <span>{statusConfig[s].label}</span>
               {s === project.status && <Check className="ml-auto h-3.5 w-3.5" />}
             </DropdownMenuItem>
           ))}

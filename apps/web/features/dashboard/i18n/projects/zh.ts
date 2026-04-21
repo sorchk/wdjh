@@ -63,6 +63,16 @@ export const zh: ProjectsDict = {
   projectNotFound: "项目不存在",
   noIssuesLinked: "没有关联的问题",
   noIssuesLinkedDescription: "请从问题详情页将问题分配到此项目。",
-  // Sidebar labels
-  lead: "负责人",
+  // Project status labels
+  projectStatusPlanned: "计划中",
+  projectStatusInProgress: "进行中",
+  projectStatusPaused: "已暂停",
+  projectStatusCompleted: "已完成",
+  projectStatusCancelled: "已取消",
+  // Project priority labels
+  projectPriorityUrgent: "紧急",
+  projectPriorityHigh: "高",
+  projectPriorityMedium: "中",
+  projectPriorityLow: "低",
+  projectPriorityNone: "无优先级",
 };

@@ -64,6 +64,16 @@ export const en: ProjectsDict = {
   projectNotFound: "Project not found",
   noIssuesLinked: "No issues linked",
   noIssuesLinkedDescription: "Assign issues to this project from the issue detail page.",
-  // Sidebar labels
-  lead: "Lead",
+  // Project status labels
+  projectStatusPlanned: "Planned",
+  projectStatusInProgress: "In Progress",
+  projectStatusPaused: "Paused",
+  projectStatusCompleted: "Completed",
+  projectStatusCancelled: "Cancelled",
+  // Project priority labels
+  projectPriorityUrgent: "Urgent",
+  projectPriorityHigh: "High",
+  projectPriorityMedium: "Medium",
+  projectPriorityLow: "Low",
+  projectPriorityNone: "No priority",
 };
