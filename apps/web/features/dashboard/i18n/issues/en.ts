@@ -88,6 +88,39 @@ export const en: IssuesDict = {
     "This issue does not exist or has been deleted in this workspace.",
   backToIssues: "Back to Issues",
 
+  // Additional labels
+  deleteIssueTitle: "Delete issue",
+  deleteIssueDescription:
+    "This will permanently delete this issue and all its comments. This action cannot be undone.",
+  cancel: "Cancel",
+  delete: "Delete",
+  deleting: "Deleting...",
+  issueDeleted: "Issue deleted",
+  failedToDeleteIssue: "Failed to delete issue",
+  failedToUpdateIssue: "Failed to update issue",
+  linkCopied: "Link copied",
+
+  // Status labels for picker
+  statusBacklog: "Backlog",
+  statusTodo: "Todo",
+  statusInProgress: "In Progress",
+  statusInReview: "In Review",
+  statusDone: "Done",
+  statusBlocked: "Blocked",
+  statusCancelled: "Cancelled",
+  noPriority: "No priority",
+
+  // Date options
+  today: "Today",
+  tomorrow: "Tomorrow",
+  nextWeek: "Next week",
+  clearDate: "Clear date",
+
+  // Sub-issues
+  subIssues: "Sub-issues",
+  subIssueOf: "Sub-issue of",
+  addSubIssues: "Add sub-issues",
+
   // Placeholders
   issueTitle: "Issue title",
   addDescription: "Add description...",

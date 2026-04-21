@@ -98,18 +98,47 @@ export type IssuesDict = {
   copyLink: string;
   deleteIssue: string;
   toggleSidebar: string;
+  // Additional labels
+  backToIssues: string;
+  deleteIssueTitle: string;
+  deleteIssueDescription: string;
+  cancel: string;
+  delete: string;
+  deleting: string;
+  issueDeleted: string;
+  failedToDeleteIssue: string;
+  failedToUpdateIssue: string;
+  linkCopied: string;
+  // Status labels for picker
+  statusBacklog: string;
+  statusTodo: string;
+  statusInProgress: string;
+  statusInReview: string;
+  statusDone: string;
+  statusBlocked: string;
+  statusCancelled: string;
+  noPriority: string;
+  // Date options
+  today: string;
+  tomorrow: string;
+  nextWeek: string;
+  clearDate: string;
+  // Sub-issues
+  subIssues: string;
+  subIssueOf: string;
+  addSubIssues: string;
   // Subscribe
   subscribe: string;
   unsubscribe: string;
   changeSubscribers: string;
-  // Activity section
+  // Activity
   activity: string;
   members: string;
   agents: string;
   noResultsFound: string;
-  // Not found
+  // Issue not found
   issueDoesNotExist: string;
-  backToIssues: string;
+};
   // Placeholders
   issueTitle: string;
   addDescription: string;
