@@ -91,7 +91,6 @@ import { pinListOptions } from "@multica/core/pins";
 import { useCreatePin, useDeletePin } from "@multica/core/pins";
 
 import { ProgressRing } from "./progress-ring";
-import { useLocale } from "@/features/dashboard/i18n";
 
 function shortDate(date: string | null): string {
   if (!date) return "—";

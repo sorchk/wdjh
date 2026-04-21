@@ -100,33 +100,6 @@ export type IssuesDict = {
   toggleSidebar: string;
   // Additional labels
   backToIssues: string;
-  deleteIssueTitle: string;
-  deleteIssueDescription: string;
-  cancel: string;
-  delete: string;
-  deleting: string;
-  issueDeleted: string;
-  failedToDeleteIssue: string;
-  failedToUpdateIssue: string;
-  linkCopied: string;
-  // Status labels for picker
-  statusBacklog: string;
-  statusTodo: string;
-  statusInProgress: string;
-  statusInReview: string;
-  statusDone: string;
-  statusBlocked: string;
-  statusCancelled: string;
-  noPriority: string;
-  // Date options
-  today: string;
-  tomorrow: string;
-  nextWeek: string;
-  clearDate: string;
-  // Sub-issues
-  subIssues: string;
-  subIssueOf: string;
-  addSubIssues: string;
   // Subscribe
   subscribe: string;
   unsubscribe: string;
@@ -137,8 +110,7 @@ export type IssuesDict = {
   agents: string;
   noResultsFound: string;
   // Issue not found
-  issueDoesNotExist: string;
-};
+  issueDoesNotExist: string; 
   // Placeholders
   issueTitle: string;
   addDescription: string;
