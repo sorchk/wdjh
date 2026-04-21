@@ -213,4 +213,12 @@ export const en: IssuesDict = {
   createProject: "Create Project",
   projectCreated: "Project created",
   failedToCreateProject: "Failed to create project",
+
+  // Board/Kanban view
+  addIssue: "Add issue",
+  hideColumn: "Hide column",
+  showColumn: "Show column",
+  noIssuesInColumn: "No issues",
+  hiddenColumns: "Hidden columns",
+  filterTooltip: "Filter",
 };

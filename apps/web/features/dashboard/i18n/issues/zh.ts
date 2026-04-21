@@ -209,4 +209,12 @@ export const zh: IssuesDict = {
   createProject: "创建项目",
   projectCreated: "项目已创建",
   failedToCreateProject: "创建项目失败",
+
+  // Board/Kanban view
+  addIssue: "添加问题",
+  hideColumn: "隐藏列",
+  showColumn: "显示列",
+  noIssuesInColumn: "暂无问题",
+  hiddenColumns: "隐藏列",
+  filterTooltip: "筛选",
 };
