@@ -73,6 +73,7 @@ export const en: CommonDict = {
     save: "Save",
     create: "Create",
     back: "Back",
+    addAttachment: "Add attachment",
   },
   empty: {
     noResults: "No results",
