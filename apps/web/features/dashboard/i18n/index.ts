@@ -10,4 +10,6 @@ export { en as skillsEn } from "./skills/en";
 export { zh as skillsZh } from "./skills/zh";
 export { en as autopilotsEn } from "./autopilots/en";
 export { zh as autopilotsZh } from "./autopilots/zh";
+export { en as searchEn } from "./search/en";
+export { zh as searchZh } from "./search/zh";
 export type { Locale, DashboardDict } from "./types";
