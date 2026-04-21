@@ -222,6 +222,14 @@ export type IssuesDict = {
   createProject: string;
   projectCreated: string;
   failedToCreateProject: string;
+
+  // Board/Kanban view
+  addIssue: string;
+  hideColumn: string;
+  showColumn: string;
+  noIssuesInColumn: string;
+  hiddenColumns: string;
+  filterTooltip: string;
 };
 
 export type AgentsDict = {
