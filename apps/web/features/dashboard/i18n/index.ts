@@ -18,4 +18,6 @@ export { en as searchEn } from "./search/en";
 export { zh as searchZh } from "./search/zh";
 export { en as inboxEn } from "./inbox/en";
 export { zh as inboxZh } from "./inbox/zh";
+export { en as runtimesEn } from "./runtimes/en";
+export { zh as runtimesZh } from "./runtimes/zh";
 export type { Locale, DashboardDict } from "./types";
