@@ -266,4 +266,7 @@ export const en: IssuesDict = {
   showDueDate: "Due date",
   showProject: "Project",
   showSubIssueProgress: "Sub-issue progress",
+
+  // Filter priority labels (most already exist as picker labels)
+  priorityNone: "No priority",
 };

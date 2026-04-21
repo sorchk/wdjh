@@ -262,4 +262,7 @@ export const zh: IssuesDict = {
   showDueDate: "截止日期",
   showProject: "项目",
   showSubIssueProgress: "子问题进度",
+
+  // Filter priority labels (most already exist as picker labels)
+  priorityNone: "无优先级",
 };

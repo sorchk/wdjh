@@ -506,7 +506,7 @@ export function IssuesHeader({ scopedIssues }: { scopedIssues: Issue[] }) {
                     >
                       <HoverCheck checked={checked} />
                       <StatusIcon status={s} className="h-3.5 w-3.5" />
-                      {STATUS_CONFIG[s].label}
+                      {t.issues[`status${s.charAt(0).toUpperCase() + s.slice(1).replace('_', '')}` as keyof typeof t.issues] || STATUS_CONFIG[s].label}
                       {count > 0 && (
                         <span className="ml-auto text-xs text-muted-foreground">
                           {count} {count === 1 ? t.issues.issue_singular : t.issues.issue_plural}
@@ -542,7 +542,7 @@ export function IssuesHeader({ scopedIssues }: { scopedIssues: Issue[] }) {
                     >
                       <HoverCheck checked={checked} />
                       <PriorityIcon priority={p} />
-                      {PRIORITY_CONFIG[p].label}
+                      {t.issues[`priority${p.charAt(0).toUpperCase() + p.slice(1)}` as keyof typeof t.issues] || PRIORITY_CONFIG[p].label}
                       {count > 0 && (
                         <span className="ml-auto text-xs text-muted-foreground">
                           {count} {count === 1 ? t.issues.issue_singular : t.issues.issue_plural}

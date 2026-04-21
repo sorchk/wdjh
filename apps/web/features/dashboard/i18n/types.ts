@@ -275,6 +275,9 @@ export type IssuesDict = {
   showDueDate: string;
   showProject: string;
   showSubIssueProgress: string;
+
+  // Filter priority labels (status labels already exist as picker labels)
+  priorityNone: string;
 };
 
 export type AgentsDict = {
