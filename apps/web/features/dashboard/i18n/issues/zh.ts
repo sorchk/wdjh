@@ -2,7 +2,7 @@ import type { IssuesDict } from "../types";
 
 export const zh: IssuesDict = {
   // Breadcrumbs & page titles
-  issues: "Issue",
+  issues: "问题",
   workspace: "工作区",
   myIssues: "我的问题",
 
@@ -28,9 +28,9 @@ export const zh: IssuesDict = {
   taskFailed: "任务失败",
 
   // Search
-  searchIssues: "搜索 Issue...",
+  searchIssues: "搜索问题...",
   searching: "搜索中...",
-  noIssuesFound: "未找到 Issue。",
+  noIssuesFound: "未找到问题。",
   typeToSearchIssues: "输入以搜索问题",
 
   //问题picker
@@ -78,7 +78,7 @@ export const zh: IssuesDict = {
   // Activity section
   activity: "活动",
   members: "成员",
-  agents: "Agent",
+  agents: "智能体",
   noResultsFound: "未找到结果",
 
   // Not found
@@ -86,7 +86,7 @@ export const zh: IssuesDict = {
   backToIssues: "返回问题列表",
 
   // Placeholders
-  issueTitle: "Issue 标题",
+  issueTitle: "问题标题",
   addDescription: "添加描述...",
 
   // Filter scopes
@@ -95,16 +95,16 @@ export const zh: IssuesDict = {
   scopeAllDescription: "此工作区中的所有问题",
   members_scope: "成员",
   scopeMembersDescription: "分配给成员的问题",
-  agents_scope: "Agent",
-  scopeAgentsDescription: "分配给 AI Agent 的问题",
+  agents_scope: "智能体",
+  scopeAgentsDescription: "分配给AI智能体的问题",
 
   // My issues scopes
   scopeAssigned: "已分配",
   scopeCreated: "已创建",
-  scopeMyAgents: "我的 Agent",
+  scopeMyAgents: "我的智能体",
   scopeAssignedDescription: "分配给我的问题",
   scopeCreatedDescription: "我创建的问题",
-  scopeMyAgentsDescription: "分配给我的 Agent 的问题",
+  scopeMyAgentsDescription: "分配给我的智能体的问题",
 
   // Filter labels
   filter: "筛选",
@@ -152,7 +152,7 @@ export const zh: IssuesDict = {
   failedToUpdateIssues: "更新问题失败",
   deletedNIssues: "已删除 {count} 个问题",
   failedToDeleteIssues: "删除问题失败",
-  deleteNIssuesTitle: "删除 {count} 个 Issue？",
+  deleteNIssuesTitle: "删除 {count} 个问题？",
   deleteNIssuesDescription:
     "此操作无法撤销，将永久删除所选的 {count} 个问题及所有相关数据。",
 
@@ -208,7 +208,7 @@ export const zh: IssuesDict = {
   // Create workspace form
   workspaceName: "工作区名称",
   workspaceUrl: "工作区 URL",
-  workspaceUrlPrefix: "multica.ai/",
+  workspaceUrlPrefix: "/",
   workspaceNamePlaceholder: "我的工作区",
   workspaceUrlPlaceholder: "my-workspace",
   creatingWorkspace: "创建中...",

@@ -74,10 +74,10 @@ export const zh: SettingsDict = {
   appearance: {
     theme: "主题",
     language: "语言",
-    selectLightTheme: "选择浅色主题",
-    selectDarkTheme: "选择深色主题",
-    selectSystemTheme: "选择跟随系统主题",
-    selectLanguage: "选择语言",
+    selectLightTheme: "浅色主题",
+    selectDarkTheme: "深色主题",
+    selectSystemTheme: "跟随系统主题",
+    selectLanguage: "语言",
   },
 
   workspace: {
@@ -112,7 +112,7 @@ export const zh: SettingsDict = {
     members: "成员",
     inviteMember: "邀请成员",
     email: "邮箱",
-    emailPlaceholder: "user@company.com",
+    emailPlaceholder: "user@example.com",
     role: "角色",
     member: "成员",
     admin: "管理员",

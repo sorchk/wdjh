@@ -57,7 +57,7 @@ export const zh: CommonDict = {
     failedToMoveIssue: "移动问题失败",
     linkCopied: "链接已复制",
     failedToUpdateIssue: "更新问题失败",
-    issueDeleted: "Issue 已删除",
+    issueDeleted: "问题已删除",
     failedToDeleteIssue: "删除问题失败",
   },
   date: {

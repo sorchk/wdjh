@@ -23,7 +23,7 @@ export const zh: AgentsDict = {
   archiveAgent: "归档智能体",
   createAgentDialog: {
     title: "创建智能体",
-    description: "为您的 workspace 创建一个新的 AI 智能体",
+    description: "为您的 工作空间 创建一个新的 AI 智能体",
     nameLabel: "名称",
     namePlaceholder: "例如：代码审查机器人",
     descriptionLabel: "描述",
