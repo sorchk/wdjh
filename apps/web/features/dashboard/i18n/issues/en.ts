@@ -169,19 +169,6 @@ export const en: IssuesDict = {
   issue_singular: "issue",
   issue_plural: "issues",
 
-  // Sub-issues
-  subIssues: "Sub-issues",
-  subIssueOf: "Sub-issue of",
-  addSubIssues: "Add sub-issues",
-
-  // Dialog
-  deleteIssueTitle: "Delete issue",
-  deleteIssueDescription:
-    "This will permanently delete this issue and all its comments. This action cannot be undone.",
-  cancel: "Cancel",
-  delete: "Delete",
-  deleting: "Deleting...",
-
   // Batch
   selected: "{count} selected",
   updatedNIssues: "Updated {count} {count, plural, one {issue} other {issues}}",
@@ -195,31 +182,14 @@ export const en: IssuesDict = {
 
   // Toast
   failedToMoveIssue: "Failed to move issue",
-  issueDeleted: "Issue deleted",
-  failedToDeleteIssue: "Failed to delete issue",
-  linkCopied: "Link copied",
-  failedToUpdateIssue: "Failed to update issue",
+  
 
-  // Date options
-  today: "Today",
-  tomorrow: "Tomorrow",
-  nextWeek: "Next week",
-  clearDate: "Clear date",
-
-  // Picker labels (used in create issue modal pickers)
-  noPriority: "No priority",
   assignTo: "Assign to...",
   priorityUrgent: "Urgent",
   priorityHigh: "High",
   priorityMedium: "Medium",
   priorityLow: "Low",
-  statusBacklog: "Backlog",
-  statusTodo: "Todo",
-  statusInProgress: "In Progress",
-  statusInReview: "In Review",
-  statusDone: "Done",
-  statusBlocked: "Blocked",
-  statusCancelled: "Cancelled",
+ 
   removeFromProject: "Remove from project",
   noProjectsYet: "No projects yet",
 
