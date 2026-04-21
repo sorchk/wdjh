@@ -46,15 +46,6 @@ function getRuntimeDevice(agent: Agent, runtimes: RuntimeDevice[]): RuntimeDevic
 
 type DetailTab = "instructions" | "skills" | "tasks" | "env" | "custom_args" | "settings";
 
-const detailTabs: { id: DetailTab; labelKey: string; icon: typeof FileText }[] = [
-  { id: "instructions", labelKey: "instructions", icon: FileText },
-  { id: "skills", labelKey: "skills", icon: BookOpenText },
-  { id: "tasks", labelKey: "tasks", icon: ListTodo },
-  { id: "env", labelKey: "env", icon: KeyRound },
-  { id: "custom_args", labelKey: "customArgs", icon: Terminal },
-  { id: "settings", labelKey: "settings", icon: Settings },
-];
-
 export function AgentDetail({
   agent,
   runtimes,
@@ -142,20 +133,72 @@ export function AgentDetail({
 
       {/* Tabs */}
       <div className="flex border-b px-6">
-        {detailTabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-              activeTab === tab.id
-                ? "border-primary text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <tab.icon className="h-3.5 w-3.5" />
-            {t.agents.tabs[tab.labelKey as keyof typeof t.agents.tabs]}
-          </button>
-        ))}
+        <button
+          onClick={() => setActiveTab("instructions")}
+          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+            activeTab === "instructions"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <FileText className="h-3.5 w-3.5" />
+          {t.agents.tabs.instructions}
+        </button>
+        <button
+          onClick={() => setActiveTab("skills")}
+          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+            activeTab === "skills"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <BookOpenText className="h-3.5 w-3.5" />
+          {t.agents.tabs.skills}
+        </button>
+        <button
+          onClick={() => setActiveTab("tasks")}
+          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+            activeTab === "tasks"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <ListTodo className="h-3.5 w-3.5" />
+          {t.agents.tabs.tasks}
+        </button>
+        <button
+          onClick={() => setActiveTab("env")}
+          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+            activeTab === "env"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <KeyRound className="h-3.5 w-3.5" />
+          {t.agents.tabs.env}
+        </button>
+        <button
+          onClick={() => setActiveTab("custom_args")}
+          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+            activeTab === "custom_args"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Terminal className="h-3.5 w-3.5" />
+          {t.agents.tabs.customArgs}
+        </button>
+        <button
+          onClick={() => setActiveTab("settings")}
+          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+            activeTab === "settings"
+              ? "border-primary text-foreground"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Settings className="h-3.5 w-3.5" />
+          {t.agents.tabs.settings}
+        </button>
       </div>
 
       {/* Tab Content */}
