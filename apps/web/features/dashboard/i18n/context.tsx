@@ -18,6 +18,8 @@ import { en as settingsEn } from "./settings/en";
 import { zh as settingsZh } from "./settings/zh";
 import { en as authEn } from "./auth/en";
 import { zh as authZh } from "./auth/zh";
+import { en as searchEn } from "./search/en";
+import { zh as searchZh } from "./search/zh";
 
 const COOKIE_NAME = "multica-locale";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
@@ -44,8 +46,8 @@ export function LocaleProvider({
   }, []);
 
   const dictionaries: Record<Locale, DashboardDict> = {
-    en: { common: commonEn, issues: issuesEn, projects: projectsEn, agents: agentsEn, settings: settingsEn, inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: autopilotsEn, skills: skillsEn, invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"], auth: authEn },
-    zh: { common: commonZh, issues: issuesZh, projects: projectsZh, agents: agentsZh, settings: settingsZh, inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: autopilotsZh, skills: skillsZh, invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"], auth: authZh },
+    en: { common: commonEn, issues: issuesEn, projects: {} as DashboardDict["projects"], agents: agentsEn, settings: settingsEn, inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: autopilotsEn, skills: skillsEn, invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"], auth: authEn, search: searchEn },
+    zh: { common: commonZh, issues: issuesZh, projects: {} as DashboardDict["projects"], agents: agentsZh, settings: settingsZh, inbox: {} as DashboardDict["inbox"], runtimes: {} as DashboardDict["runtimes"], autopilots: autopilotsZh, skills: skillsZh, invite: {} as DashboardDict["invite"], workspace: {} as DashboardDict["workspace"], auth: authZh, search: searchZh },
   };
 
   return (

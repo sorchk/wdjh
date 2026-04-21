@@ -14,4 +14,6 @@ export { en as autopilotsEn } from "./autopilots/en";
 export { zh as autopilotsZh } from "./autopilots/zh";
 export { en as settingsEn } from "./settings/en";
 export { zh as settingsZh } from "./settings/zh";
+export { en as searchEn } from "./search/en";
+export { zh as searchZh } from "./search/zh";
 export type { Locale, DashboardDict } from "./types";

@@ -20,6 +20,7 @@ export type DashboardDict = {
   invite: InviteDict;
   workspace: WorkspaceDict;
   auth: AuthDict;
+  search: SearchDict;
 };
 
 export type CommonDict = {
@@ -755,9 +756,43 @@ export type ProjectsDict = {
   projectNotFound: string;
   noIssuesLinked: string;
   noIssuesLinkedDescription: string;
-  // Sidebar labels
-  lead: string;
 };
+export type SearchDict = {
+  // Dialog
+  title: string;
+  description: string;
+  placeholder: string;
+  // Navigation labels
+  inbox: string;
+  myIssues: string;
+  issues: string;
+  projects: string;
+  agents: string;
+  runtimes: string;
+  skills: string;
+  settings: string;
+  // Section headings
+  pages: string;
+  commands: string;
+  switchWorkspace: string;
+  recent: string;
+  recentIssues: string;
+  // Commands
+  newIssue: string;
+  newProject: string;
+  copyIssueLink: string;
+  copyIssueIdentifier: string;
+  switchToLightTheme: string;
+  switchToDarkTheme: string;
+  useSystemTheme: string;
+  // Toast messages
+  linkCopied: string;
+  identifierCopied: string;
+  // Empty states
+  noResultsFound: string;
+  typeToSearchIssuesAndProjects: string;
+};
+
 export type InboxDict = Record<string, unknown>;
 export type RuntimesDict = Record<string, unknown>;
 export type InviteDict = Record<string, unknown>;
