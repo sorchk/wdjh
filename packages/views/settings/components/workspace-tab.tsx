@@ -34,8 +34,10 @@ import { setCurrentWorkspace } from "@multica/core/platform";
 import type { Workspace } from "@multica/core/types";
 import { useNavigation } from "../../navigation";
 import { DeleteWorkspaceDialog } from "./delete-workspace-dialog";
+import { useLocale } from "@/features/dashboard/i18n";
 
 export function WorkspaceTab() {
+  const { t } = useLocale();
   const user = useAuthStore((s) => s.user);
   const workspace = useCurrentWorkspace();
   const wsId = useWorkspaceId();
@@ -134,9 +136,9 @@ export function WorkspaceTab() {
       qc.setQueryData(workspaceKeys.list(), (old: Workspace[] | undefined) =>
         old?.map((ws) => (ws.id === updated.id ? updated : ws)),
       );
-      toast.success("Workspace settings saved");
+      toast.success(t.settings.workspace.workspaceSettingsSaved);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to save workspace settings");
+      toast.error(t.settings.workspace.failedToSaveWorkspaceSettings);
     } finally {
       setSaving(false);
     }
@@ -145,18 +147,16 @@ export function WorkspaceTab() {
   const handleLeaveWorkspace = () => {
     if (!workspace) return;
     setConfirmAction({
-      title: "Leave workspace",
-      description: `Leave ${workspace.name}? You will lose access until re-invited.`,
+      title: t.settings.workspace.leaveWorkspace,
+      description: t.settings.workspace.leaveWorkspaceConfirm,
       variant: "destructive",
       onConfirm: async () => {
         setActionId("leave");
-        // Navigate away FIRST so the realtime handler's
-        // "current-workspace-deleted" branch doesn't race the mutation.
         navigateAwayFromCurrentWorkspace();
         try {
           await leaveWorkspace.mutateAsync(workspace.id);
         } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Failed to leave workspace");
+          toast.error(e instanceof Error ? e.message : t.settings.workspace.failedToSaveWorkspaceSettings);
         } finally {
           setActionId(null);
         }
@@ -167,16 +167,12 @@ export function WorkspaceTab() {
   const handleConfirmDelete = async () => {
     if (!workspace) return;
     setActionId("delete-workspace");
-    // Close the dialog and navigate away FIRST. See navigateAwayFromCurrentWorkspace
-    // comment for why: keeps the realtime `workspace:deleted` handler out
-    // of the race so we don't end up with concurrent refetches cancelling
-    // each other and surfacing CancelledError.
     setDeleteDialogOpen(false);
     navigateAwayFromCurrentWorkspace();
     try {
       await deleteWorkspace.mutateAsync(workspace.id);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to delete workspace");
+      toast.error(e instanceof Error ? e.message : t.settings.workspace.failedToSaveWorkspaceSettings);
     } finally {
       setActionId(null);
     }
@@ -188,12 +184,12 @@ export function WorkspaceTab() {
     <div className="space-y-8">
       {/* Workspace settings */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold">General</h2>
+        <h2 className="text-sm font-semibold">{t.settings.workspace.general}</h2>
 
         <Card>
           <CardContent className="space-y-3">
             <div>
-              <Label className="text-xs text-muted-foreground">Name</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.workspace.name}</Label>
               <Input
                 type="text"
                 value={name}
@@ -203,29 +199,29 @@ export function WorkspaceTab() {
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Description</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.workspace.description}</Label>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
                 disabled={!canManageWorkspace}
                 className="mt-1 resize-none"
-                placeholder="What does this workspace focus on?"
+                placeholder={t.settings.workspace.descriptionPlaceholder}
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Context</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.workspace.context}</Label>
               <Textarea
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
                 rows={4}
                 disabled={!canManageWorkspace}
                 className="mt-1 resize-none"
-                placeholder="Background information and context for AI agents working in this workspace"
+                placeholder={t.settings.workspace.contextPlaceholder}
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Slug</Label>
+              <Label className="text-xs text-muted-foreground">{t.settings.workspace.slug}</Label>
               <div className="mt-1 rounded-md border bg-muted/50 px-3 py-2 text-sm text-muted-foreground">
                 {workspace.slug}
               </div>
@@ -237,39 +233,37 @@ export function WorkspaceTab() {
                 disabled={saving || !name.trim() || !canManageWorkspace}
               >
                 <Save className="h-3 w-3" />
-                {saving ? "Saving..." : "Save"}
+                {saving ? t.settings.workspace.saving : t.settings.workspace.save}
               </Button>
             </div>
             {!canManageWorkspace && (
               <p className="text-xs text-muted-foreground">
-                Only admins and owners can update workspace settings.
+                {t.settings.workspace.onlyAdminsAndOwnersCanUpdate}
               </p>
             )}
           </CardContent>
         </Card>
       </section>
 
-      {/* Danger Zone — gated on the member query settling so the owner-only
-          Delete button and the sole-owner Leave guidance don't flash in
-          after mount. */}
+      {/* Danger Zone */}
       {membersFetched && (
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <LogOut className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold">Danger Zone</h2>
+          <h2 className="text-sm font-semibold">{t.settings.workspace.dangerZone}</h2>
         </div>
 
         <Card>
           <CardContent className="space-y-3">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm font-medium">Leave workspace</p>
+                <p className="text-sm font-medium">{t.settings.workspace.leaveWorkspace}</p>
                 <p className="text-xs text-muted-foreground">
                   {isSoleOwner
                     ? isSoleMember
-                      ? "You're the only member. Delete the workspace to leave."
-                      : "You're the only owner. Promote another member to owner first, or delete the workspace."
-                    : "Remove yourself from this workspace."}
+                      ? t.settings.workspace.isSoleOwnerMember
+                      : t.settings.workspace.isSoleOwnerNoMember
+                    : t.settings.workspace.leaveWorkspaceDescription}
                 </p>
               </div>
               <Button
@@ -278,16 +272,16 @@ export function WorkspaceTab() {
                 onClick={handleLeaveWorkspace}
                 disabled={actionId === "leave" || isSoleOwner}
               >
-                {actionId === "leave" ? "Leaving..." : "Leave workspace"}
+                {actionId === "leave" ? t.settings.workspace.leaving : t.settings.workspace.leaveWorkspaceButton}
               </Button>
             </div>
 
             {isOwner && (
               <div className="flex flex-col gap-2 border-t pt-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm font-medium text-destructive">Delete workspace</p>
+                  <p className="text-sm font-medium text-destructive">{t.settings.workspace.deleteWorkspace}</p>
                   <p className="text-xs text-muted-foreground">
-                    Permanently delete this workspace and its data.
+                    {t.settings.workspace.deleteWorkspaceDescription}
                   </p>
                 </div>
                 <Button
@@ -296,7 +290,7 @@ export function WorkspaceTab() {
                   onClick={() => setDeleteDialogOpen(true)}
                   disabled={actionId === "delete-workspace"}
                 >
-                  {actionId === "delete-workspace" ? "Deleting..." : "Delete workspace"}
+                  {actionId === "delete-workspace" ? t.settings.workspace.deleting : t.settings.workspace.deleteWorkspaceButton}
                 </Button>
               </div>
             )}
@@ -312,7 +306,7 @@ export function WorkspaceTab() {
             <AlertDialogDescription>{confirmAction?.description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.settings.deleteWorkspace.cancel}</AlertDialogCancel>
             <AlertDialogAction
               variant={confirmAction?.variant === "destructive" ? "destructive" : "default"}
               onClick={async () => {
@@ -320,7 +314,7 @@ export function WorkspaceTab() {
                 setConfirmAction(null);
               }}
             >
-              Confirm
+              {t.settings.deleteWorkspace.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -331,8 +325,6 @@ export function WorkspaceTab() {
         loading={actionId === "delete-workspace"}
         open={deleteDialogOpen}
         onOpenChange={(open) => {
-          // Ignore close requests while the delete mutation is in flight
-          // so the user can't accidentally dismiss mid-operation.
           if (actionId === "delete-workspace" && !open) return;
           setDeleteDialogOpen(open);
         }}
