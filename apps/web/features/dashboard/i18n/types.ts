@@ -773,6 +773,18 @@ export type ProjectsDict = {
   projectNotFound: string;
   noIssuesLinked: string;
   noIssuesLinkedDescription: string;
+  // Project status labels
+  projectStatusPlanned: string;
+  projectStatusInProgress: string;
+  projectStatusPaused: string;
+  projectStatusCompleted: string;
+  projectStatusCancelled: string;
+  // Project priority labels
+  projectPriorityUrgent: string;
+  projectPriorityHigh: string;
+  projectPriorityMedium: string;
+  projectPriorityLow: string;
+  projectPriorityNone: string;
 };
 export type SearchDict = {
   // Dialog

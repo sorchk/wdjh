@@ -5,11 +5,9 @@ import { ChevronRight, Maximize2, Minimize2, X as XIcon, UserMinus } from "lucid
 import { useQuery } from "@tanstack/react-query";
 import { useCreateProject } from "@multica/core/projects/mutations";
 import {
-  PROJECT_STATUS_CONFIG,
-  PROJECT_STATUS_ORDER,
-  PROJECT_PRIORITY_CONFIG,
   PROJECT_PRIORITY_ORDER,
 } from "@multica/core/projects/config";
+import { useProjectStatusConfig, useProjectPriorityConfig } from "../projects/components/use-project-config";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useCurrentWorkspace, useWorkspacePaths } from "@multica/core/paths";
 import { memberListOptions, agentListOptions } from "@multica/core/workspace/queries";
@@ -64,6 +62,8 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
   const { data: members = [] } = useQuery(memberListOptions(wsId));
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
   const { getActorName } = useActorName();
+  const { statusConfig, statusOrder } = useProjectStatusConfig();
+  const { priorityConfig, priorityOrder } = useProjectPriorityConfig();
 
   const [title, setTitle] = useState("");
   const descEditorRef = useRef<ContentEditorRef>(null);
@@ -209,16 +209,16 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
             <DropdownMenuTrigger
               render={
                 <PillButton>
-                  <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[status].dotColor)} />
-                  <span>{PROJECT_STATUS_CONFIG[status].label}</span>
+                  <span className={cn("size-2 rounded-full", statusConfig[status].dotColor)} />
+                  <span>{statusConfig[status].label}</span>
                 </PillButton>
               }
             />
             <DropdownMenuContent align="start" className="w-44">
-              {PROJECT_STATUS_ORDER.map((s) => (
+              {statusOrder.map((s) => (
                 <DropdownMenuItem key={s} onClick={() => setStatus(s)}>
-                  <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[s].dotColor)} />
-                  <span>{PROJECT_STATUS_CONFIG[s].label}</span>
+                  <span className={cn("size-2 rounded-full", statusConfig[s].dotColor)} />
+                  <span>{statusConfig[s].label}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -229,15 +229,15 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
               render={
                 <PillButton>
                   <PriorityIcon priority={priority} />
-                  <span>{PROJECT_PRIORITY_CONFIG[priority].label}</span>
+                  <span>{priorityConfig[priority].label}</span>
                 </PillButton>
               }
             />
             <DropdownMenuContent align="start" className="w-44">
-              {PROJECT_PRIORITY_ORDER.map((pr) => (
+              {priorityOrder.map((pr) => (
                 <DropdownMenuItem key={pr} onClick={() => setPriority(pr)}>
                   <PriorityIcon priority={pr} />
-                  <span>{PROJECT_PRIORITY_CONFIG[pr].label}</span>
+                  <span>{priorityConfig[pr].label}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>

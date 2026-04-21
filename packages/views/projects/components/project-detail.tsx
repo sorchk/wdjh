@@ -18,7 +18,7 @@ import { memberListOptions, agentListOptions } from "@multica/core/workspace/que
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useCurrentWorkspace, useWorkspacePaths } from "@multica/core/paths";
 import { useActorName } from "@multica/core/workspace/hooks";
-import { PROJECT_STATUS_ORDER, PROJECT_STATUS_CONFIG, PROJECT_PRIORITY_ORDER, PROJECT_PRIORITY_CONFIG } from "@multica/core/projects/config";
+import { PROJECT_PRIORITY_ORDER } from "@multica/core/projects/config";
 import { BOARD_STATUSES } from "@multica/core/issues/config";
 import { createIssueViewStore } from "@multica/core/issues/stores/view-store";
 import { ViewStoreProvider, useViewStore } from "@multica/core/issues/stores/view-store-context";
@@ -28,6 +28,7 @@ import { ActorAvatar } from "../../common/actor-avatar";
 import { AppLink, useNavigation } from "../../navigation";
 import { TitleEditor, ContentEditor, type ContentEditorRef } from "../../editor";
 import { PriorityIcon } from "../../issues/components/priority-icon";
+import { useProjectStatusConfig, useProjectPriorityConfig } from "./use-project-config";
 import { IssuesHeader } from "../../issues/components/issues-header";
 import { BoardView } from "../../issues/components/board-view";
 import { ListView } from "../../issues/components/list-view";
@@ -191,6 +192,8 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   const workspace = useCurrentWorkspace();
   const workspaceName = workspace?.name;
   const { t } = useLocale();
+  const { statusConfig, statusOrder } = useProjectStatusConfig();
+  const { priorityConfig, priorityOrder } = useProjectPriorityConfig();
   const { data: project, isLoading } = useQuery(projectDetailOptions(wsId, projectId));
   const { data: allIssues = [] } = useQuery(issueListOptions(wsId));
   const { data: members = [] } = useQuery(memberListOptions(wsId));
@@ -273,8 +276,8 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   }
 
   const issueMetrics = getProjectIssueMetrics(project, projectIssues);
-  const statusCfg = PROJECT_STATUS_CONFIG[project.status];
-  const priorityCfg = PROJECT_PRIORITY_CONFIG[project.priority];
+  const statusCfg = statusConfig[project.status];
+  const priorityCfg = priorityConfig[project.priority];
 
   const sidebarContent = (
     <div className="space-y-5">
@@ -334,10 +337,10 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 }
               />
               <DropdownMenuContent align="start" className="w-44">
-                {PROJECT_STATUS_ORDER.map((s) => (
+                {statusOrder.map((s) => (
                   <DropdownMenuItem key={s} onClick={() => handleUpdateField({ status: s as ProjectStatus })}>
-                    <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[s].dotColor)} />
-                    <span>{PROJECT_STATUS_CONFIG[s].label}</span>
+                    <span className={cn("size-2 rounded-full", statusConfig[s].dotColor)} />
+                    <span>{statusConfig[s].label}</span>
                     {s === project.status && <Check className="ml-auto h-3.5 w-3.5" />}
                   </DropdownMenuItem>
                 ))}
@@ -355,10 +358,10 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 }
               />
               <DropdownMenuContent align="start" className="w-44">
-                {PROJECT_PRIORITY_ORDER.map((p) => (
+                {priorityOrder.map((p) => (
                   <DropdownMenuItem key={p} onClick={() => handleUpdateField({ priority: p as ProjectPriority })}>
                     <PriorityIcon priority={p} />
-                    <span>{PROJECT_PRIORITY_CONFIG[p].label}</span>
+                    <span>{priorityConfig[p].label}</span>
                     {p === project.priority && <Check className="ml-auto h-3.5 w-3.5" />}
                   </DropdownMenuItem>
                 ))}
