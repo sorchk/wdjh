@@ -66,6 +66,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@multica/ui/components/ui/alert-dialog";
+import { useLocale } from "@/features/dashboard/i18n";
 
 // ---------------------------------------------------------------------------
 // Property row — sidebar property display
@@ -96,6 +97,7 @@ const projectViewStore = createIssueViewStore("project_issues_view");
 
 function ProjectIssuesContent({ projectIssues }: { projectIssues: Issue[] }) {
   const wsId = useWorkspaceId();
+  const { t } = useLocale();
   const viewMode = useViewStore((s) => s.viewMode);
   const statusFilters = useViewStore((s) => s.statusFilters);
   const priorityFilters = useViewStore((s) => s.priorityFilters);
@@ -137,18 +139,18 @@ function ProjectIssuesContent({ projectIssues }: { projectIssues: Issue[] }) {
       if (newPosition !== undefined) updates.position = newPosition;
       updateIssueMutation.mutate(
         { id: issueId, ...updates },
-        { onError: () => toast.error("Failed to move issue") },
+        { onError: () => toast.error(t.projects.failedToMoveIssue) },
       );
     },
-    [updateIssueMutation],
+    [updateIssueMutation, t],
   );
 
   if (projectIssues.length === 0) {
     return (
       <div className="flex flex-1 min-h-0 flex-col items-center justify-center gap-2 text-muted-foreground">
         <ListTodo className="h-10 w-10 text-muted-foreground/40" />
-        <p className="text-sm">No issues linked</p>
-        <p className="text-xs">Assign issues to this project from the issue detail page.</p>
+        <p className="text-sm">{t.projects.noIssuesLinked}</p>
+        <p className="text-xs">{t.projects.noIssuesLinkedDescription}</p>
       </div>
     );
   }
@@ -188,6 +190,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   const userId = useAuthStore((s) => s.user?.id);
   const workspace = useCurrentWorkspace();
   const workspaceName = workspace?.name;
+  const { t } = useLocale();
   const { data: project, isLoading } = useQuery(projectDetailOptions(wsId, projectId));
   const { data: allIssues = [] } = useQuery(issueListOptions(wsId));
   const { data: members = [] } = useQuery(memberListOptions(wsId));
@@ -248,11 +251,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
     if (!project) return;
     deleteProject.mutate(project.id, {
       onSuccess: () => {
-        toast.success("Project deleted");
+        toast.success(t.projects.projectDeleted);
         router.push(wsPaths.projects());
       },
     });
-  }, [project, deleteProject, router, wsPaths]);
+  }, [project, deleteProject, router, wsPaths, t]);
 
   if (isLoading) {
     return (
@@ -266,7 +269,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   }
 
   if (!project) {
-    return <div className="flex items-center justify-center h-full text-muted-foreground">Project not found</div>;
+    return <div className="flex items-center justify-center h-full text-muted-foreground">{t.projects.projectNotFound}</div>;
   }
 
   const issueMetrics = getProjectIssueMetrics(project, projectIssues);
@@ -283,7 +286,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
               <button
                 type="button"
                 className="text-2xl cursor-pointer rounded-lg p-1 -ml-1 hover:bg-accent/60 transition-colors"
-                title="Change icon"
+                title={t.projects.changeIcon}
               >
                 {project.icon || "📁"}
               </button>
@@ -301,7 +304,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
         <TitleEditor
           key={`title-${projectId}`}
           defaultValue={project.title}
-          placeholder="Project title"
+          placeholder={t.projects.projectTitle}
           className="mt-2 w-full text-base font-semibold leading-snug tracking-tight"
           onBlur={(value) => {
             const trimmed = value.trim();
@@ -316,11 +319,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           className={`flex w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors mb-2 hover:bg-accent/70 ${propertiesOpen ? "" : "text-muted-foreground hover:text-foreground"}`}
           onClick={() => setPropertiesOpen(!propertiesOpen)}
         >
-          Properties
+          {t.projects.properties}
           <ChevronRight className={`!size-3 shrink-0 stroke-[2.5] text-muted-foreground transition-transform ${propertiesOpen ? "rotate-90" : ""}`} />
         </button>
         {propertiesOpen && <div className="space-y-0.5 pl-2">
-          <PropRow label="Status">
+          <PropRow label={t.projects.status}>
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -341,7 +344,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
               </DropdownMenuContent>
             </DropdownMenu>
           </PropRow>
-          <PropRow label="Priority">
+          <PropRow label={t.projects.priority}>
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -362,7 +365,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
               </DropdownMenuContent>
             </DropdownMenu>
           </PropRow>
-          <PropRow label="Lead">
+          <PropRow label={t.projects.lead}>
             <Popover open={leadOpen} onOpenChange={(v) => { setLeadOpen(v); if (!v) setLeadFilter(""); }}>
               <PopoverTrigger
                 render={
@@ -373,7 +376,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                         <span>{getActorName(project.lead_type, project.lead_id)}</span>
                       </>
                     ) : (
-                      <span className="text-muted-foreground">No lead</span>
+                      <span className="text-muted-foreground">{t.projects.noLead}</span>
                     )}
                   </button>
                 }
@@ -384,7 +387,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     type="text"
                     value={leadFilter}
                     onChange={(e) => setLeadFilter(e.target.value)}
-                    placeholder="Assign lead..."
+                    placeholder={t.projects.assignLead}
                     className="w-full bg-transparent text-sm placeholder:text-muted-foreground outline-none"
                   />
                 </div>
@@ -395,11 +398,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
                   >
                     <UserMinus className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-muted-foreground">No lead</span>
+                    <span className="text-muted-foreground">{t.projects.noLead}</span>
                   </button>
                   {filteredMembers.length > 0 && (
                     <>
-                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Members</div>
+                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.projects.members}</div>
                       {filteredMembers.map((m) => (
                         <button
                           type="button"
@@ -415,7 +418,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                   )}
                   {filteredAgents.length > 0 && (
                     <>
-                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Agents</div>
+                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.projects.agents}</div>
                       {filteredAgents.map((a) => (
                         <button
                           type="button"
@@ -430,7 +433,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     </>
                   )}
                   {filteredMembers.length === 0 && filteredAgents.length === 0 && leadFilter && (
-                    <div className="px-2 py-3 text-center text-sm text-muted-foreground">No results</div>
+                    <div className="px-2 py-3 text-center text-sm text-muted-foreground">{t.projects.noResults}</div>
                   )}
                 </div>
               </PopoverContent>
@@ -448,7 +451,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
               className={`flex w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors mb-2 hover:bg-accent/70 ${progressOpen ? "" : "text-muted-foreground hover:text-foreground"}`}
               onClick={() => setProgressOpen(!progressOpen)}
             >
-              Progress
+              {t.projects.progressSection}
               <ChevronRight className={`!size-3 shrink-0 stroke-[2.5] text-muted-foreground transition-transform ${progressOpen ? "rotate-90" : ""}`} />
             </button>
             {progressOpen && <div className="pl-2 flex items-center gap-3">
@@ -472,7 +475,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           className={`flex w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors mb-2 hover:bg-accent/70 ${descriptionOpen ? "" : "text-muted-foreground hover:text-foreground"}`}
           onClick={() => setDescriptionOpen(!descriptionOpen)}
         >
-          Description
+          {t.projects.description}
           <ChevronRight className={`!size-3 shrink-0 stroke-[2.5] text-muted-foreground transition-transform ${descriptionOpen ? "rotate-90" : ""}`} />
         </button>
         {descriptionOpen && <div className="pl-2">
@@ -480,7 +483,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
             ref={descEditorRef}
             key={projectId}
             defaultValue={project.description || ""}
-            placeholder="Add description..."
+            placeholder={t.projects.addDescription}
             onUpdate={(md) => handleUpdateField({ description: md || null })}
             debounceMs={1500}
           />
@@ -497,7 +500,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           <PageHeader className="gap-2 bg-background text-sm">
             <div className="flex flex-1 items-center gap-1.5 min-w-0">
               <AppLink href={wsPaths.projects()} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
-                {workspaceName ?? "Projects"}
+                {workspaceName ?? t.projects.projects}
               </AppLink>
               <ChevronRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
               <span className="truncate">{project.title}</span>
@@ -507,7 +510,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 variant="ghost"
                 size="icon-sm"
                 className={cn("text-muted-foreground", isPinned && "text-foreground")}
-                title={isPinned ? "Unpin from sidebar" : "Pin to sidebar"}
+                title={isPinned ? t.projects.unpinFromSidebar : t.projects.pinToSidebar}
                 onClick={() => {
                   if (isPinned) {
                     deletePinMut.mutate({ itemType: "project", itemId: projectId });
@@ -529,10 +532,10 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 <DropdownMenuContent align="end" className="w-auto">
                   <DropdownMenuItem onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
-                    toast.success("Link copied");
+                    toast.success(t.projects.linkCopied);
                   }}>
                     <Link2 className="h-3.5 w-3.5" />
-                    Copy link
+                    {t.projects.copyLink}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -540,7 +543,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     onClick={() => setDeleteDialogOpen(true)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    Delete project
+                    {t.projects.deleteProject}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -566,7 +569,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     </Button>
                   }
                 />
-                <TooltipContent side="bottom">Toggle sidebar</TooltipContent>
+                <TooltipContent side="bottom">{t.projects.toggleSidebar}</TooltipContent>
               </Tooltip>
             </div>
           </PageHeader>
@@ -610,15 +613,15 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete project</AlertDialogTitle>
+            <AlertDialogTitle>{t.projects.deleteProjectTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              This will delete the project. Issues will not be deleted but will be unlinked.
+              {t.projects.deleteProjectDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t.projects.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90">
-              Delete
+              {t.projects.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
