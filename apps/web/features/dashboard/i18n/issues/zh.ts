@@ -160,6 +160,23 @@ export const zh: IssuesDict = {
   nextWeek: "下周",
   clearDate: "清除日期",
 
+  // Picker labels (used in create issue modal pickers)
+  noPriority: "无优先级",
+  assignTo: "分配给...",
+  priorityUrgent: "紧急",
+  priorityHigh: "高",
+  priorityMedium: "中",
+  priorityLow: "低",
+  statusBacklog: "待办",
+  statusTodo: "待处理",
+  statusInProgress: "进行中",
+  statusInReview: "审核中",
+  statusDone: "已完成",
+  statusBlocked: "已阻塞",
+  statusCancelled: "已取消",
+  removeFromProject: "从项目中移除",
+  noProjectsYet: "暂无项目",
+
   // Create issue modal
   newIssue: "新建问题",
   newSubIssue: "新建子问题",

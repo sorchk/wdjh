@@ -174,6 +174,23 @@ export type IssuesDict = {
   nextWeek: string;
   clearDate: string;
 
+  // Picker labels (used in create issue modal pickers)
+  noPriority: string;
+  assignTo: string;
+  priorityUrgent: string;
+  priorityHigh: string;
+  priorityMedium: string;
+  priorityLow: string;
+  statusBacklog: string;
+  statusTodo: string;
+  statusInProgress: string;
+  statusInReview: string;
+  statusDone: string;
+  statusBlocked: string;
+  statusCancelled: string;
+  removeFromProject: string;
+  noProjectsYet: string;
+
   // Create issue modal
   newIssue: string;
   newSubIssue: string;

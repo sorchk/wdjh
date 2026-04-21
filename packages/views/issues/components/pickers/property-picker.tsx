@@ -192,10 +192,10 @@ export function PickerSection({
 // PickerEmpty — no results state
 // ---------------------------------------------------------------------------
 
-export function PickerEmpty() {
+export function PickerEmpty({ message = "No results" }: { message?: string }) {
   return (
     <div className="px-2 py-3 text-center text-sm text-muted-foreground">
-      No results
+      {message}
     </div>
   );
 }
