@@ -10,6 +10,7 @@ interface FileUploadButtonProps {
   disabled?: boolean;
   className?: string;
   size?: "sm" | "default";
+  title?: string;
 }
 
 function FileUploadButton({
@@ -17,6 +18,7 @@ function FileUploadButton({
   disabled,
   className,
   size = "default",
+  title,
 }: FileUploadButtonProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -36,6 +38,7 @@ function FileUploadButton({
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={disabled}
+        title={title}
         className={cn(
           "inline-flex items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground transition-colors disabled:opacity-50 disabled:pointer-events-none",
           btnSize,

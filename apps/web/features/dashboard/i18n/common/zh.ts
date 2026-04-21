@@ -73,6 +73,7 @@ export const zh: CommonDict = {
     save: "保存",
     create: "创建",
     back: "返回",
+    addAttachment: "添加附件",
   },
   empty: {
     noResults: "无结果",
