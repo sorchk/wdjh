@@ -57,7 +57,7 @@ function CreateSkillDialog({
   onImport: (url: string) => Promise<void>;
   t: ReturnType<typeof useLocale>["t"];
 }) {
-  const [tab, setTab] = useState<"create" | "import">("create");
+  const [tab, setTab] = useState<"create" | "import">("import");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [importUrl, setImportUrl] = useState("");
@@ -87,7 +87,13 @@ function CreateSkillDialog({
     setLoading(true);
     setImportError("");
     try {
-      await onImport(importUrl.trim());
+      const urls = importUrl
+        .split(",")
+        .map((u) => u.trim())
+        .filter((u) => u.length > 0);
+      for (const url of urls) {
+        await onImport(url);
+      }
       onClose();
     } catch (err) {
       setImportError(err instanceof Error ? err.message : t.skills.importFailed);
@@ -154,6 +160,7 @@ function CreateSkillDialog({
                 className="mt-1"
                 onKeyDown={(e) => e.key === "Enter" && handleImport()}
               />
+              <p className="mt-1.5 text-[11px] text-muted-foreground">{t.skills.skillUrlBatchHint}</p>
             </div>
 
             {/* Supported sources — highlight on detection */}
