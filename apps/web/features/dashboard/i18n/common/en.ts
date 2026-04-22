@@ -59,6 +59,7 @@ export const en: CommonDict = {
     failedToUpdateIssue: "Failed to update issue",
     issueDeleted: "Issue deleted",
     failedToDeleteIssue: "Failed to delete issue",
+    failedToCancelTask: "Failed to cancel task",
   },
   date: {
     today: "Today",

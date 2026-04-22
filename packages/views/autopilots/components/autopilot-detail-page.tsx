@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Zap, Play, Clock, Plus, Trash2, CheckCircle2, XCircle, Loader2, Pencil } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { autopilotDetailOptions, autopilotRunsOptions } from "@multica/core/autopilots/queries";
@@ -11,6 +11,7 @@ import {
   useCreateAutopilotTrigger,
   useDeleteAutopilotTrigger,
 } from "@multica/core/autopilots/mutations";
+import { agentListOptions } from "@multica/core/workspace/queries";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useWorkspacePaths } from "@multica/core/paths";
 import { useActorName } from "@multica/core/workspace/hooks";
@@ -29,14 +30,19 @@ import {
   DialogTitle,
 } from "@multica/ui/components/ui/dialog";
 import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@multica/ui/components/ui/select";
+import {
   TriggerConfigSection,
   getDefaultTriggerConfig,
   toCronExpression,
 } from "./trigger-config";
 import type { TriggerConfig } from "./trigger-config";
-import type { AutopilotExecutionMode, AutopilotRun, AutopilotTrigger } from "@multica/core/types";
-import { ReadonlyContent } from "../../editor";
-import { AutopilotDialog } from "./autopilot-dialog";
+import type { AutopilotRun, AutopilotTrigger } from "@multica/core/types";
 
 function formatDate(date: string): string {
   return new Date(date).toLocaleString(undefined, {
@@ -408,6 +414,7 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
 
   const { data, isLoading } = useQuery(autopilotDetailOptions(wsId, autopilotId));
   const { data: runs = [], isLoading: runsLoading } = useQuery(autopilotRunsOptions(wsId, autopilotId));
+  const { data: agents = [] } = useQuery(agentListOptions(wsId));
   const updateAutopilot = useUpdateAutopilot();
   const deleteAutopilot = useDeleteAutopilot();
   const triggerAutopilot = useTriggerAutopilot();
@@ -618,6 +625,13 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
         open={triggerDialogOpen}
         onOpenChange={setTriggerDialogOpen}
         autopilotId={autopilotId}
+        i18n={i18n}
+      />
+      <EditAutopilotDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        autopilot={autopilot}
+        agents={agents}
         i18n={i18n}
       />
     </div>

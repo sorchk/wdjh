@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -322,9 +323,33 @@ func (s *AutopilotService) publishRunDone(workspaceID string, run db.AutopilotRu
 // it understands the actual work.
 func (s *AutopilotService) buildIssueDescription(ap db.Autopilot) pgtype.Text {
 	now := time.Now().UTC().Format("2006-01-02 15:04 UTC")
-	note := fmt.Sprintf("\n\n---\n*Autopilot run triggered at %s. After starting work, rename this issue to accurately reflect what you are doing.*", now)
+	// Get workspace locale from settings for localized message
+	locale := s.getWorkspaceLocale(ap.WorkspaceID)
+	var note string
+	if locale == "zh" {
+		note = fmt.Sprintf("\n\n---\n*自动任务于 %s 触发。开始工作后，请将此问题的标题修改为准确反映实际工作内容。*", now)
+	} else {
+		note = fmt.Sprintf("\n\n---\n*Autopilot run triggered at %s. After starting work, rename this issue to accurately reflect what you are doing.*", now)
+	}
 	base := ap.Description.String
 	return pgtype.Text{String: base + note, Valid: true}
+}
+
+// getWorkspaceLocale extracts the locale from workspace settings
+func (s *AutopilotService) getWorkspaceLocale(workspaceID pgtype.UUID) string {
+	ws, err := s.Queries.GetWorkspace(context.Background(), workspaceID)
+	if err != nil || len(ws.Settings) == 0 {
+		return "en" // default to English
+	}
+	// Try to parse locale from settings JSON
+	var settings map[string]interface{}
+	if err := json.Unmarshal(ws.Settings, &settings); err != nil {
+		return "en"
+	}
+	if locale, ok := settings["locale"].(string); ok {
+		return locale
+	}
+	return "en"
 }
 
 // interpolateTemplate replaces {{date}} in the issue title template.
