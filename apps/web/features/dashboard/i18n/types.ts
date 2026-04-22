@@ -504,7 +504,12 @@ export type AutopilotsDict = {
   failedToCreateAutopilot: string;
   autopilotCreatedButTriggerFailed: string;
   mode: string;
+  modeCreateIssue: string;
+  modeRunOnly: string;
   status: string;
+  statusActive: string;
+  statusPaused: string;
+  statusArchived: string;
   lastRun: string;
   agent: string;
   name: string;

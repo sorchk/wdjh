@@ -102,38 +102,42 @@ const TEMPLATES: AutopilotTemplate[] = [
   },
 ];
 
-function formatRelativeDate(date: string, i18n: { today: string; daysAgo: string; monthsAgo: string }): string {
+function formatRelativeDate(date: string, i18n: { autopilots: { today: string; daysAgo: string; monthsAgo: string } }): string {
   const diff = Date.now() - new Date(date).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days < 1) return i18n.today;
-  if (days === 1) return `1${i18n.daysAgo}`;
-  if (days < 30) return `${days}${i18n.daysAgo}`;
+  if (days < 1) return i18n.autopilots.today;
+  if (days === 1) return `1${i18n.autopilots.daysAgo}`;
+  if (days < 30) return `${days}${i18n.autopilots.daysAgo}`;
   const months = Math.floor(days / 30);
-  return `${months}${i18n.monthsAgo}`;
+  return `${months}${i18n.autopilots.monthsAgo}`;
 }
 
-function getStatusConfig(status: string, i18n: { statusActive: string; statusPaused: string; statusArchived: string }) {
-  const configs: Record<string, { label: string; color: string; icon: typeof Zap }> = {
-    active: { label: i18n.statusActive, color: "text-emerald-500", icon: Play },
-    paused: { label: i18n.statusPaused, color: "text-amber-500", icon: Pause },
-    archived: { label: i18n.statusArchived, color: "text-muted-foreground", icon: AlertCircle },
-  };
-  return configs[status] ?? configs["active"]!;
-}
-
-function getExecutionModeLabel(mode: string, i18n: { executionModeCreateIssue: string; executionModeRunOnly: string }): string {
-  const labels: Record<string, string> = {
-    create_issue: i18n.executionModeCreateIssue,
-    run_only: i18n.executionModeRunOnly,
-  };
-  return labels[mode] ?? mode;
-}
-
-function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: ReturnType<typeof useLocale>["t"] }) {
+function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: { autopilots: { modeCreateIssue: string; modeRunOnly: string; statusActive: string; statusPaused: string; statusArchived: string; today: string; daysAgo: string; monthsAgo: string; lastRun: string; mode: string; status: string; agent: string; name: string } } }) {
   const { getActorName } = useActorName();
   const wsPaths = useWorkspacePaths();
-  const statusCfg = getStatusConfig(autopilot.status, i18n.autopilots);
-  const StatusIcon = statusCfg.icon;
+  const statusKey = autopilot.status as "active" | "paused" | "archived";
+  const statusLabels = {
+    active: i18n.autopilots.statusActive,
+    paused: i18n.autopilots.statusPaused,
+    archived: i18n.autopilots.statusArchived,
+  } as const;
+  const statusColors = {
+    active: "text-emerald-500",
+    paused: "text-amber-500",
+    archived: "text-muted-foreground",
+  } as const;
+  const statusIcons = {
+    active: Play,
+    paused: Pause,
+    archived: AlertCircle,
+  } as const;
+  const modeLabels = {
+    create_issue: i18n.autopilots.modeCreateIssue,
+    run_only: i18n.autopilots.modeRunOnly,
+  };
+  const statusLabel = statusLabels[statusKey] ?? statusLabels.active;
+  const statusColor = statusColors[statusKey] ?? statusColors.active;
+  const StatusIcon = statusIcons[statusKey] ?? statusIcons.active;
 
   return (
     <div className="group/row flex h-11 items-center gap-2 px-5 text-sm transition-colors hover:bg-accent/40">
@@ -155,18 +159,18 @@ function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: ReturnT
 
       {/* Mode */}
       <span className="w-24 shrink-0 text-center text-xs text-muted-foreground">
-        {getExecutionModeLabel(autopilot.execution_mode, i18n.autopilots)}
+        {modeLabels[autopilot.execution_mode as keyof typeof modeLabels] ?? autopilot.execution_mode}
       </span>
 
       {/* Status */}
-      <span className={cn("flex w-20 items-center justify-center gap-1 shrink-0 text-xs", statusCfg.color)}>
+      <span className={cn("flex w-20 items-center justify-center gap-1 shrink-0 text-xs", statusColor)}>
         <StatusIcon className="h-3 w-3" />
-        {statusCfg.label}
+        {statusLabel}
       </span>
 
       {/* Last run */}
       <span className="w-20 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-        {autopilot.last_run_at ? formatRelativeDate(autopilot.last_run_at, i18n.autopilots) : "--"}
+        {autopilot.last_run_at ? formatRelativeDate(autopilot.last_run_at, i18n) : "--"}
       </span>
     </div>
   );
