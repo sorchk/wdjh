@@ -18,6 +18,15 @@ const tokenChartConfig = {
   total: { label: "Total", color: "hsl(var(--chart-1))" },
 } satisfies ChartConfig;
 
+export type DailyTokenChartLocale = {
+  title: string;
+  input: string;
+  output: string;
+  cacheRead: string;
+  cacheWrite: string;
+  total: string;
+};
+
 type DailyTokenRow = DailyTokenData & { total: number };
 
 function computeNiceTicks(data: DailyTokenRow[], tickCount = 5): number[] {
@@ -47,19 +56,21 @@ function TokenTooltipContent({
   active,
   payload,
   label,
+  locale,
 }: {
   active?: boolean;
   payload?: Array<{ payload: DailyTokenRow }>;
   label?: string;
+  locale: DailyTokenChartLocale;
 }) {
   if (!active || !payload?.length) return null;
   const row = payload[0]!.payload;
 
   const items = [
-    { label: "Input", value: row.input },
-    { label: "Output", value: row.output },
-    { label: "Cache Read", value: row.cacheRead },
-    { label: "Cache Write", value: row.cacheWrite },
+    { label: locale.input, value: row.input },
+    { label: locale.output, value: row.output },
+    { label: locale.cacheRead, value: row.cacheRead },
+    { label: locale.cacheWrite, value: row.cacheWrite },
   ];
 
   return (
@@ -78,7 +89,7 @@ function TokenTooltipContent({
           </div>
         ))}
         <div className="flex items-center justify-between gap-6 border-t pt-1 mt-0.5 font-medium">
-          <span>Total</span>
+          <span>{locale.total}</span>
           <span className="font-mono tabular-nums">
             {formatTokens(row.total)}
           </span>
@@ -88,7 +99,13 @@ function TokenTooltipContent({
   );
 }
 
-export function DailyTokenChart({ data }: { data: DailyTokenData[] }) {
+export function DailyTokenChart({
+  data,
+  locale,
+}: {
+  data: DailyTokenData[];
+  locale: DailyTokenChartLocale;
+}) {
   const chartData = useMemo<DailyTokenRow[]>(
     () =>
       data.map((d) => ({
@@ -103,7 +120,7 @@ export function DailyTokenChart({ data }: { data: DailyTokenData[] }) {
   return (
     <div className="rounded-lg border p-4">
       <h4 className="text-xs font-medium text-muted-foreground mb-3">
-        Daily Token Usage
+        {locale.title}
       </h4>
       <ChartContainer
         config={tokenChartConfig}
@@ -131,7 +148,7 @@ export function DailyTokenChart({ data }: { data: DailyTokenData[] }) {
             domain={[0, yMax]}
             ticks={ticks}
           />
-          <Tooltip content={<TokenTooltipContent />} />
+          <Tooltip content={<TokenTooltipContent locale={locale} />} />
           <Area
             type="monotone"
             dataKey="total"

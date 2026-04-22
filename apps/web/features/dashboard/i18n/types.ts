@@ -969,6 +969,17 @@ export type RuntimesDict = {
   noUsageData: string;
   date: string;
   model: string;
+  // Chart titles
+  activity: string;
+  hourlyDistribution: string;
+  dailyTokenUsage: string;
+  tokenUsageByModel: string;
+  // Chart labels
+  total: string;
+  // Heatmap labels
+  less: string;
+  more: string;
+  noActivity: string;
   // Delete dialog
   deleteRuntime: string;
   deleteRuntimeConfirmation: string;

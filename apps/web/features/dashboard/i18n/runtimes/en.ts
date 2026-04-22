@@ -70,6 +70,17 @@ export const en: RuntimesDict = {
   noUsageData: "No usage data yet",
   date: "Date",
   model: "Model",
+  // Chart titles
+  activity: "Activity",
+  hourlyDistribution: "Hourly Distribution",
+  dailyTokenUsage: "Daily Token Usage",
+  tokenUsageByModel: "Token Usage by Model",
+  // Chart labels
+  total: "Total",
+  // Heatmap labels
+  less: "Less",
+  more: "More",
+  noActivity: "No activity",
   // Delete dialog
   deleteRuntime: "Delete Runtime",
   deleteRuntimeConfirmation: 'Are you sure you want to delete "{name}"? This action cannot be undone.',
