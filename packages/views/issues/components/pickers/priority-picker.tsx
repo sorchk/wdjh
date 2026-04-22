@@ -5,15 +5,6 @@ import type { IssuePriority, UpdateIssueRequest } from "@multica/core/types";
 import { PRIORITY_ORDER, PRIORITY_CONFIG } from "@multica/core/issues/config";
 import { PriorityIcon } from "../priority-icon";
 import { PropertyPicker, PickerItem } from "./property-picker";
-import { useLocale } from "@/features/dashboard/i18n";
-
-const PRIORITY_I18N: Record<IssuePriority, keyof ReturnType<typeof useLocale>["t"]["issues"]> = {
-  urgent: "priorityUrgent",
-  high: "priorityHigh",
-  medium: "priorityMedium",
-  low: "priorityLow",
-  none: "noPriority",
-};
 
 export function PriorityPicker({
   priority,
@@ -32,7 +23,6 @@ export function PriorityPicker({
   onOpenChange?: (v: boolean) => void;
   align?: "start" | "center" | "end";
 }) {
-  const { t } = useLocale();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
   const setOpen = controlledOnOpenChange ?? setInternalOpen;
@@ -49,7 +39,7 @@ export function PriorityPicker({
         customTrigger ?? (
           <>
             <PriorityIcon priority={priority} className="shrink-0" />
-            <span className="truncate">{t.issues[PRIORITY_I18N[priority]]}</span>
+            <span className="truncate">{cfg.label}</span>
           </>
         )
       }
@@ -67,7 +57,7 @@ export function PriorityPicker({
           >
             <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${c.badgeBg} ${c.badgeText}`}>
               <PriorityIcon priority={p} className="h-3 w-3" inheritColor />
-              {t.issues[PRIORITY_I18N[p]]}
+              {c.label}
             </span>
           </PickerItem>
         );

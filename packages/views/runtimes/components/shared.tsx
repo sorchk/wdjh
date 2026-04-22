@@ -1,6 +1,5 @@
 import { Monitor, Cloud, Wifi, WifiOff } from "lucide-react";
 import { Badge } from "@multica/ui/components/ui/badge";
-import type { RuntimesDict } from "@/features/dashboard/i18n/types";
 
 export function RuntimeModeIcon({ mode }: { mode: string }) {
   return mode === "cloud" ? (
@@ -10,7 +9,7 @@ export function RuntimeModeIcon({ mode }: { mode: string }) {
   );
 }
 
-export function StatusBadge({ status, runtimesT }: { status: string; runtimesT: RuntimesDict }) {
+export function StatusBadge({ status }: { status: string }) {
   const isOnline = status === "online";
   return (
     <Badge
@@ -22,7 +21,7 @@ export function StatusBadge({ status, runtimesT }: { status: string; runtimesT: 
       ) : (
         <WifiOff className="h-3 w-3" />
       )}
-      {isOnline ? runtimesT.online : runtimesT.offline}
+      {isOnline ? "Online" : "Offline"}
     </Badge>
   );
 }

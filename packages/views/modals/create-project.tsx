@@ -5,9 +5,11 @@ import { ChevronRight, Maximize2, Minimize2, X as XIcon, UserMinus } from "lucid
 import { useQuery } from "@tanstack/react-query";
 import { useCreateProject } from "@multica/core/projects/mutations";
 import {
+  PROJECT_STATUS_CONFIG,
+  PROJECT_STATUS_ORDER,
+  PROJECT_PRIORITY_CONFIG,
   PROJECT_PRIORITY_ORDER,
 } from "@multica/core/projects/config";
-import { useProjectStatusConfig, useProjectPriorityConfig } from "../projects/components/use-project-config";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useCurrentWorkspace, useWorkspacePaths } from "@multica/core/paths";
 import { memberListOptions, agentListOptions } from "@multica/core/workspace/queries";
@@ -30,7 +32,6 @@ import { ContentEditor, type ContentEditorRef, TitleEditor } from "../editor";
 import { PriorityIcon } from "../issues/components/priority-icon";
 import { ActorAvatar } from "../common/actor-avatar";
 import { useNavigation } from "../navigation";
-import { useLocale } from "@/features/dashboard/i18n";
 
 function PillButton({
   children,
@@ -53,7 +54,6 @@ function PillButton({
 }
 
 export function CreateProjectModal({ onClose }: { onClose: () => void }) {
-  const { t } = useLocale();
   const router = useNavigation();
   const workspace = useCurrentWorkspace();
   const workspaceName = workspace?.name;
@@ -62,8 +62,6 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
   const { data: members = [] } = useQuery(memberListOptions(wsId));
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
   const { getActorName } = useActorName();
-  const { statusConfig, statusOrder } = useProjectStatusConfig();
-  const { priorityConfig, priorityOrder } = useProjectPriorityConfig();
 
   const [title, setTitle] = useState("");
   const descEditorRef = useRef<ContentEditorRef>(null);
@@ -85,7 +83,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
     (a) => !a.archived_at && a.name.toLowerCase().includes(leadQuery),
   );
 
-  const leadLabel = leadType && leadId ? getActorName(leadType, leadId) : t.projects.noLead;
+  const leadLabel = leadType && leadId ? getActorName(leadType, leadId) : "Lead";
 
   const createProject = useCreateProject();
 
@@ -103,10 +101,10 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
         lead_id: leadId,
       });
       onClose();
-      toast.success(t.projects.projectCreated);
+      toast.success("Project created");
       router.push(wsPaths.projectDetail(project.id));
     } catch {
-      toast.error(t.projects.failedToCreateProject);
+      toast.error("Failed to create project");
     } finally {
       setSubmitting(false);
     }
@@ -125,13 +123,13 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
             : "!max-w-2xl !w-full !h-96 !-translate-y-1/2",
         )}
       >
-        <DialogTitle className="sr-only">{t.projects.newProject}</DialogTitle>
+        <DialogTitle className="sr-only">New Project</DialogTitle>
 
         <div className="flex items-center justify-between px-5 pt-3 pb-2 shrink-0">
           <div className="flex items-center gap-1.5 text-xs">
             <span className="text-muted-foreground">{workspaceName}</span>
             <ChevronRight className="size-3 text-muted-foreground/50" />
-            <span className="font-medium">{t.projects.newProject}</span>
+            <span className="font-medium">New project</span>
           </div>
           <div className="flex items-center gap-1">
             <Tooltip>
@@ -145,7 +143,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                   </button>
                 }
               />
-              <TooltipContent side="bottom">{isExpanded ? t.projects.collapseProject : t.projects.expandProject}</TooltipContent>
+              <TooltipContent side="bottom">{isExpanded ? "Collapse" : "Expand"}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger
@@ -158,7 +156,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                   </button>
                 }
               />
-              <TooltipContent side="bottom">{t.projects.closeProject}</TooltipContent>
+              <TooltipContent side="bottom">Close</TooltipContent>
             </Tooltip>
           </div>
         </div>
@@ -170,7 +168,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                 <button
                   type="button"
                   className="text-2xl cursor-pointer rounded-lg p-1 -ml-1 hover:bg-accent/60 transition-colors"
-                  title={t.projects.chooseIcon}
+                  title="Choose icon"
                 >
                   {icon || "📁"}
                 </button>
@@ -188,7 +186,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
           <TitleEditor
             autoFocus
             defaultValue=""
-            placeholder={t.projects.projectTitlePlaceholder}
+            placeholder="Project title"
             className="text-lg font-semibold"
             onChange={(v) => setTitle(v)}
             onSubmit={handleSubmit}
@@ -199,7 +197,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
           <ContentEditor
             ref={descEditorRef}
             defaultValue=""
-            placeholder={t.projects.addDescriptionProject}
+            placeholder="Add description..."
             debounceMs={500}
           />
         </div>
@@ -209,16 +207,16 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
             <DropdownMenuTrigger
               render={
                 <PillButton>
-                  <span className={cn("size-2 rounded-full", statusConfig[status].dotColor)} />
-                  <span>{statusConfig[status].label}</span>
+                  <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[status].dotColor)} />
+                  <span>{PROJECT_STATUS_CONFIG[status].label}</span>
                 </PillButton>
               }
             />
             <DropdownMenuContent align="start" className="w-44">
-              {statusOrder.map((s) => (
+              {PROJECT_STATUS_ORDER.map((s) => (
                 <DropdownMenuItem key={s} onClick={() => setStatus(s)}>
-                  <span className={cn("size-2 rounded-full", statusConfig[s].dotColor)} />
-                  <span>{statusConfig[s].label}</span>
+                  <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[s].dotColor)} />
+                  <span>{PROJECT_STATUS_CONFIG[s].label}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -229,15 +227,15 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
               render={
                 <PillButton>
                   <PriorityIcon priority={priority} />
-                  <span>{priorityConfig[priority].label}</span>
+                  <span>{PROJECT_PRIORITY_CONFIG[priority].label}</span>
                 </PillButton>
               }
             />
             <DropdownMenuContent align="start" className="w-44">
-              {priorityOrder.map((pr) => (
+              {PROJECT_PRIORITY_ORDER.map((pr) => (
                 <DropdownMenuItem key={pr} onClick={() => setPriority(pr)}>
                   <PriorityIcon priority={pr} />
-                  <span>{priorityConfig[pr].label}</span>
+                  <span>{PROJECT_PRIORITY_CONFIG[pr].label}</span>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -259,7 +257,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                       <span>{leadLabel}</span>
                     </>
                   ) : (
-                    <span className="text-muted-foreground">{t.projects.assignLead}</span>
+                    <span className="text-muted-foreground">Lead</span>
                   )}
                 </PillButton>
               }
@@ -270,7 +268,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                   type="text"
                   value={leadFilter}
                   onChange={(e) => setLeadFilter(e.target.value)}
-                  placeholder={t.projects.assignLead}
+                  placeholder="Assign lead..."
                   className="w-full bg-transparent text-sm placeholder:text-muted-foreground outline-none"
                 />
               </div>
@@ -285,12 +283,12 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                   className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
                 >
                   <UserMinus className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">{t.projects.noLead}</span>
+                  <span className="text-muted-foreground">No lead</span>
                 </button>
                 {filteredMembers.length > 0 && (
                   <>
                     <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      {t.projects.members}
+                      Members
                     </div>
                     {filteredMembers.map((m) => (
                       <button
@@ -312,7 +310,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                 {filteredAgents.length > 0 && (
                   <>
                     <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      {t.projects.agents}
+                      Agents
                     </div>
                     {filteredAgents.map((a) => (
                       <button
@@ -335,7 +333,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
                   filteredAgents.length === 0 &&
                   leadFilter && (
                     <div className="px-2 py-3 text-center text-sm text-muted-foreground">
-                      {t.projects.noResultsProject}
+                      No results
                     </div>
                   )}
               </div>
@@ -345,7 +343,7 @@ export function CreateProjectModal({ onClose }: { onClose: () => void }) {
 
         <div className="flex items-center justify-end px-4 py-3 border-t shrink-0">
           <Button size="sm" onClick={handleSubmit} disabled={!title.trim() || submitting}>
-            {submitting ? t.projects.creatingProject : t.projects.createProject}
+            {submitting ? "Creating..." : "Create Project"}
           </Button>
         </div>
       </DialogContent>

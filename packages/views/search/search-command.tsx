@@ -37,7 +37,7 @@ import { useModalStore } from "@multica/core/modals";
 import { workspaceListOptions } from "@multica/core/workspace/queries";
 import { StatusIcon } from "../issues/components";
 import { STATUS_CONFIG } from "@multica/core/issues/config";
-import { useProjectStatusConfig } from "../projects/components/use-project-config";
+import { PROJECT_STATUS_CONFIG } from "@multica/core/projects/config";
 import type { ProjectStatus } from "@multica/core/types";
 import {
   Dialog,
@@ -49,7 +49,6 @@ import {
 import { useTheme } from "@multica/ui/components/common/theme-provider";
 import { useNavigation } from "../navigation";
 import { useSearchStore } from "./search-store";
-import { useLocale } from "@/features/dashboard/i18n";
 
 function HighlightText({ text, query }: { text: string; query: string }) {
   const parts = useMemo(() => {
@@ -107,18 +106,16 @@ interface NavPage {
   keywords: string[];
 }
 
-function getNavPages(t: ReturnType<typeof useLocale>["t"]): NavPage[] {
-  return [
-    { key: "inbox", label: t.search.inbox, icon: Inbox, keywords: ["inbox", "notifications"] },
-    { key: "myIssues", label: t.search.myIssues, icon: CircleUser, keywords: ["my", "issues", "assigned"] },
-    { key: "issues", label: t.search.issues, icon: ListTodo, keywords: ["issues", "tasks", "bugs"] },
-    { key: "projects", label: t.search.projects, icon: FolderKanban, keywords: ["projects", "kanban"] },
-    { key: "agents", label: t.search.agents, icon: Bot, keywords: ["agents", "bots", "ai"] },
-    { key: "runtimes", label: t.search.runtimes, icon: Monitor, keywords: ["runtimes", "environments"] },
-    { key: "skills", label: t.search.skills, icon: BookOpenText, keywords: ["skills", "library"] },
-    { key: "settings", label: t.search.settings, icon: Settings, keywords: ["settings", "config", "preferences"] },
-  ];
-}
+const navPages: NavPage[] = [
+  { key: "inbox", label: "Inbox", icon: Inbox, keywords: ["inbox", "notifications"] },
+  { key: "myIssues", label: "My Issues", icon: CircleUser, keywords: ["my", "issues", "assigned"] },
+  { key: "issues", label: "Issues", icon: ListTodo, keywords: ["issues", "tasks", "bugs"] },
+  { key: "projects", label: "Projects", icon: FolderKanban, keywords: ["projects", "kanban"] },
+  { key: "agents", label: "Agents", icon: Bot, keywords: ["agents", "bots", "ai"] },
+  { key: "runtimes", label: "Runtimes", icon: Monitor, keywords: ["runtimes", "environments"] },
+  { key: "skills", label: "Skills", icon: BookOpenText, keywords: ["skills", "library"] },
+  { key: "settings", label: "Settings", icon: Settings, keywords: ["settings", "config", "preferences"] },
+];
 
 type ThemeValue = "light" | "dark" | "system";
 
@@ -137,8 +134,6 @@ interface SearchResults {
 }
 
 export function SearchCommand() {
-  const { t } = useLocale();
-  const { statusConfig } = useProjectStatusConfig();
   const { push, pathname, getShareableUrl } = useNavigation();
   const open = useSearchStore((s) => s.open);
   const setOpen = useSearchStore((s) => s.setOpen);
@@ -168,8 +163,6 @@ export function SearchCommand() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
-  const navPages = useMemo(() => getNavPages(t), [t]);
-
   const filteredPages = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -178,7 +171,7 @@ export function SearchCommand() {
         page.label.toLowerCase().includes(q) ||
         page.keywords.some((kw) => kw.includes(q)),
     );
-  }, [query, navPages]);
+  }, [query]);
 
   // Detect if current route is an issue detail page — /{slug}/issues/{id}.
   // Falls back to null on any other route; used to gate issue-specific commands.
@@ -204,7 +197,7 @@ export function SearchCommand() {
     const items: CommandItem[] = [
       {
         key: "new-issue",
-        label: t.search.newIssue,
+        label: "New Issue",
         icon: Plus,
         keywords: ["new", "issue", "create", "add"],
         onSelect: () => {
@@ -214,7 +207,7 @@ export function SearchCommand() {
       },
       {
         key: "new-project",
-        label: t.search.newProject,
+        label: "New Project",
         icon: Plus,
         keywords: ["new", "project", "create", "add"],
         onSelect: () => {
@@ -229,24 +222,24 @@ export function SearchCommand() {
       items.push(
         {
           key: "copy-issue-link",
-          label: t.search.copyIssueLink,
+          label: "Copy Issue Link",
           icon: Link2,
           keywords: ["copy", "link", "share", "url", identifier.toLowerCase()],
           onSelect: () => {
             const url = getShareableUrl ? getShareableUrl(pathname) : window.location.href;
             void navigator.clipboard.writeText(url);
-            toast.success(t.search.linkCopied);
+            toast.success("Link copied");
             setOpen(false);
           },
         },
         {
           key: "copy-issue-identifier",
-          label: `${t.search.copyIssueIdentifier} (${identifier})`,
+          label: `Copy Identifier (${identifier})`,
           icon: Copy,
           keywords: ["copy", "id", "identifier", identifier.toLowerCase()],
           onSelect: () => {
             void navigator.clipboard.writeText(identifier);
-            toast.success(t.search.identifierCopied.replace("{identifier}", identifier));
+            toast.success(`Copied ${identifier}`);
             setOpen(false);
           },
         },
@@ -256,7 +249,7 @@ export function SearchCommand() {
     items.push(
       {
         key: "theme-light",
-        label: t.search.switchToLightTheme,
+        label: "Switch to Light Theme",
         icon: Sun,
         keywords: ["light", "theme", "appearance", "mode", "bright"],
         trailing: activeThemeCheck("light"),
@@ -267,7 +260,7 @@ export function SearchCommand() {
       },
       {
         key: "theme-dark",
-        label: t.search.switchToDarkTheme,
+        label: "Switch to Dark Theme",
         icon: Moon,
         keywords: ["dark", "theme", "appearance", "mode", "night"],
         trailing: activeThemeCheck("dark"),
@@ -278,7 +271,7 @@ export function SearchCommand() {
       },
       {
         key: "theme-system",
-        label: t.search.useSystemTheme,
+        label: "Use System Theme",
         icon: Monitor,
         keywords: ["system", "theme", "appearance", "mode", "auto"],
         trailing: activeThemeCheck("system"),
@@ -290,7 +283,7 @@ export function SearchCommand() {
     );
 
     return items;
-  }, [currentIssue, getShareableUrl, pathname, setOpen, setTheme, theme, t]);
+  }, [currentIssue, getShareableUrl, pathname, setOpen, setTheme, theme]);
 
   const filteredCommands = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -455,9 +448,9 @@ export function SearchCommand() {
         showCloseButton={false}
       >
         <DialogHeader className="sr-only">
-          <DialogTitle>{t.search.title}</DialogTitle>
+          <DialogTitle>Search</DialogTitle>
           <DialogDescription>
-            {t.search.description}
+            Search pages, issues, and projects
           </DialogDescription>
         </DialogHeader>
         <CommandPrimitive
@@ -468,7 +461,7 @@ export function SearchCommand() {
           <div className="flex items-center gap-3 border-b px-4 py-3">
             <SearchIcon className="size-5 shrink-0 text-muted-foreground" />
             <CommandPrimitive.Input
-              placeholder={t.search.placeholder}
+              placeholder="Type a command or search..."
               value={query}
               onValueChange={handleValueChange}
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
@@ -484,7 +477,7 @@ export function SearchCommand() {
             {filteredPages.length > 0 && (
               <CommandPrimitive.Group className="p-2">
                 <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                  {t.search.pages}
+                  Pages
                 </div>
                 {filteredPages.map((page) => (
                   <CommandPrimitive.Item
@@ -506,7 +499,7 @@ export function SearchCommand() {
             {filteredCommands.length > 0 && (
               <CommandPrimitive.Group className="p-2">
                 <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                  {t.search.commands}
+                  Commands
                 </div>
                 {filteredCommands.map((cmd) => (
                   <CommandPrimitive.Item
@@ -529,7 +522,7 @@ export function SearchCommand() {
             {filteredWorkspaces.length > 0 && (
               <CommandPrimitive.Group className="p-2">
                 <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground">
-                  {t.search.switchWorkspace}
+                  Switch Workspace
                 </div>
                 {filteredWorkspaces.map((ws) => (
                   <CommandPrimitive.Item
@@ -563,13 +556,13 @@ export function SearchCommand() {
               filteredCommands.length === 0 &&
               filteredWorkspaces.length === 0 && (
                 <CommandPrimitive.Empty className="py-10 text-center text-sm text-muted-foreground">
-                  {t.search.noResultsFound}
+                  No results found.
                 </CommandPrimitive.Empty>
               )}
 
             {!isLoading && results.projects.length > 0 && (
               <CommandPrimitive.Group
-                heading={t.search.projects}
+                heading="Projects"
                 className="p-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground"
               >
                 {results.projects.map((project) => (
@@ -587,9 +580,9 @@ export function SearchCommand() {
                         <HighlightText text={project.title} query={query} />
                       </span>
                       <span
-                        className={`ml-auto text-xs shrink-0 ${statusConfig[project.status]?.color ?? "text-muted-foreground"}`}
+                        className={`ml-auto text-xs shrink-0 ${PROJECT_STATUS_CONFIG[project.status as ProjectStatus]?.color ?? "text-muted-foreground"}`}
                       >
-                        {statusConfig[project.status]?.label ?? project.status}
+                        {PROJECT_STATUS_CONFIG[project.status as ProjectStatus]?.label ?? project.status}
                       </span>
                     </div>
                     {project.match_source === "description" &&
@@ -610,7 +603,7 @@ export function SearchCommand() {
 
             {!isLoading && results.issues.length > 0 && (
               <CommandPrimitive.Group
-                heading={t.search.issues}
+                heading="Issues"
                 className="p-2 [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground"
               >
                 {results.issues.map((issue) => (
@@ -658,7 +651,7 @@ export function SearchCommand() {
               <CommandPrimitive.Group className="p-2">
                 <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground">
                   <Clock className="size-3" />
-                  <span>{t.search.recent}</span>
+                  <span>Recent</span>
                 </div>
                 {recentIssues.map((item) => (
                   <CommandPrimitive.Item
@@ -687,7 +680,7 @@ export function SearchCommand() {
 
             {!isLoading && !query.trim() && recentIssues.length === 0 && (
               <div className="px-5 py-4 text-center text-xs text-muted-foreground">
-                {t.search.typeToSearchIssuesAndProjects}
+                Type to search issues and projects
               </div>
             )}
           </CommandPrimitive.List>

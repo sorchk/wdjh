@@ -12,7 +12,6 @@ import {
 } from "@multica/ui/components/ui/popover";
 import { Input } from "@multica/ui/components/ui/input";
 import { Label } from "@multica/ui/components/ui/label";
-import { useLocale } from "@/features/dashboard/i18n";
 
 // ModelDropdown renders a searchable, creatable model picker for an agent.
 // It fetches the supported-model catalog from the selected runtime — the
@@ -34,7 +33,6 @@ export function ModelDropdown({
   onChange: (value: string) => void;
   disabled?: boolean;
 }) {
-  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -86,23 +84,27 @@ export function ModelDropdown({
   const triggerLabel =
     value ||
     (disabled
-      ? t.agents.createAgentDialog.registerRuntimeBeforeCreating
+      ? "Select a runtime first"
       : runtimeOnline
         ? defaultModel
           ? `Default — ${defaultModel.label}`
           : "Default (provider)"
-        : t.agents.modelDropdown.noModelsAvailable);
+        : "Runtime offline — enter manually");
 
   if (!supported && !modelsQuery.isLoading) {
+    // Provider doesn't honour per-agent model selection — show a
+    // clearly-disabled state so the user knows why the control is
+    // inert. (Hermes reads its model from ~/.hermes/.env.)
     return (
       <div className="min-w-0">
-        <Label className="text-xs text-muted-foreground">{t.agents.modelDropdown.model}</Label>
+        <Label className="text-xs text-muted-foreground">Model</Label>
         <div className="mt-1.5 flex items-start gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground">
           <Info className="mt-0.5 h-4 w-4 shrink-0" />
           <div className="min-w-0">
-            <div>{t.agents.modelDropdown.selectModel}</div>
+            <div>Model selection is managed by this runtime.</div>
             <div className="mt-0.5 text-xs">
-              {t.agents.modelDropdown.noModelsAvailable}
+              Configure the model on the runtime host (e.g. Hermes reads it
+              from its own config file).
             </div>
           </div>
         </div>
@@ -113,7 +115,7 @@ export function ModelDropdown({
   return (
     <div className="min-w-0">
       <div className="flex items-center justify-between">
-        <Label className="text-xs text-muted-foreground">{t.agents.modelDropdown.model}</Label>
+        <Label className="text-xs text-muted-foreground">Model</Label>
         {modelsQuery.isError && (
           <span className="text-xs text-muted-foreground">discovery failed</span>
         )}
@@ -145,7 +147,7 @@ export function ModelDropdown({
           <div className="border-b border-border p-2">
             <Input
               autoFocus
-              placeholder={t.agents.modelDropdown.selectModel}
+              placeholder="Search or type a model ID"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-8"
@@ -155,7 +157,7 @@ export function ModelDropdown({
             {modelsQuery.isLoading && (
               <div className="flex items-center gap-2 px-3 py-6 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {t.agents.modelDropdown.noModelsAvailable}
+                Discovering models…
               </div>
             )}
 
@@ -202,7 +204,7 @@ export function ModelDropdown({
               Object.keys(filtered).length === 0 &&
               !canCreate && (
                 <div className="px-3 py-6 text-center text-sm text-muted-foreground">
-                  {t.agents.modelDropdown.noModelsAvailable}
+                  No models available.
                 </div>
               )}
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { LocaleProvider } from "@/features/dashboard/i18n";
 import { use, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -86,9 +85,7 @@ export default function WorkspaceLayout({
 
   return (
     <WorkspaceSlugProvider slug={workspaceSlug}>
-      <LocaleProvider>
-        {children}
-      </LocaleProvider>
+      {children}
     </WorkspaceSlugProvider>
   );
 }

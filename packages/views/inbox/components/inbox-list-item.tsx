@@ -3,7 +3,7 @@
 import { StatusIcon } from "../../issues/components";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { Archive } from "lucide-react";
-import type { InboxItem, InboxItemType } from "@multica/core/types";
+import type { InboxItem } from "@multica/core/types";
 import { InboxDetailLabel } from "./inbox-detail-label";
 
 function timeAgo(dateStr: string): string {
@@ -24,13 +24,11 @@ export function InboxListItem({
   isSelected,
   onClick,
   onArchive,
-  typeLabels,
 }: {
   item: InboxItem;
   isSelected: boolean;
   onClick: () => void;
   onArchive: () => void;
-  typeLabels: Record<InboxItemType, string>;
 }) {
   return (
     <button
@@ -82,7 +80,7 @@ export function InboxListItem({
         </div>
         <div className="mt-0.5 flex items-center justify-between gap-2">
           <p className={`min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-xs ${item.read ? "text-muted-foreground/60" : "text-muted-foreground"}`}>
-            <InboxDetailLabel item={item} typeLabels={typeLabels} />
+            <InboxDetailLabel item={item} />
           </p>
           <span className={`shrink-0 text-xs ${item.read ? "text-muted-foreground/60" : "text-muted-foreground"}`}>
             {timeAgo(item.created_at)}

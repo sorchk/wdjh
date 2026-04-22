@@ -26,7 +26,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@multica/ui/components/ui/dropdown-menu";
-import { ALL_STATUSES } from "@multica/core/issues/config";
+import { ALL_STATUSES, STATUS_CONFIG } from "@multica/core/issues/config";
 import { useViewStoreApi, useViewStore } from "@multica/core/issues/stores/view-store-context";
 import type { SortField, SortDirection } from "@multica/core/issues/stores/view-store";
 import { sortIssues } from "../utils/sort";
@@ -35,7 +35,6 @@ import { BoardColumn } from "./board-column";
 import { BoardCardContent } from "./board-card";
 import { InfiniteScrollSentinel } from "./infinite-scroll-sentinel";
 import type { ChildProgress } from "./list-row";
-import { useLocale } from "@/features/dashboard/i18n";
 
 const COLUMN_IDS = new Set<string>(ALL_STATUSES);
 
@@ -355,7 +354,7 @@ function HiddenColumnsPanel({
     <div className="flex w-[240px] shrink-0 flex-col">
       <div className="mb-2 flex items-center gap-2 px-1">
         <span className="text-sm font-medium text-muted-foreground">
-          {t.issues.hiddenColumns}
+          Hidden columns
         </span>
       </div>
       <div className="flex-1 space-y-0.5">

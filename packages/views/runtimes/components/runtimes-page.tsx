@@ -12,30 +12,33 @@ import {
 import { Skeleton } from "@multica/ui/components/ui/skeleton";
 import { useAuthStore } from "@multica/core/auth";
 import { useWorkspaceId } from "@multica/core/hooks";
-import { useLocale } from "@/features/dashboard/i18n";
 import { runtimeListOptions, runtimeKeys } from "@multica/core/runtimes/queries";
 import { useUpdatableRuntimeIds } from "@multica/core/runtimes/hooks";
 import { useWSEvent } from "@multica/core/realtime";
 import { RuntimeList } from "./runtime-list";
 import { RuntimeDetail } from "./runtime-detail";
-import type { RuntimesDict } from "@/features/dashboard/i18n/types";
 
 type RuntimeFilter = "mine" | "all";
 
 interface RuntimesPageProps {
   /** Desktop-only slot rendered above the runtime list (e.g. local daemon card) */
   topSlot?: React.ReactNode;
+  /**
+   * Desktop-only signal: the bundled daemon is still booting / hasn't
+   * registered with the server yet. Forwarded to RuntimeList so its
+   * empty state shows a "starting" indicator instead of the static
+   * "register a runtime" hint during the boot window. Web omits this.
+   */
+  bootstrapping?: boolean;
 }
 
-export default function RuntimesPage({ topSlot }: RuntimesPageProps = {}) {
+export default function RuntimesPage({ topSlot, bootstrapping }: RuntimesPageProps = {}) {
   const isLoading = useAuthStore((s) => s.isLoading);
   const wsId = useWorkspaceId();
   const qc = useQueryClient();
   const [filter, setFilter] = useState<RuntimeFilter>("mine");
   const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState("");
-  const { t } = useLocale();
-  const runtimesT = t.runtimes as RuntimesDict;
 
   const ownerParam = filter === "mine" ? "me" as const : undefined;
   const { data: runtimes = [], isLoading: fetching } = useQuery(runtimeListOptions(wsId, ownerParam));
@@ -119,7 +122,7 @@ export default function RuntimesPage({ topSlot }: RuntimesPageProps = {}) {
             ownerFilter={ownerFilter}
             onOwnerFilterChange={setOwnerFilter}
             updatableIds={updatableIds}
-            runtimesT={runtimesT}
+            bootstrapping={bootstrapping}
           />
         </ResizablePanel>
 
@@ -127,11 +130,11 @@ export default function RuntimesPage({ topSlot }: RuntimesPageProps = {}) {
 
         <ResizablePanel id="detail" minSize="50%">
           {selected ? (
-            <RuntimeDetail key={selected.id} runtime={selected} runtimesT={runtimesT} />
+            <RuntimeDetail key={selected.id} runtime={selected} />
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
               <Server className="h-10 w-10 text-muted-foreground/30" />
-              <p className="mt-3 text-sm">{runtimesT.selectRuntimeHint}</p>
+              <p className="mt-3 text-sm">Select a runtime to view details</p>
             </div>
           )}
         </ResizablePanel>

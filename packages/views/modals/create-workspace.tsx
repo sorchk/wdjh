@@ -12,7 +12,6 @@ import {
 } from "@multica/ui/components/ui/dialog";
 import { paths } from "@multica/core/paths";
 import { CreateWorkspaceForm } from "../workspace/create-workspace-form";
-import { useLocale } from "@/features/dashboard/i18n";
 
 export function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
   const router = useNavigation();
@@ -44,7 +43,7 @@ export function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
           onClick={onClose}
         >
           <ArrowLeft className="h-4 w-4" />
-          {t.issues.back}
+          Back
         </Button>
 
         <div className="flex flex-1 flex-col items-center justify-center px-6 pb-12">

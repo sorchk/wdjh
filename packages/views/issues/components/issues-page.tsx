@@ -22,10 +22,8 @@ import { IssuesHeader } from "./issues-header";
 import { BoardView } from "./board-view";
 import { ListView } from "./list-view";
 import { BatchActionToolbar } from "./batch-action-toolbar";
-import { useLocale } from "@/features/dashboard/i18n";
 
 export function IssuesPage() {
-  const { t } = useLocale();
   const wsId = useWorkspaceId();
   const { data: allIssues = [], isLoading: loading } = useQuery(issueListOptions(wsId));
 
@@ -92,7 +90,7 @@ export function IssuesPage() {
 
       updateIssueMutation.mutate(
         { id: issueId, ...updates },
-        { onError: () => toast.error(t.issues.failedToMoveIssue) },
+        { onError: () => toast.error("Failed to move issue") },
       );
     },
     [updateIssueMutation],
@@ -144,10 +142,10 @@ export function IssuesPage() {
       <PageHeader className="gap-1.5">
         <WorkspaceAvatar name={workspace?.name ?? "W"} size="sm" />
         <span className="text-sm text-muted-foreground">
-          {workspace?.name ?? t.issues.workspace}
+          {workspace?.name ?? "Workspace"}
         </span>
         <ChevronRight className="h-3 w-3 text-muted-foreground" />
-        <span className="text-sm font-medium">{t.issues.issues}</span>
+        <span className="text-sm font-medium">Issues</span>
       </PageHeader>
 
       <ViewStoreProvider store={useIssueViewStore}>
@@ -158,8 +156,8 @@ export function IssuesPage() {
         {scopedIssues.length === 0 ? (
           <div className="flex flex-1 min-h-0 flex-col items-center justify-center gap-2 text-muted-foreground">
             <ListTodo className="h-10 w-10 text-muted-foreground/40" />
-            <p className="text-sm">{t.issues.noIssuesYet}</p>
-            <p className="text-xs">{t.issues.createAnIssueToGetStarted}</p>
+            <p className="text-sm">No issues yet</p>
+            <p className="text-xs">Create an issue to get started.</p>
           </div>
         ) : (
           <div className="flex flex-col flex-1 min-h-0">

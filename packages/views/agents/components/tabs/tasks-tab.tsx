@@ -11,10 +11,8 @@ import { issueDetailOptions } from "@multica/core/issues/queries";
 import { useQueries } from "@tanstack/react-query";
 import { AppLink } from "../../../navigation";
 import { taskStatusConfig } from "../../config";
-import { useLocale } from "@/features/dashboard/i18n";
 
 export function TasksTab({ agent }: { agent: Agent }) {
-  const { t } = useLocale();
   const [tasks, setTasks] = useState<AgentTask[]>([]);
   const [loading, setLoading] = useState(true);
   const wsId = useWorkspaceId();
@@ -89,18 +87,18 @@ export function TasksTab({ agent }: { agent: Agent }) {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold">{t.agents.tasksTab.title}</h3>
+        <h3 className="text-sm font-semibold">Task Queue</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          {t.agents.tasksTab.description}
+          Issues assigned to this agent and their execution status.
         </p>
       </div>
 
       {tasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
           <ListTodo className="h-8 w-8 text-muted-foreground/40" />
-          <p className="mt-3 text-sm text-muted-foreground">{t.agents.tasksTab.noTasksInQueue}</p>
+          <p className="mt-3 text-sm text-muted-foreground">No tasks in queue</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            {t.agents.tasksTab.noTasksInQueueDesc}
+            Assign an issue to this agent to get started.
           </p>
         </div>
       ) : (
@@ -143,14 +141,14 @@ export function TasksTab({ agent }: { agent: Agent }) {
                   </div>
                   <div className="mt-0.5 text-xs text-muted-foreground">
                     {isRunning && task.started_at
-                      ? `${t.agents.tasksTab.started} ${new Date(task.started_at).toLocaleString()}`
+                      ? `Started ${new Date(task.started_at).toLocaleString()}`
                       : task.status === "dispatched" && task.dispatched_at
-                        ? `${t.agents.tasksTab.dispatchedLabel} ${new Date(task.dispatched_at).toLocaleString()}`
+                        ? `Dispatched ${new Date(task.dispatched_at).toLocaleString()}`
                         : task.status === "completed" && task.completed_at
-                          ? `${t.agents.tasksTab.completedLabel} ${new Date(task.completed_at).toLocaleString()}`
+                          ? `Completed ${new Date(task.completed_at).toLocaleString()}`
                           : task.status === "failed" && task.completed_at
-                            ? `${t.agents.tasksTab.failedLabel} ${new Date(task.completed_at).toLocaleString()}`
-                            : `${t.agents.tasksTab.queuedLabel} ${new Date(task.created_at).toLocaleString()}`}
+                            ? `Failed ${new Date(task.completed_at).toLocaleString()}`
+                            : `Queued ${new Date(task.created_at).toLocaleString()}`}
                   </div>
                 </div>
                 <span className={`shrink-0 text-xs font-medium ${config.color}`}>

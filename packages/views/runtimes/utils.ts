@@ -1,17 +1,16 @@
 import type { RuntimeUsage } from "@multica/core/types";
-import type { RuntimesDict } from "@/features/dashboard/i18n/types";
 
 // ---------------------------------------------------------------------------
 // Formatting helpers
 // ---------------------------------------------------------------------------
 
-export function formatLastSeen(lastSeenAt: string | null, t?: RuntimesDict): string {
-  if (!lastSeenAt) return t?.never ?? "Never";
+export function formatLastSeen(lastSeenAt: string | null): string {
+  if (!lastSeenAt) return "Never";
   const diff = Date.now() - new Date(lastSeenAt).getTime();
-  if (diff < 60_000) return t?.justNow ?? "Just now";
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}${t?.minutesAgo?.replace("{minutes}", "") ?? "m ago"}`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}${t?.hoursAgo?.replace("{hours}", "") ?? "h ago"}`;
-  return `${Math.floor(diff / 86_400_000)}${t?.daysAgo?.replace("{days}", "") ?? "d ago"}`;
+  if (diff < 60_000) return "Just now";
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  return `${Math.floor(diff / 86_400_000)}d ago`;
 }
 
 export function formatTokens(n: number): string {

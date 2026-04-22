@@ -160,27 +160,6 @@ vi.mock("@multica/ui/lib/utils", () => ({
   cn: (...values: Array<string | false | null | undefined>) => values.filter(Boolean).join(" "),
 }));
 
-vi.mock("@/features/dashboard/i18n", () => ({
-  useLocale: () => ({
-    t: {
-      issues: {
-        issueCreated: "Issue created",
-        viewIssue: "View issue",
-        failedToCreateIssue: "Failed to create issue",
-        newIssue: "New issue",
-        newSubIssue: "New sub-issue",
-        collapse: "Collapse",
-        expand: "Expand",
-        close: "Close",
-        issueTitlePlaceholder: "Issue title",
-        addDescriptionPlaceholder: "Add description...",
-        creating: "Creating...",
-        createIssue: "Create Issue",
-      },
-    },
-  }),
-}));
-
 vi.mock("sonner", () => ({
   toast: {
     custom: mockToastCustom,

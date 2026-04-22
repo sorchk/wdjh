@@ -66,8 +66,8 @@ brews:
       branch: main
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: Formula
-    homepage: "https://github.com/sorchk/wdjh"
-    description: "multica CLI — local agent runtime and management tool for the multica platform"
+    homepage: "https://github.com/multica-ai/multica"
+    description: "Multica CLI — local agent runtime and management tool for the Multica platform"
     license: "Apache-2.0"
     install: |
       bin.install "multica"

@@ -16,7 +16,6 @@ import { sortIssues } from "../utils/sort";
 import { StatusIcon } from "./status-icon";
 import { ListRow, type ChildProgress } from "./list-row";
 import { InfiniteScrollSentinel } from "./infinite-scroll-sentinel";
-import { useLocale } from "@/features/dashboard/i18n";
 
 const EMPTY_PROGRESS_MAP = new Map<string, ChildProgress>();
 
@@ -34,7 +33,6 @@ export function ListView({
   myIssuesScope?: string;
   myIssuesFilter?: MyIssuesFilter;
 }) {
-  const { t } = useLocale();
   const sortBy = useViewStore((s) => s.sortBy);
   const sortDirection = useViewStore((s) => s.sortDirection);
   const listCollapsedStatuses = useViewStore(

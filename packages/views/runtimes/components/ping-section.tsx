@@ -3,22 +3,19 @@ import { Loader2, CheckCircle2, XCircle, Zap } from "lucide-react";
 import { Button } from "@multica/ui/components/ui/button";
 import { api } from "@multica/core/api";
 import type { RuntimePingStatus } from "@multica/core/types";
-import type { RuntimesDict } from "@/features/dashboard/i18n/types";
 
-function getPingStatusConfig(t: RuntimesDict): Record<
+const pingStatusConfig: Record<
   RuntimePingStatus,
   { label: string; icon: typeof Loader2; color: string }
-> {
-  return {
-    pending: { label: t.waitingForDaemon, icon: Loader2, color: "text-muted-foreground" },
-    running: { label: t.runningTest, icon: Loader2, color: "text-info" },
-    completed: { label: t.connected, icon: CheckCircle2, color: "text-success" },
-    failed: { label: t.pingFailed, icon: XCircle, color: "text-destructive" },
-    timeout: { label: t.pingTimeout, icon: XCircle, color: "text-warning" },
-  };
-}
+> = {
+  pending: { label: "Waiting for daemon...", icon: Loader2, color: "text-muted-foreground" },
+  running: { label: "Running test...", icon: Loader2, color: "text-info" },
+  completed: { label: "Connected", icon: CheckCircle2, color: "text-success" },
+  failed: { label: "Failed", icon: XCircle, color: "text-destructive" },
+  timeout: { label: "Timeout", icon: XCircle, color: "text-warning" },
+};
 
-export function PingSection({ runtimeId, runtimesT }: { runtimeId: string; runtimesT: RuntimesDict }) {
+export function PingSection({ runtimeId }: { runtimeId: string }) {
   const [status, setStatus] = useState<RuntimePingStatus | null>(null);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
@@ -68,12 +65,11 @@ export function PingSection({ runtimeId, runtimesT }: { runtimeId: string; runti
       }, 2000);
     } catch {
       setStatus("failed");
-      setError(runtimesT.pingFailed);
+      setError("Failed to initiate test");
       setTesting(false);
     }
   };
 
-  const pingStatusConfig = getPingStatusConfig(runtimesT);
   const config = status ? pingStatusConfig[status] : null;
   const Icon = config?.icon;
   const isActive = status === "pending" || status === "running";
@@ -92,7 +88,7 @@ export function PingSection({ runtimeId, runtimesT }: { runtimeId: string; runti
           ) : (
             <Zap className="h-3 w-3" />
           )}
-          {testing ? runtimesT.testing : runtimesT.testConnection}
+          {testing ? "Testing..." : "Test Connection"}
         </Button>
 
         {config && Icon && (

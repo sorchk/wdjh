@@ -18,7 +18,7 @@ import { memberListOptions, agentListOptions } from "@multica/core/workspace/que
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useCurrentWorkspace, useWorkspacePaths } from "@multica/core/paths";
 import { useActorName } from "@multica/core/workspace/hooks";
-import { PROJECT_PRIORITY_ORDER } from "@multica/core/projects/config";
+import { PROJECT_STATUS_ORDER, PROJECT_STATUS_CONFIG, PROJECT_PRIORITY_ORDER, PROJECT_PRIORITY_CONFIG } from "@multica/core/projects/config";
 import { BOARD_STATUSES } from "@multica/core/issues/config";
 import { createIssueViewStore } from "@multica/core/issues/stores/view-store";
 import { ViewStoreProvider, useViewStore } from "@multica/core/issues/stores/view-store-context";
@@ -28,7 +28,6 @@ import { ActorAvatar } from "../../common/actor-avatar";
 import { AppLink, useNavigation } from "../../navigation";
 import { TitleEditor, ContentEditor, type ContentEditorRef } from "../../editor";
 import { PriorityIcon } from "../../issues/components/priority-icon";
-import { useProjectStatusConfig, useProjectPriorityConfig } from "./use-project-config";
 import { IssuesHeader } from "../../issues/components/issues-header";
 import { BoardView } from "../../issues/components/board-view";
 import { ListView } from "../../issues/components/list-view";
@@ -67,7 +66,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@multica/ui/components/ui/alert-dialog";
-import { useLocale } from "@/features/dashboard/i18n";
 
 // ---------------------------------------------------------------------------
 // Property row — sidebar property display
@@ -106,7 +104,6 @@ function ProjectIssuesContent({
   filter: MyIssuesFilter;
 }) {
   const wsId = useWorkspaceId();
-  const { t } = useLocale();
   const viewMode = useViewStore((s) => s.viewMode);
   const statusFilters = useViewStore((s) => s.statusFilters);
   const priorityFilters = useViewStore((s) => s.priorityFilters);
@@ -144,18 +141,18 @@ function ProjectIssuesContent({
       if (newPosition !== undefined) updates.position = newPosition;
       updateIssueMutation.mutate(
         { id: issueId, ...updates },
-        { onError: () => toast.error(t.projects.failedToMoveIssue) },
+        { onError: () => toast.error("Failed to move issue") },
       );
     },
-    [updateIssueMutation, t],
+    [updateIssueMutation],
   );
 
   if (projectIssues.length === 0) {
     return (
       <div className="flex flex-1 min-h-0 flex-col items-center justify-center gap-2 text-muted-foreground">
         <ListTodo className="h-10 w-10 text-muted-foreground/40" />
-        <p className="text-sm">{t.projects.noIssuesLinked}</p>
-        <p className="text-xs">{t.projects.noIssuesLinkedDescription}</p>
+        <p className="text-sm">No issues linked</p>
+        <p className="text-xs">Assign issues to this project from the issue detail page.</p>
       </div>
     );
   }
@@ -196,9 +193,6 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   const userId = useAuthStore((s) => s.user?.id);
   const workspace = useCurrentWorkspace();
   const workspaceName = workspace?.name;
-  const { t } = useLocale();
-  const { statusConfig, statusOrder } = useProjectStatusConfig();
-  const { priorityConfig, priorityOrder } = useProjectPriorityConfig();
   const { data: project, isLoading } = useQuery(projectDetailOptions(wsId, projectId));
   const projectScope = `project:${projectId}`;
   const projectFilter = useMemo<MyIssuesFilter>(
@@ -261,11 +255,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
     if (!project) return;
     deleteProject.mutate(project.id, {
       onSuccess: () => {
-        toast.success(t.projects.projectDeleted);
+        toast.success("Project deleted");
         router.push(wsPaths.projects());
       },
     });
-  }, [project, deleteProject, router, wsPaths, t]);
+  }, [project, deleteProject, router, wsPaths]);
 
   if (isLoading) {
     return (
@@ -279,7 +273,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
   }
 
   if (!project) {
-    return <div className="flex items-center justify-center h-full text-muted-foreground">{t.projects.projectNotFound}</div>;
+    return <div className="flex items-center justify-center h-full text-muted-foreground">Project not found</div>;
   }
 
   const issueMetrics = getProjectIssueMetrics(project);
@@ -296,7 +290,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
               <button
                 type="button"
                 className="text-2xl cursor-pointer rounded-lg p-1 -ml-1 hover:bg-accent/60 transition-colors"
-                title={t.projects.changeIcon}
+                title="Change icon"
               >
                 {project.icon || "📁"}
               </button>
@@ -314,7 +308,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
         <TitleEditor
           key={`title-${projectId}`}
           defaultValue={project.title}
-          placeholder={t.projects.projectTitle}
+          placeholder="Project title"
           className="mt-2 w-full text-base font-semibold leading-snug tracking-tight"
           onBlur={(value) => {
             const trimmed = value.trim();
@@ -329,11 +323,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           className={`flex w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors mb-2 hover:bg-accent/70 ${propertiesOpen ? "" : "text-muted-foreground hover:text-foreground"}`}
           onClick={() => setPropertiesOpen(!propertiesOpen)}
         >
-          {t.projects.properties}
+          Properties
           <ChevronRight className={`!size-3 shrink-0 stroke-[2.5] text-muted-foreground transition-transform ${propertiesOpen ? "rotate-90" : ""}`} />
         </button>
         {propertiesOpen && <div className="space-y-0.5 pl-2">
-          <PropRow label={t.projects.status}>
+          <PropRow label="Status">
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -344,17 +338,17 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 }
               />
               <DropdownMenuContent align="start" className="w-44">
-                {statusOrder.map((s) => (
+                {PROJECT_STATUS_ORDER.map((s) => (
                   <DropdownMenuItem key={s} onClick={() => handleUpdateField({ status: s as ProjectStatus })}>
-                    <span className={cn("size-2 rounded-full", statusConfig[s].dotColor)} />
-                    <span>{statusConfig[s].label}</span>
+                    <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[s].dotColor)} />
+                    <span>{PROJECT_STATUS_CONFIG[s].label}</span>
                     {s === project.status && <Check className="ml-auto h-3.5 w-3.5" />}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </PropRow>
-          <PropRow label={t.projects.priority}>
+          <PropRow label="Priority">
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
@@ -365,17 +359,17 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 }
               />
               <DropdownMenuContent align="start" className="w-44">
-                {priorityOrder.map((p) => (
+                {PROJECT_PRIORITY_ORDER.map((p) => (
                   <DropdownMenuItem key={p} onClick={() => handleUpdateField({ priority: p as ProjectPriority })}>
                     <PriorityIcon priority={p} />
-                    <span>{priorityConfig[p].label}</span>
+                    <span>{PROJECT_PRIORITY_CONFIG[p].label}</span>
                     {p === project.priority && <Check className="ml-auto h-3.5 w-3.5" />}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </PropRow>
-          <PropRow label={t.projects.lead}>
+          <PropRow label="Lead">
             <Popover open={leadOpen} onOpenChange={(v) => { setLeadOpen(v); if (!v) setLeadFilter(""); }}>
               <PopoverTrigger
                 render={
@@ -386,7 +380,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                         <span>{getActorName(project.lead_type, project.lead_id)}</span>
                       </>
                     ) : (
-                      <span className="text-muted-foreground">{t.projects.noLead}</span>
+                      <span className="text-muted-foreground">No lead</span>
                     )}
                   </button>
                 }
@@ -397,7 +391,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     type="text"
                     value={leadFilter}
                     onChange={(e) => setLeadFilter(e.target.value)}
-                    placeholder={t.projects.assignLead}
+                    placeholder="Assign lead..."
                     className="w-full bg-transparent text-sm placeholder:text-muted-foreground outline-none"
                   />
                 </div>
@@ -408,11 +402,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
                   >
                     <UserMinus className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-muted-foreground">{t.projects.noLead}</span>
+                    <span className="text-muted-foreground">No lead</span>
                   </button>
                   {filteredMembers.length > 0 && (
                     <>
-                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.projects.members}</div>
+                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Members</div>
                       {filteredMembers.map((m) => (
                         <button
                           type="button"
@@ -428,7 +422,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                   )}
                   {filteredAgents.length > 0 && (
                     <>
-                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.projects.agents}</div>
+                      <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Agents</div>
                       {filteredAgents.map((a) => (
                         <button
                           type="button"
@@ -443,7 +437,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     </>
                   )}
                   {filteredMembers.length === 0 && filteredAgents.length === 0 && leadFilter && (
-                    <div className="px-2 py-3 text-center text-sm text-muted-foreground">{t.projects.noResults}</div>
+                    <div className="px-2 py-3 text-center text-sm text-muted-foreground">No results</div>
                   )}
                 </div>
               </PopoverContent>
@@ -461,7 +455,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
               className={`flex w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors mb-2 hover:bg-accent/70 ${progressOpen ? "" : "text-muted-foreground hover:text-foreground"}`}
               onClick={() => setProgressOpen(!progressOpen)}
             >
-              {t.projects.progressSection}
+              Progress
               <ChevronRight className={`!size-3 shrink-0 stroke-[2.5] text-muted-foreground transition-transform ${progressOpen ? "rotate-90" : ""}`} />
             </button>
             {progressOpen && <div className="pl-2 flex items-center gap-3">
@@ -485,7 +479,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           className={`flex w-full items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition-colors mb-2 hover:bg-accent/70 ${descriptionOpen ? "" : "text-muted-foreground hover:text-foreground"}`}
           onClick={() => setDescriptionOpen(!descriptionOpen)}
         >
-          {t.projects.description}
+          Description
           <ChevronRight className={`!size-3 shrink-0 stroke-[2.5] text-muted-foreground transition-transform ${descriptionOpen ? "rotate-90" : ""}`} />
         </button>
         {descriptionOpen && <div className="pl-2">
@@ -493,7 +487,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
             ref={descEditorRef}
             key={projectId}
             defaultValue={project.description || ""}
-            placeholder={t.projects.addDescription}
+            placeholder="Add description..."
             onUpdate={(md) => handleUpdateField({ description: md || null })}
             debounceMs={1500}
           />
@@ -510,7 +504,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
           <PageHeader className="gap-2 bg-background text-sm">
             <div className="flex flex-1 items-center gap-1.5 min-w-0">
               <AppLink href={wsPaths.projects()} className="text-muted-foreground hover:text-foreground transition-colors shrink-0">
-                {workspaceName ?? t.projects.projects}
+                {workspaceName ?? "Projects"}
               </AppLink>
               <ChevronRight className="h-3 w-3 text-muted-foreground/50 shrink-0" />
               <span className="truncate">{project.title}</span>
@@ -520,7 +514,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 variant="ghost"
                 size="icon-sm"
                 className={cn("text-muted-foreground", isPinned && "text-foreground")}
-                title={isPinned ? t.projects.unpinFromSidebar : t.projects.pinToSidebar}
+                title={isPinned ? "Unpin from sidebar" : "Pin to sidebar"}
                 onClick={() => {
                   if (isPinned) {
                     deletePinMut.mutate({ itemType: "project", itemId: projectId });
@@ -542,10 +536,10 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                 <DropdownMenuContent align="end" className="w-auto">
                   <DropdownMenuItem onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
-                    toast.success(t.projects.linkCopied);
+                    toast.success("Link copied");
                   }}>
                     <Link2 className="h-3.5 w-3.5" />
-                    {t.projects.copyLink}
+                    Copy link
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -553,7 +547,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     onClick={() => setDeleteDialogOpen(true)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
-                    {t.projects.deleteProject}
+                    Delete project
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -579,7 +573,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
                     </Button>
                   }
                 />
-                <TooltipContent side="bottom">{t.projects.toggleSidebar}</TooltipContent>
+                <TooltipContent side="bottom">Toggle sidebar</TooltipContent>
               </Tooltip>
             </div>
           </PageHeader>
@@ -627,15 +621,15 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t.projects.deleteProjectTitle}</AlertDialogTitle>
+            <AlertDialogTitle>Delete project</AlertDialogTitle>
             <AlertDialogDescription>
-              {t.projects.deleteProjectDescription}
+              This will delete the project. Issues will not be deleted but will be unlinked.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t.projects.cancel}</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-white hover:bg-destructive/90">
-              {t.projects.delete}
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

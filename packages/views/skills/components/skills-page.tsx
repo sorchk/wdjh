@@ -9,6 +9,7 @@ import {
   Save,
   AlertCircle,
   Download,
+  HardDrive,
 } from "lucide-react";
 import type { Skill, CreateSkillRequest, UpdateSkillRequest } from "@multica/core/types";
 import {
@@ -40,7 +41,7 @@ import { skillListOptions, workspaceKeys } from "@multica/core/workspace/queries
 import { PageHeader } from "../../layout/page-header";
 import { FileTree } from "./file-tree";
 import { FileViewer } from "./file-viewer";
-import { useLocale } from "@/features/dashboard/i18n";
+import { RuntimeLocalSkillImportPanel } from "./runtime-local-skill-import-panel";
 
 // ---------------------------------------------------------------------------
 // Create Skill Dialog
@@ -50,14 +51,14 @@ function CreateSkillDialog({
   onClose,
   onCreate,
   onImport,
-  t,
+  onRuntimeImported,
 }: {
   onClose: () => void;
   onCreate: (data: CreateSkillRequest) => Promise<void>;
   onImport: (url: string) => Promise<void>;
-  t: ReturnType<typeof useLocale>["t"];
+  onRuntimeImported?: (skill: Skill) => void;
 }) {
-  const [tab, setTab] = useState<"create" | "import">("import");
+  const [tab, setTab] = useState<"create" | "import" | "runtime">("create");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [importUrl, setImportUrl] = useState("");
@@ -87,85 +88,90 @@ function CreateSkillDialog({
     setLoading(true);
     setImportError("");
     try {
-      const urls = importUrl
-        .split(",")
-        .map((u) => u.trim())
-        .filter((u) => u.length > 0);
-      for (const url of urls) {
-        await onImport(url);
-      }
+      await onImport(importUrl.trim());
       onClose();
     } catch (err) {
-      setImportError(err instanceof Error ? err.message : t.skills.importFailed);
+      setImportError(err instanceof Error ? err.message : "Import failed");
       setLoading(false);
     }
   };
 
   return (
     <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent
+        className={`flex max-h-[85vh] flex-col ${tab === "runtime" ? "sm:max-w-2xl" : "sm:max-w-md"}`}
+      >
         <DialogHeader>
-              <DialogTitle>{t.skills.addWorkspaceSkill}</DialogTitle>
-              <DialogDescription>
-                {t.skills.addWorkspaceSkillDescription}
-              </DialogDescription>
+          <DialogTitle>Add Workspace Skill</DialogTitle>
+          <DialogDescription>
+            Create a new skill, import from ClawHub / Skills.sh, or pull one in from a connected runtime. Workspace skills are shared with your team and automatically injected into agent runs.
+          </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={tab} onValueChange={(v) => setTab(v as "create" | "import")}>
+        <Tabs
+          value={tab}
+          onValueChange={(v) => setTab(v as "create" | "import" | "runtime")}
+          className="flex min-h-0 flex-1 flex-col"
+        >
           <TabsList className="w-full">
             <TabsTrigger value="create" className="flex-1">
               <Plus className="mr-1.5 h-3 w-3" />
-              {t.skills.createTab}
+              Create
             </TabsTrigger>
             <TabsTrigger value="import" className="flex-1">
               <Download className="mr-1.5 h-3 w-3" />
-              {t.skills.importTab}
+              Import URL
+            </TabsTrigger>
+            <TabsTrigger value="runtime" className="flex-1">
+              <HardDrive className="mr-1.5 h-3 w-3" />
+              From Runtime
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="create" className="space-y-4 mt-4 min-h-[180px]">
+          <div className="-mx-6 mt-4 flex-1 overflow-y-auto px-6">
+
+          <TabsContent value="create" className="space-y-4 min-h-[180px]">
             <div>
-              <Label className="text-xs text-muted-foreground">{t.skills.nameLabel}</Label>
+              <Label className="text-xs text-muted-foreground">Name</Label>
               <Input
                 autoFocus
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder={t.skills.namePlaceholder}
+                placeholder="e.g. Code Review, Bug Triage"
                 className="mt-1"
                 onKeyDown={(e) => e.key === "Enter" && handleCreate()}
               />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">{t.skills.descriptionLabel}</Label>
+              <Label className="text-xs text-muted-foreground">Description</Label>
               <Input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder={t.skills.descriptionPlaceholder}
+                placeholder="Brief description of what this skill does"
                 className="mt-1"
               />
             </div>
           </TabsContent>
 
-          <TabsContent value="import" className="space-y-4 mt-4 min-h-[180px]">
+          <TabsContent value="import" className="space-y-4 min-h-[180px]">
             <div>
-              <Label className="text-xs text-muted-foreground">{t.skills.skillUrlLabel}</Label>
+              <Label className="text-xs text-muted-foreground">Skill URL</Label>
               <Input
                 autoFocus
                 type="text"
                 value={importUrl}
                 onChange={(e) => { setImportUrl(e.target.value); setImportError(""); }}
-                placeholder={t.skills.skillUrlPlaceholder}
+                placeholder="Paste a skill URL..."
                 className="mt-1"
                 onKeyDown={(e) => e.key === "Enter" && handleImport()}
               />
-              <p className="mt-1.5 text-[11px] text-muted-foreground">{t.skills.skillUrlBatchHint}</p>
             </div>
 
             {/* Supported sources — highlight on detection */}
             <div>
-              <p className="text-xs text-muted-foreground mb-2">{t.skills.supportedSources}</p>
+              <p className="text-xs text-muted-foreground mb-2">Supported sources</p>
               <div className="grid grid-cols-2 gap-2">
                 <div className={`rounded-lg border px-3 py-2.5 transition-colors ${
                   detectedSource === "clawhub"
@@ -197,30 +203,45 @@ function CreateSkillDialog({
               </div>
             )}
           </TabsContent>
+
+          <TabsContent value="runtime" className="min-h-[180px]">
+            <RuntimeLocalSkillImportPanel
+              active={tab === "runtime"}
+              onImported={(skill) => {
+                onRuntimeImported?.(skill);
+                onClose();
+              }}
+            />
+          </TabsContent>
+          </div>
         </Tabs>
 
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>{t.skills.cancel}</Button>
-          {tab === "create" ? (
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          {tab === "create" && (
             <Button onClick={handleCreate} disabled={loading || !name.trim()}>
-              {loading ? t.skills.creating : t.skills.create}
+              {loading ? "Creating..." : "Create"}
             </Button>
-          ) : (
+          )}
+          {tab === "import" && (
             <Button onClick={handleImport} disabled={loading || !importUrl.trim()}>
               {loading ? (
                 detectedSource === "clawhub"
-                  ? t.skills.importingFromClawHub
+                  ? "Importing from ClawHub..."
                   : detectedSource === "skills.sh"
-                    ? t.skills.importingFromSkillsSh
-                    : t.skills.importing
+                    ? "Importing from Skills.sh..."
+                    : "Importing..."
               ) : (
                 <>
                   <Download className="mr-1.5 h-3 w-3" />
-                  {t.skills.import}
+                  Import
                 </>
               )}
             </Button>
           )}
+          {/* The runtime tab embeds its own "Import to Workspace" button
+              inside the panel since it can only enable once a runtime +
+              skill are picked. */}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -294,12 +315,10 @@ function AddFileDialog({
   existingPaths,
   onClose,
   onAdd,
-  t,
 }: {
   existingPaths: string[];
   onClose: () => void;
   onAdd: (path: string) => void;
-  t: ReturnType<typeof useLocale>["t"];
 }) {
   const [path, setPath] = useState("");
   const duplicate = existingPaths.includes(path.trim());
@@ -308,19 +327,19 @@ function AddFileDialog({
     <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent className="max-w-sm" showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle className="text-sm font-semibold">{t.skills.addFile}</DialogTitle>
+          <DialogTitle className="text-sm font-semibold">Add File</DialogTitle>
           <DialogDescription className="text-xs">
-            {t.skills.addFileDescription}
+            Add a supporting file to this skill.
           </DialogDescription>
         </DialogHeader>
         <div>
-          <Label className="text-xs text-muted-foreground">{t.skills.filePathLabel}</Label>
+          <Label className="text-xs text-muted-foreground">File Path</Label>
           <Input
             autoFocus
             type="text"
             value={path}
             onChange={(e) => setPath(e.target.value)}
-            placeholder={t.skills.filePathPlaceholder}
+            placeholder="e.g. templates/review.md"
             className="mt-1 font-mono text-sm"
             onKeyDown={(e) => {
               if (e.key === "Enter" && path.trim() && !duplicate) {
@@ -330,16 +349,16 @@ function AddFileDialog({
             }}
           />
           {duplicate && (
-            <p className="mt-1 text-xs text-destructive">{t.skills.fileAlreadyExists}</p>
+            <p className="mt-1 text-xs text-destructive">File already exists</p>
           )}
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>{t.skills.cancel}</Button>
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
           <Button
             disabled={!path.trim() || duplicate}
             onClick={() => { onAdd(path.trim()); onClose(); }}
           >
-            {t.skills.add}
+            Add
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -355,12 +374,10 @@ function SkillDetail({
   skill,
   onUpdate,
   onDelete,
-  t,
 }: {
   skill: Skill;
   onUpdate: (id: string, data: UpdateSkillRequest) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
-  t: ReturnType<typeof useLocale>["t"];
 }) {
   const qc = useQueryClient();
   const wsId = useWorkspaceId();
@@ -451,22 +468,20 @@ function SkillDetail({
       {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
-            <Sparkles className="h-4 w-4 text-muted-foreground" />
-          </div>
           <div className="grid grid-cols-2 gap-3 flex-1 min-w-0">
             <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="h-8 text-sm font-medium"
-              placeholder={t.skills.namePlaceholder}
+              placeholder="Skill name"
             />
             <Input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={t.skills.descriptionPlaceholder}
+              className="h-8 text-sm"
+              placeholder="Description"
             />
           </div>
         </div>
@@ -474,7 +489,7 @@ function SkillDetail({
           {isDirty && (
             <Button onClick={handleSave} disabled={saving || !name.trim()} size="xs">
               <Save className="h-3 w-3" />
-              {saving ? t.skills.saving : t.skills.save}
+              {saving ? "Saving..." : "Save"}
             </Button>
           )}
           <Tooltip>
@@ -490,7 +505,7 @@ function SkillDetail({
                 </Button>
               }
             />
-            <TooltipContent>{t.skills.deleteSkill}</TooltipContent>
+            <TooltipContent>Delete skill</TooltipContent>
           </Tooltip>
         </div>
       </div>
@@ -500,9 +515,9 @@ function SkillDetail({
         {/* File tree */}
         <div className="w-52 shrink-0 border-r flex flex-col">
           <div className="flex h-10 items-center justify-between border-b px-3">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                {t.skills.files}
-              </span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              Files
+            </span>
             <div className="flex items-center gap-1">
               <Tooltip>
                 <TooltipTrigger
@@ -517,7 +532,7 @@ function SkillDetail({
                     </Button>
                   }
                 />
-                <TooltipContent>{t.skills.addFile}</TooltipContent>
+                <TooltipContent>Add file</TooltipContent>
               </Tooltip>
               {selectedPath !== SKILL_MD && (
                 <Tooltip>
@@ -533,7 +548,7 @@ function SkillDetail({
                       </Button>
                     }
                   />
-                  <TooltipContent>{t.skills.deleteFile}</TooltipContent>
+                  <TooltipContent>Delete file</TooltipContent>
                 </Tooltip>
               )}
             </div>
@@ -582,7 +597,6 @@ function SkillDetail({
           existingPaths={filePaths}
           onClose={() => setShowAddFile(false)}
           onAdd={handleAddFile}
-          t={t}
         />
       )}
 
@@ -595,15 +609,15 @@ function SkillDetail({
                 <AlertCircle className="h-5 w-5 text-destructive" />
               </div>
               <DialogHeader className="flex-1 gap-1">
-                <DialogTitle className="text-sm font-semibold">{t.skills.deleteSkill}?</DialogTitle>
+                <DialogTitle className="text-sm font-semibold">Delete skill?</DialogTitle>
                 <DialogDescription className="text-xs">
-                  {t.skills.deleteSkillConfirmation.replace("{name}", skill.name)}
+                  This will permanently delete &quot;{skill.name}&quot; and remove it from all agents.
                 </DialogDescription>
               </DialogHeader>
             </div>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
-                {t.skills.cancel}
+                Cancel
               </Button>
               <Button
                 variant="destructive"
@@ -612,7 +626,7 @@ function SkillDetail({
                   onDelete(skill.id);
                 }}
               >
-                {t.skills.deleteSkill}
+                Delete
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -629,7 +643,6 @@ function SkillDetail({
 export default function SkillsPage() {
   const qc = useQueryClient();
   const wsId = useWorkspaceId();
-  const { t } = useLocale();
   const { data: skills = [], isLoading } = useQuery(skillListOptions(wsId));
   const [selectedId, setSelectedId] = useState<string>("");
   const [showCreate, setShowCreate] = useState(false);
@@ -647,14 +660,14 @@ export default function SkillsPage() {
     const skill = await api.createSkill(data);
     qc.invalidateQueries({ queryKey: workspaceKeys.skills(wsId) });
     setSelectedId(skill.id);
-    toast.success(t.skills.skillCreated);
+    toast.success("Skill created");
   };
 
   const handleImport = async (url: string) => {
     const skill = await api.importSkill({ url });
     qc.invalidateQueries({ queryKey: workspaceKeys.skills(wsId) });
     setSelectedId(skill.id);
-    toast.success(t.skills.skillImported);
+    toast.success("Skill imported");
   };
 
   const handleUpdate = async (id: string, data: UpdateSkillRequest) => {
@@ -663,7 +676,7 @@ export default function SkillsPage() {
       qc.invalidateQueries({ queryKey: workspaceKeys.skills(wsId) });
       toast.success("Skill saved");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : t.skills.failedToSaveSkill);
+      toast.error(e instanceof Error ? e.message : "Failed to save skill");
       throw e;
     }
   };
@@ -678,7 +691,7 @@ export default function SkillsPage() {
       qc.invalidateQueries({ queryKey: workspaceKeys.skills(wsId) });
       toast.success("Skill deleted");
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : t.skills.failedToDeleteSkill);
+      toast.error(e instanceof Error ? e.message : "Failed to delete skill");
     }
   };
 
@@ -739,7 +752,7 @@ export default function SkillsPage() {
         {/* Left column — skill list */}
         <div className="overflow-y-auto h-full border-r">
           <PageHeader className="justify-between">
-            <h1 className="text-sm font-semibold">{t.skills.skills}</h1>
+            <h1 className="text-sm font-semibold">Skills</h1>
             <Tooltip>
               <TooltipTrigger
                 render={
@@ -752,15 +765,15 @@ export default function SkillsPage() {
                   </Button>
                 }
               />
-              <TooltipContent side="bottom">{t.skills.createSkill}</TooltipContent>
+              <TooltipContent side="bottom">Add skill</TooltipContent>
             </Tooltip>
           </PageHeader>
           {skills.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-12">
               <Sparkles className="h-8 w-8 text-muted-foreground/40" />
-              <p className="mt-3 text-sm text-muted-foreground">{t.skills.noWorkspaceSkillsYet}</p>
+              <p className="mt-3 text-sm text-muted-foreground">No workspace skills yet</p>
               <p className="mt-1 text-xs text-muted-foreground text-center max-w-[280px]">
-                {t.skills.workspaceSkillsDescription}
+                Workspace skills are shared across your team and injected into agent runs. Skills already installed in your local runtime are used automatically.
               </p>
               <Button
                 onClick={() => setShowCreate(true)}
@@ -768,7 +781,7 @@ export default function SkillsPage() {
                 className="mt-3"
               >
                 <Plus className="h-3 w-3" />
-                {t.skills.createSkill}
+                Add Skill
               </Button>
             </div>
           ) : (
@@ -797,14 +810,13 @@ export default function SkillsPage() {
               skill={selected}
               onUpdate={handleUpdate}
               onDelete={handleDelete}
-              t={t}
             />
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
               <Sparkles className="h-10 w-10 text-muted-foreground/30" />
-              <p className="mt-3 text-sm">{t.skills.selectSkillToViewDetails}</p>
+              <p className="mt-3 text-sm">Select a skill to view details</p>
               <p className="mt-1 text-xs text-center max-w-[260px]">
-                {t.skills.workspaceSkillsSupplement}
+                Workspace skills supplement your local skills and are shared across the team.
               </p>
               <Button
                 onClick={() => setShowCreate(true)}
@@ -812,7 +824,7 @@ export default function SkillsPage() {
                 className="mt-3"
               >
                 <Plus className="h-3 w-3" />
-                {t.skills.createSkill}
+                Add Skill
               </Button>
             </div>
           )}
@@ -824,7 +836,7 @@ export default function SkillsPage() {
           onClose={() => setShowCreate(false)}
           onCreate={handleCreate}
           onImport={handleImport}
-          t={t}
+          onRuntimeImported={(skill) => setSelectedId(skill.id)}
         />
       )}
     </ResizablePanelGroup>

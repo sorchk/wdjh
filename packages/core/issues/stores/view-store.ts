@@ -27,21 +27,21 @@ export interface ActorFilterValue {
   id: string;
 }
 
-export const SORT_OPTIONS: { value: SortField }[] = [
-  { value: "position" },
-  { value: "priority" },
-  { value: "due_date" },
-  { value: "created_at" },
-  { value: "title" },
+export const SORT_OPTIONS: { value: SortField; label: string }[] = [
+  { value: "position", label: "Manual" },
+  { value: "priority", label: "Priority" },
+  { value: "due_date", label: "Due date" },
+  { value: "created_at", label: "Created date" },
+  { value: "title", label: "Title" },
 ];
 
-export const CARD_PROPERTY_OPTIONS: { key: keyof CardProperties }[] = [
-  { key: "priority" },
-  { key: "description" },
-  { key: "assignee" },
-  { key: "dueDate" },
-  { key: "project" },
-  { key: "childProgress" },
+export const CARD_PROPERTY_OPTIONS: { key: keyof CardProperties; label: string }[] = [
+  { key: "priority", label: "Priority" },
+  { key: "description", label: "Description" },
+  { key: "assignee", label: "Assignee" },
+  { key: "dueDate", label: "Due date" },
+  { key: "project", label: "Project" },
+  { key: "childProgress", label: "Sub-issue progress" },
 ];
 
 export interface IssueViewState {

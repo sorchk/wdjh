@@ -12,8 +12,23 @@ import {
 import { Input } from "@multica/ui/components/ui/input";
 import { Label } from "@multica/ui/components/ui/label";
 import { Button } from "@multica/ui/components/ui/button";
-import { useLocale } from "@/features/dashboard/i18n";
 
+/**
+ * Typed-confirmation dialog for workspace deletion — GitHub's repo-delete
+ * pattern. The destructive button stays disabled until the user types
+ * the workspace name exactly (case-sensitive, no trimming). The friction
+ * is deliberate: deleting a workspace cascades into every issue, agent,
+ * skill, and run under it, and the backend has no soft-delete.
+ *
+ * Case-sensitive match matches GitHub's pattern and catches the "I
+ * remember the gist of the name but not the casing" misfire. No trim —
+ * leading/trailing whitespace indicates a typo, and silently accepting
+ * it would weaken the whole point of the gate.
+ *
+ * Input value resets whenever the dialog closes so reopening doesn't
+ * leak the previous attempt (which might have been for a different
+ * workspace after a swap).
+ */
 export function DeleteWorkspaceDialog({
   workspaceName,
   loading = false,
@@ -27,10 +42,13 @@ export function DeleteWorkspaceDialog({
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }) {
-  const { t } = useLocale();
   const [typed, setTyped] = useState("");
   const matched = typed === workspaceName;
 
+  // Reset on close (so reopening for a different workspace doesn't leak
+  // the prior attempt) AND on workspaceName change (if another owner
+  // renames the workspace while the dialog is open, the already-typed
+  // string stops matching and there'd be no feedback explaining why).
   useEffect(() => {
     setTyped("");
   }, [open, workspaceName]);
@@ -44,19 +62,20 @@ export function DeleteWorkspaceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t.settings.deleteWorkspace.deleteWorkspace}</DialogTitle>
+          <DialogTitle>Delete workspace</DialogTitle>
           <DialogDescription>
-            {t.settings.deleteWorkspace.thisCannotBeUndone}
+            This cannot be undone. All issues, agents, and data will be
+            permanently removed.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-2">
           <Label htmlFor="delete-workspace-confirm" className="text-xs">
-            {t.settings.deleteWorkspace.toConfirmType}{" "}
+            To confirm, type{" "}
             <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs">
               {workspaceName}
             </code>{" "}
-            {t.settings.deleteWorkspace.below}
+            below.
           </Label>
           <Input
             id="delete-workspace-confirm"
@@ -85,7 +104,7 @@ export function DeleteWorkspaceDialog({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            {t.settings.deleteWorkspace.cancel}
+            Cancel
           </Button>
           <Button
             type="button"
@@ -93,7 +112,7 @@ export function DeleteWorkspaceDialog({
             onClick={submit}
             disabled={!matched || loading}
           >
-            {loading ? t.settings.deleteWorkspace.deleting : t.settings.deleteWorkspace.delete}
+            {loading ? "Deleting..." : "Delete workspace"}
           </Button>
         </DialogFooter>
       </DialogContent>

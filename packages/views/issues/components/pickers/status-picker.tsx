@@ -5,17 +5,6 @@ import type { IssueStatus, UpdateIssueRequest } from "@multica/core/types";
 import { ALL_STATUSES, STATUS_CONFIG } from "@multica/core/issues/config";
 import { StatusIcon } from "../status-icon";
 import { PropertyPicker, PickerItem } from "./property-picker";
-import { useLocale } from "@/features/dashboard/i18n";
-
-const STATUS_I18N: Record<IssueStatus, keyof ReturnType<typeof useLocale>["t"]["issues"]> = {
-  backlog: "statusBacklog",
-  todo: "statusTodo",
-  in_progress: "statusInProgress",
-  in_review: "statusInReview",
-  done: "statusDone",
-  blocked: "statusBlocked",
-  cancelled: "statusCancelled",
-};
 
 export function StatusPicker({
   status,
@@ -34,10 +23,10 @@ export function StatusPicker({
   onOpenChange?: (v: boolean) => void;
   align?: "start" | "center" | "end";
 }) {
-  const { t } = useLocale();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
   const setOpen = controlledOnOpenChange ?? setInternalOpen;
+  const cfg = STATUS_CONFIG[status];
 
   return (
     <PropertyPicker
@@ -50,7 +39,7 @@ export function StatusPicker({
         customTrigger ?? (
           <>
             <StatusIcon status={status} className="h-3.5 w-3.5 shrink-0" />
-            <span className="truncate">{t.issues[STATUS_I18N[status]]}</span>
+            <span className="truncate">{cfg.label}</span>
           </>
         )
       }
@@ -68,7 +57,7 @@ export function StatusPicker({
             }}
           >
             <StatusIcon status={s} className="h-3.5 w-3.5" />
-            <span>{t.issues[STATUS_I18N[s]]}</span>
+            <span>{c.label}</span>
           </PickerItem>
         );
       })}

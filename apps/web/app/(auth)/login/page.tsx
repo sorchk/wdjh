@@ -1,174 +1,155 @@
 "use client";
 
-import { Suspense, useState, useEffect, useRef } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuthStore } from "@multica/core/auth";
-import { workspaceKeys } from "@multica/core/workspace";
-import { validateCliCallback } from "@multica/views/auth";
+import { sanitizeNextUrl, useAuthStore } from "@multica/core/auth";
+import { useConfigStore } from "@multica/core/config";
+import { workspaceKeys } from "@multica/core/workspace/queries";
+import {
+  paths,
+  resolvePostAuthDestination,
+  useHasOnboarded,
+} from "@multica/core/paths";
 import { api } from "@multica/core/api";
-import { paths } from "@multica/core/paths";
-import { useLocale } from "@/features/dashboard/i18n";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@multica/ui/components/ui/card";
-import { Input } from "@multica/ui/components/ui/input";
+import type { Workspace } from "@multica/core/types";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@multica/ui/components/ui/card";
 import { Button } from "@multica/ui/components/ui/button";
-import { Label } from "@multica/ui/components/ui/label";
-
-type Step = "credentials" | "cli_confirm";
-
-function redirectToCliCallback(url: string, token: string, state: string) {
-  const separator = url.includes("?") ? "&" : "?";
-  window.location.href = `${url}${separator}token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
-}
+import { Loader2 } from "lucide-react";
+import { captureDownloadIntent } from "@multica/core/analytics";
+import { setLoggedInCookie } from "@/features/auth/auth-cookie";
+import Link from "next/link";
+import { LoginPage, validateCliCallback } from "@multica/views/auth";
 
 function LoginPageContent() {
   const router = useRouter();
   const qc = useQueryClient();
+  const googleClientId = useConfigStore((state) => state.googleClientId);
   const user = useAuthStore((s) => s.user);
-  const setUser = useAuthStore((s) => s.setUser);
+  const isLoading = useAuthStore((s) => s.isLoading);
   const searchParams = useSearchParams();
-  const { t: i18n } = useLocale();
-  const authDict = i18n.auth.login;
-
-  const [step, setStep] = useState<Step>("credentials");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [existingUser, setExistingUser] = useState<{ email: string } | null>(null);
-  const authSourceRef = useRef<"cookie" | "localStorage">("cookie");
-  const cliCallbackRef = useRef<{ url: string; state: string } | null>(null);
 
   const cliCallbackRaw = searchParams.get("cli_callback");
   const cliState = searchParams.get("cli_state") || "";
+  const platform = searchParams.get("platform");
+  const isDesktopHandoff = platform === "desktop" && !cliCallbackRaw;
+  // `next` carries a protected URL the user was originally headed to
+  // (e.g. /invite/{id}). With URL-driven workspaces there is no legacy
+  // "/issues" default — if `next` is absent we decide after login based on
+  // the user's workspace list. Sanitize first so a crafted `?next=https://evil`
+  // cannot bounce the user off-origin after a successful login.
+  const nextUrl = sanitizeNextUrl(searchParams.get("next"));
+
+  const [desktopToken, setDesktopToken] = useState<string | null>(null);
+  const [desktopError, setDesktopError] = useState("");
+  const hasOnboarded = useHasOnboarded();
+
+  // Already authenticated — honor ?next= or fall back to first workspace
+  // (or /onboarding if the user has none). Skip this entire path when
+  // the user arrived to authorize the CLI.
   useEffect(() => {
-    if (!cliCallbackRaw || !validateCliCallback(cliCallbackRaw)) return;
-
-    const cfg = { url: cliCallbackRaw, state: cliState };
-    cliCallbackRef.current = cfg;
-
-    api.setToken(null);
-    api
-      .getMe()
-      .then((u) => {
-        authSourceRef.current = "cookie";
-        setExistingUser(u);
-        setStep("cli_confirm");
-      })
-      .catch(() => {
-        const token = localStorage.getItem("multica_token");
-        if (!token) return;
-        api.setToken(token);
-        api.getMe().then((u) => {
-          authSourceRef.current = "localStorage";
-          setExistingUser(u);
-          setStep("cli_confirm");
-        }).catch(() => {
-          api.setToken(null);
-          localStorage.removeItem("multica_token");
+    if (isLoading || !user || cliCallbackRaw) return;
+    if (isDesktopHandoff) {
+      // Desktop opened the browser for login but the web session is already
+      // authenticated — mint a bearer token from the cookie session and hand
+      // it off via deep link instead of silently redirecting to the workspace.
+      api
+        .issueCliToken()
+        .then(({ token }) => {
+          setDesktopToken(token);
+          window.location.href = `multica://auth/callback?token=${encodeURIComponent(token)}`;
+        })
+        .catch((err) => {
+          setDesktopError(
+            err instanceof Error ? err.message : "Failed to prepare Desktop sign-in",
+          );
         });
-      });
-  }, [cliCallbackRaw, cliState]);
+      return;
+    }
+    if (!hasOnboarded) {
+      router.replace(paths.onboarding());
+      return;
+    }
+    if (nextUrl) {
+      router.replace(nextUrl);
+      return;
+    }
+    const list = qc.getQueryData<Workspace[]>(workspaceKeys.list()) ?? [];
+    router.replace(resolvePostAuthDestination(list, hasOnboarded));
+  }, [isLoading, user, router, nextUrl, cliCallbackRaw, isDesktopHandoff, hasOnboarded, qc]);
 
-  const handleCredentialsLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  const handleSuccess = () => {
+    // Read the latest user snapshot directly — the closure's `hasOnboarded`
+    // was captured before login completed and would be stale here.
+    const currentUser = useAuthStore.getState().user;
+    const onboarded = currentUser?.onboarded_at != null;
+    if (!onboarded) {
+      router.push(paths.onboarding());
+      return;
+    }
+    if (nextUrl) {
+      router.push(nextUrl);
+      return;
+    }
+    const list = qc.getQueryData<Workspace[]>(workspaceKeys.list()) ?? [];
+    router.push(resolvePostAuthDestination(list, onboarded));
+  };
 
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  // Build Google OAuth state: encode platform + next URL so the callback
+  // can redirect to the right place after login.
+  const googleState = [
+    platform === "desktop" ? "platform:desktop" : "",
+    nextUrl ? `next:${nextUrl}` : "",
+  ]
+    .filter(Boolean)
+    .join(",") || undefined;
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Invalid credentials");
-      }
-
-      const data = await res.json();
-      localStorage.setItem("multica_token", data.token);
-      api.setToken(data.token);
-      setUser(data.user);
-
-      if (cliCallbackRef.current) {
-        setExistingUser({ email: data.user.email });
-        setStep("cli_confirm");
-        setLoading(false);
-        return;
-      }
-
-      const wsList = await api.listWorkspaces();
-      qc.setQueryData(workspaceKeys.list(), wsList);
-      const [first] = wsList;
-      router.push(
-        first ? paths.workspace(first.slug).issues() : paths.newWorkspace(),
+  // While the desktop handoff is in progress (or has produced a token/error),
+  // render a dedicated screen instead of flashing the login form or redirecting
+  // away to a workspace page.
+  if (isDesktopHandoff && user) {
+    if (desktopError) {
+      return (
+        <div className="flex min-h-screen items-center justify-center">
+          <Card className="w-full max-w-sm">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Sign-in Failed</CardTitle>
+              <CardDescription>{desktopError}</CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const handleCliAuthorize = async () => {
-    if (!cliCallbackRef.current) return;
-    setLoading(true);
-
-    try {
-      let token: string;
-      if (authSourceRef.current === "localStorage") {
-        const stored = localStorage.getItem("multica_token");
-        if (!stored) throw new Error("token missing");
-        token = stored;
-      } else {
-        const res = await api.issueCliToken();
-        token = res.token;
-      }
-      redirectToCliCallback(cliCallbackRef.current.url, token, cliCallbackRef.current.state);
-    } catch {
-      setError("Failed to authorize CLI. Please log in again.");
-      setExistingUser(null);
-      setStep("credentials");
-      setLoading(false);
-    }
-  };
-
-  if (step === "cli_confirm" && existingUser) {
     return (
-      <div className="flex min-h-svh items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">{authDict.authorizeCli}</CardTitle>
+            <CardTitle className="text-2xl">Opening Multica</CardTitle>
             <CardDescription>
-              {authDict.allowCliAccess}{" "}
-              <span className="font-medium text-foreground">
-                {existingUser.email}
-              </span>
-              ?
+              {desktopToken
+                ? "You should see a prompt to open the Multica desktop app. If nothing happens, click the button below."
+                : "Preparing Desktop sign-in..."}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-3">
-            <Button
-              onClick={handleCliAuthorize}
-              disabled={loading}
-              className="w-full"
-              size="lg"
-            >
-              {loading ? authDict.authorizing : authDict.authorizeCli}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() => {
-                setExistingUser(null);
-                cliCallbackRef.current = null;
-                setStep("credentials");
-              }}
-            >
-              {authDict.useDifferentAccount}
-            </Button>
+          <CardContent className="flex justify-center">
+            {desktopToken ? (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  window.location.href = `multica://auth/callback?token=${encodeURIComponent(desktopToken)}`;
+                }}
+              >
+                Open Multica Desktop
+              </Button>
+            ) : (
+              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -176,57 +157,40 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{authDict.signIn}</CardTitle>
-          <CardDescription>
-            {authDict.enterCredentials}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form id="login-form" onSubmit={handleCredentialsLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">{authDict.email}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={authDict.emailPlaceholder}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoFocus
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">{authDict.password}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={authDict.passwordPlaceholder}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
-          </form>
-        </CardContent>
-        <CardFooter>
-          <Button
-            type="submit"
-            form="login-form"
-            className="w-full"
-            size="lg"
-            disabled={!email || !password || loading}
+    <LoginPage
+      onSuccess={handleSuccess}
+      google={
+        googleClientId
+          ? {
+              clientId: googleClientId,
+              redirectUri: `${window.location.origin}/auth/callback`,
+              state: googleState,
+            }
+          : undefined
+      }
+      cliCallback={
+        cliCallbackRaw && validateCliCallback(cliCallbackRaw)
+          ? { url: cliCallbackRaw, state: cliState }
+          : undefined
+      }
+      onTokenObtained={setLoggedInCookie}
+      extra={
+        // Web-only nudge toward the desktop app. Copy is hardcoded EN
+        // for now because the login route sits outside the landing
+        // group's LocaleProvider — if this page ever becomes
+        // locale-aware, the strings live in positioning doc §3.3.
+        <span className="text-xs text-muted-foreground">
+          Prefer the desktop app?{" "}
+          <Link
+            href="/download"
+            onClick={() => captureDownloadIntent("login")}
+            className="font-medium text-foreground underline decoration-foreground/30 underline-offset-4 hover:decoration-foreground/70"
           >
-            {loading ? authDict.signingIn : authDict.signInButton}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+            Download
+          </Link>
+        </span>
+      }
+    />
   );
 }
 

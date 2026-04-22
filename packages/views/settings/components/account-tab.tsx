@@ -10,22 +10,15 @@ import { toast } from "sonner";
 import { useAuthStore } from "@multica/core/auth";
 import { api } from "@multica/core/api";
 import { useFileUpload } from "@multica/core/hooks/use-file-upload";
-import { useLocale } from "@/features/dashboard/i18n";
 
 export function AccountTab() {
   const user = useAuthStore((s) => s.user);
   const setUser = useAuthStore((s) => s.setUser);
-  const { t } = useLocale();
 
   const [profileName, setProfileName] = useState(user?.name ?? "");
   const [profileSaving, setProfileSaving] = useState(false);
   const { upload, uploading } = useFileUpload(api);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordSaving, setPasswordSaving] = useState(false);
 
   useEffect(() => {
     setProfileName(user?.name ?? "");
@@ -41,15 +34,16 @@ export function AccountTab() {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Reset input so the same file can be re-selected
     e.target.value = "";
     try {
       const result = await upload(file);
       if (!result) return;
       const updated = await api.updateMe({ avatar_url: result.link });
       setUser(updated);
-      toast.success(t.settings.account.avatarUpdated);
+      toast.success("Avatar updated");
     } catch (err) {
-      toast.error(t.settings.account.failedToUploadAvatar);
+      toast.error(err instanceof Error ? err.message : "Failed to upload avatar");
     }
   };
 
@@ -58,44 +52,22 @@ export function AccountTab() {
     try {
       const updated = await api.updateMe({ name: profileName });
       setUser(updated);
-      toast.success(t.settings.account.profileUpdated);
+      toast.success("Profile updated");
     } catch (e) {
-      toast.error(t.settings.account.failedToUpdateProfile);
+      toast.error(e instanceof Error ? e.message : "Failed to update profile");
     } finally {
       setProfileSaving(false);
-    }
-  };
-
-  const handlePasswordChange = async () => {
-    if (newPassword !== confirmPassword) {
-      toast.error(t.settings.password.passwordMismatch);
-      return;
-    }
-    if (newPassword.length < 8) {
-      toast.error(t.settings.password.passwordTooShort);
-      return;
-    }
-    setPasswordSaving(true);
-    try {
-      await api.changePassword(oldPassword, newPassword);
-      toast.success(t.settings.password.changeSuccess);
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (e) {
-      toast.error(t.settings.password.changeFailed);
-    } finally {
-      setPasswordSaving(false);
     }
   };
 
   return (
     <div className="space-y-8">
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold">{t.settings.account.profile}</h2>
+        <h2 className="text-sm font-semibold">Profile</h2>
 
         <Card>
           <CardContent className="space-y-4">
+            {/* Avatar upload */}
             <div className="flex items-center gap-4">
               <button
                 type="button"
@@ -130,12 +102,12 @@ export function AccountTab() {
                 onChange={handleAvatarUpload}
               />
               <div className="text-xs text-muted-foreground">
-                {t.settings.account.clickToUploadAvatar}
+                Click to upload avatar
               </div>
             </div>
 
             <div>
-              <Label className="text-xs text-muted-foreground">{t.settings.account.name}</Label>
+              <Label className="text-xs text-muted-foreground">Name</Label>
               <Input
                 type="search"
                 value={profileName}
@@ -150,56 +122,7 @@ export function AccountTab() {
                 disabled={profileSaving || !profileName.trim()}
               >
                 <Save className="h-3 w-3" />
-                {profileSaving ? t.settings.account.updating : t.settings.account.updateProfile}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-sm font-semibold">{t.settings.password.changePassword}</h2>
-
-        <Card>
-          <CardContent className="space-y-4">
-            <div>
-              <Label className="text-xs text-muted-foreground">{t.settings.password.oldPassword}</Label>
-              <Input
-                type="password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">{t.settings.password.newPassword}</Label>
-              <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1"
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                {t.settings.password.passwordRequirements}
-              </p>
-            </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">{t.settings.password.confirmNewPassword}</Label>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div className="flex items-center justify-end gap-2 pt-1">
-              <Button
-                size="sm"
-                onClick={handlePasswordChange}
-                disabled={passwordSaving || !oldPassword || !newPassword || !confirmPassword}
-              >
-                <Save className="h-3 w-3" />
-                {passwordSaving ? t.settings.password.processing : t.settings.password.changePassword}
+                {profileSaving ? "Updating..." : "Update Profile"}
               </Button>
             </div>
           </CardContent>

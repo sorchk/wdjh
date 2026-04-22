@@ -38,13 +38,21 @@ import { TasksTab } from "./tabs/tasks-tab";
 import { SettingsTab } from "./tabs/settings-tab";
 import { EnvTab } from "./tabs/env-tab";
 import { CustomArgsTab } from "./tabs/custom-args-tab";
-import { useLocale } from "@/features/dashboard/i18n";
 
 function getRuntimeDevice(agent: Agent, runtimes: RuntimeDevice[]): RuntimeDevice | undefined {
   return runtimes.find((runtime) => runtime.id === agent.runtime_id);
 }
 
 type DetailTab = "instructions" | "skills" | "tasks" | "env" | "custom_args" | "settings";
+
+const detailTabs: { id: DetailTab; label: string; icon: typeof FileText }[] = [
+  { id: "instructions", label: "Instructions", icon: FileText },
+  { id: "skills", label: "Skills", icon: BookOpenText },
+  { id: "tasks", label: "Tasks", icon: ListTodo },
+  { id: "env", label: "Environment", icon: KeyRound },
+  { id: "custom_args", label: "Custom Args", icon: Terminal },
+  { id: "settings", label: "Settings", icon: Settings },
+];
 
 export function AgentDetail({
   agent,
@@ -63,7 +71,6 @@ export function AgentDetail({
   onArchive: (id: string) => Promise<void>;
   onRestore: (id: string) => Promise<void>;
 }) {
-  const { t } = useLocale();
   const st = statusConfig[agent.status];
   const runtimeDevice = getRuntimeDevice(agent, runtimes);
   const [activeTab, setActiveTab] = useState<DetailTab>("instructions");
@@ -76,9 +83,9 @@ export function AgentDetail({
       {isArchived && (
         <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 text-xs text-muted-foreground border-b">
           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-          <span className="flex-1">{t.agents.archived}</span>
+          <span className="flex-1">This agent is archived. It cannot be assigned or mentioned.</span>
           <Button variant="outline" size="sm" className="h-6 text-xs" onClick={() => onRestore(agent.id)}>
-            {t.agents.restore}
+            Restore
           </Button>
         </div>
       )}
@@ -91,7 +98,7 @@ export function AgentDetail({
             <h2 className={`text-sm font-semibold truncate ${isArchived ? "text-muted-foreground" : ""}`}>{agent.name}</h2>
             {isArchived ? (
               <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
-                {t.agents.archived}
+                Archived
               </span>
             ) : (
               <span className={`flex items-center gap-1.5 text-xs ${st.color}`}>
@@ -105,7 +112,7 @@ export function AgentDetail({
               ) : (
                 <Monitor className="h-3 w-3" />
               )}
-              {runtimeDevice?.name ?? (agent.runtime_mode === "cloud" ? t.agents.cloud : t.agents.local)}
+              {runtimeDevice?.name ?? (agent.runtime_mode === "cloud" ? "Cloud" : "Local")}
             </span>
           </div>
         </div>
@@ -124,7 +131,7 @@ export function AgentDetail({
                 onClick={() => setConfirmArchive(true)}
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                {t.agents.archiveAgent}
+                Archive Agent
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -133,72 +140,20 @@ export function AgentDetail({
 
       {/* Tabs */}
       <div className="flex border-b px-6">
-        <button
-          onClick={() => setActiveTab("instructions")}
-          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-            activeTab === "instructions"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <FileText className="h-3.5 w-3.5" />
-          {t.agents.tabs.instructions}
-        </button>
-        <button
-          onClick={() => setActiveTab("skills")}
-          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-            activeTab === "skills"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <BookOpenText className="h-3.5 w-3.5" />
-          {t.agents.tabs.skills}
-        </button>
-        <button
-          onClick={() => setActiveTab("tasks")}
-          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-            activeTab === "tasks"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <ListTodo className="h-3.5 w-3.5" />
-          {t.agents.tabs.tasks}
-        </button>
-        <button
-          onClick={() => setActiveTab("env")}
-          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-            activeTab === "env"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <KeyRound className="h-3.5 w-3.5" />
-          {t.agents.tabs.env}
-        </button>
-        <button
-          onClick={() => setActiveTab("custom_args")}
-          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-            activeTab === "custom_args"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Terminal className="h-3.5 w-3.5" />
-          {t.agents.tabs.customArgs}
-        </button>
-        <button
-          onClick={() => setActiveTab("settings")}
-          className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
-            activeTab === "settings"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Settings className="h-3.5 w-3.5" />
-          {t.agents.tabs.settings}
-        </button>
+        {detailTabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-xs font-medium transition-colors ${
+              activeTab === tab.id
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <tab.icon className="h-3.5 w-3.5" />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}
@@ -247,15 +202,15 @@ export function AgentDetail({
                 <AlertCircle className="h-5 w-5 text-destructive" />
               </div>
               <DialogHeader className="flex-1 gap-1">
-                <DialogTitle className="text-sm font-semibold">{t.agents.archiveAgent}?</DialogTitle>
+                <DialogTitle className="text-sm font-semibold">Archive agent?</DialogTitle>
                 <DialogDescription className="text-xs">
-                  &quot;{agent.name}&quot; {t.agents.archived}. {t.agents.selectAgentToViewDetails}
+                  &quot;{agent.name}&quot; will be archived. It won&apos;t be assignable or mentionable, but all history is preserved. You can restore it later.
                 </DialogDescription>
               </DialogHeader>
             </div>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setConfirmArchive(false)}>
-                {t.agents.createAgentDialog.cancel}
+                Cancel
               </Button>
               <Button
                 variant="destructive"
@@ -264,7 +219,7 @@ export function AgentDetail({
                   onArchive(agent.id);
                 }}
               >
-                {t.agents.archiveAgent}
+                Archive
               </Button>
             </DialogFooter>
           </DialogContent>

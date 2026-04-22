@@ -23,31 +23,7 @@ import { useCreateIssue, useUpdateIssue } from "@multica/core/issues/mutations";
 import { useFileUpload } from "@multica/core/hooks/use-file-upload";
 import { api } from "@multica/core/api";
 import { FileUploadButton } from "@multica/ui/components/common/file-upload-button";
-import { useLocale } from "@/features/dashboard/i18n";
-
-// ---------------------------------------------------------------------------
-// Pill trigger — shared rounded-full button style for toolbar
-// ---------------------------------------------------------------------------
-
-function PillButton({
-  children,
-  className,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs",
-        "hover:bg-accent/60 transition-colors cursor-pointer",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
+import { PillButton } from "../common/pill-button";
 
 // ---------------------------------------------------------------------------
 // CreateIssueModal
@@ -57,7 +33,6 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
   const router = useNavigation();
   const p = useWorkspacePaths();
   const workspaceName = useCurrentWorkspace()?.name;
-  const { t } = useLocale();
 
   const draft = useIssueDraftStore((s) => s.draft);
   const setDraft = useIssueDraftStore((s) => s.setDraft);
@@ -131,13 +106,13 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
       }
 
       if (!shouldShowBacklogHint) {
-        toast.custom((toastId) => (
+        toast.custom((t) => (
           <div className="bg-popover text-popover-foreground border rounded-lg shadow-lg p-4 w-[360px]">
             <div className="flex items-center gap-2 mb-2">
               <div className="flex items-center justify-center size-5 rounded-full bg-emerald-500/15 text-emerald-500">
                 <Check className="size-3" />
               </div>
-              <span className="text-sm font-medium">{t.issues.issueCreated}</span>
+              <span className="text-sm font-medium">Issue created</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground ml-7">
               <StatusIcon status={issue.status} className="size-3.5 shrink-0" />
@@ -148,16 +123,16 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
               className="ml-7 mt-2 text-sm text-primary hover:underline cursor-pointer"
               onClick={() => {
                 router.push(p.issueDetail(issue.id));
-                toast.dismiss(toastId);
+                toast.dismiss(t);
               }}
-              >
-                {t.issues.viewIssue}
-              </button>
+            >
+              View issue
+            </button>
           </div>
         ), { duration: 5000 });
       }
     } catch {
-      toast.error(t.issues.failedToCreateIssue);
+      toast.error("Failed to create issue");
     } finally {
       setSubmitting(false);
     }
@@ -222,7 +197,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                     <ChevronRight className="size-3 text-muted-foreground/50" />
                   </>
                 )}
-                <span className="font-medium">{data?.parent_issue_id ? t.issues.newSubIssue : t.issues.newIssue}</span>
+                <span className="font-medium">{data?.parent_issue_id ? "New sub-issue" : "New issue"}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Tooltip>
@@ -236,7 +211,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                       </button>
                     }
                   />
-                  <TooltipContent side="bottom">{isExpanded ? t.issues.collapse : t.issues.expand}</TooltipContent>
+                  <TooltipContent side="bottom">{isExpanded ? "Collapse" : "Expand"}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger
@@ -249,7 +224,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                       </button>
                     }
                   />
-                  <TooltipContent side="bottom">{t.issues.close}</TooltipContent>
+                  <TooltipContent side="bottom">Close</TooltipContent>
                 </Tooltip>
               </div>
             </div>
@@ -259,7 +234,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
               <TitleEditor
                 autoFocus
                 defaultValue={draft.title}
-                placeholder={t.issues.issueTitlePlaceholder}
+                placeholder="Issue title"
                 className="text-lg font-semibold"
                 onChange={(v) => updateTitle(v)}
                 onSubmit={handleSubmit}
@@ -271,7 +246,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
               <ContentEditor
                 ref={descEditorRef}
                 defaultValue={draft.description}
-                placeholder={t.issues.addDescriptionPlaceholder}
+                placeholder="Add description..."
                 onUpdate={(md) => setDraft({ description: md })}
                 onUploadFile={handleUpload}
                 debounceMs={500}
@@ -330,10 +305,9 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
             <div className="flex items-center justify-between px-4 py-3 border-t shrink-0">
               <FileUploadButton
                 onSelect={(file) => descEditorRef.current?.uploadFile(file)}
-                title={t.common.actions.addAttachment}
               />
               <Button size="sm" onClick={handleSubmit} disabled={!title.trim() || submitting}>
-                {submitting ? t.issues.creating : t.issues.createIssue}
+                {submitting ? "Creating..." : "Create Issue"}
               </Button>
             </div>
           </>

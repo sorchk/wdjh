@@ -36,6 +36,9 @@ import type {
   RuntimePing,
   RuntimeUpdate,
   RuntimeModelListRequest,
+  RuntimeLocalSkillListRequest,
+  CreateRuntimeLocalSkillImportRequest,
+  RuntimeLocalSkillImportRequest,
   TimelineEntry,
   AssigneeFrequencyEntry,
   TaskMessagePayload,
@@ -65,13 +68,29 @@ import type {
   GetAutopilotResponse,
   ListAutopilotRunsResponse,
 } from "../types";
+import type { OnboardingCompletionPath } from "../onboarding/types";
 import { type Logger, noopLogger } from "../logger";
 import { createRequestId } from "../utils";
 import { getCurrentSlug } from "../platform/workspace-storage";
 
+/** Identifies the calling client to the server.
+ *  Sent on every HTTP request as X-Client-Platform / X-Client-Version /
+ *  X-Client-OS so the backend can log, gate, or split metrics by client.
+ *  See server/internal/middleware/client.go for the receiving end. */
+export interface ApiClientIdentity {
+  /** Logical client kind. Server expects: "web" | "desktop" | "cli" | "daemon". */
+  platform?: string;
+  /** Client/app version string (e.g. "0.1.0", git tag, commit). */
+  version?: string;
+  /** Operating system the client is running on: "macos" | "windows" | "linux". */
+  os?: string;
+}
+
 export interface ApiClientOptions {
   logger?: Logger;
   onUnauthorized?: () => void;
+  /** Identifies the client to the server. Sent as X-Client-* headers. */
+  identity?: ApiClientIdentity;
 }
 
 export interface LoginResponse {
@@ -172,6 +191,10 @@ export class ApiClient {
     if (slug) headers["X-Workspace-Slug"] = slug;
     const csrf = this.readCsrfToken();
     if (csrf) headers["X-CSRF-Token"] = csrf;
+    const id = this.options.identity;
+    if (id?.platform) headers["X-Client-Platform"] = id.platform;
+    if (id?.version) headers["X-Client-Version"] = id.version;
+    if (id?.os) headers["X-Client-OS"] = id.os;
     return headers;
   }
 
@@ -232,11 +255,6 @@ export class ApiClient {
     return res.json() as Promise<T>;
   }
 
-  // Generic request methods
-  async get<T>(path: string): Promise<T> {
-    return this.fetch<T>(path);
-  }
-
   // Auth
   async sendCode(email: string): Promise<void> {
     await this.fetch("/auth/send-code", {
@@ -271,8 +289,13 @@ export class ApiClient {
     return this.fetch("/api/me");
   }
 
-  async markOnboardingComplete(): Promise<User> {
-    return this.fetch("/api/me/onboarding/complete", { method: "POST" });
+  async markOnboardingComplete(payload?: {
+    completion_path?: OnboardingCompletionPath;
+  }): Promise<User> {
+    return this.fetch("/api/me/onboarding/complete", {
+      method: "POST",
+      body: payload ? JSON.stringify(payload) : undefined,
+    });
   }
 
   async joinCloudWaitlist(payload: {
@@ -313,9 +336,12 @@ export class ApiClient {
     });
   }
 
-  async dismissStarterContent(): Promise<User> {
+  async dismissStarterContent(payload?: {
+    workspace_id?: string;
+  }): Promise<User> {
     return this.fetch("/api/me/starter-content/dismiss", {
       method: "POST",
+      body: payload ? JSON.stringify(payload) : undefined,
     });
   }
 
@@ -323,13 +349,6 @@ export class ApiClient {
     return this.fetch("/api/me", {
       method: "PATCH",
       body: JSON.stringify(data),
-    });
-  }
-
-  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
-    await this.fetch("/api/me/change-password", {
-      method: "POST",
-      body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
     });
   }
 
@@ -589,6 +608,38 @@ export class ApiClient {
     return this.fetch(`/api/runtimes/${runtimeId}/models/${requestId}`);
   }
 
+  async initiateListLocalSkills(
+    runtimeId: string,
+  ): Promise<RuntimeLocalSkillListRequest> {
+    return this.fetch(`/api/runtimes/${runtimeId}/local-skills`, {
+      method: "POST",
+    });
+  }
+
+  async getListLocalSkillsResult(
+    runtimeId: string,
+    requestId: string,
+  ): Promise<RuntimeLocalSkillListRequest> {
+    return this.fetch(`/api/runtimes/${runtimeId}/local-skills/${requestId}`);
+  }
+
+  async initiateImportLocalSkill(
+    runtimeId: string,
+    data: CreateRuntimeLocalSkillImportRequest,
+  ): Promise<RuntimeLocalSkillImportRequest> {
+    return this.fetch(`/api/runtimes/${runtimeId}/local-skills/import`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getImportLocalSkillResult(
+    runtimeId: string,
+    requestId: string,
+  ): Promise<RuntimeLocalSkillImportRequest> {
+    return this.fetch(`/api/runtimes/${runtimeId}/local-skills/import/${requestId}`);
+  }
+
   async listAgentTasks(agentId: string): Promise<AgentTask[]> {
     return this.fetch(`/api/agents/${agentId}/tasks`);
   }
@@ -651,15 +702,12 @@ export class ApiClient {
   // App Config
   async getConfig(): Promise<{
     cdn_domain: string;
+    allow_signup: boolean;
+    google_client_id?: string;
     posthog_key?: string;
     posthog_host?: string;
   }> {
     return this.fetch("/api/config");
-  }
-
-  // Auth check (public, no auth required)
-  async authCheck(): Promise<{ has_users: boolean; is_logged_in: boolean }> {
-    return this.fetch("/api/auth/check");
   }
 
   // Workspaces

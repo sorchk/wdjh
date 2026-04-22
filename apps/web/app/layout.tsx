@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "wdjh",
+    siteName: "Multica",
     locale: "en_US",
   },
   twitter: {

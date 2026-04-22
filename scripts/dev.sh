@@ -60,6 +60,6 @@ echo "  Frontend: http://localhost:${FRONTEND_PORT:-3000}"
 echo ""
 
 trap 'kill 0' EXIT
-(cd server && air) &
+(cd server && go run ./cmd/server) &
 pnpm dev:web &
 wait

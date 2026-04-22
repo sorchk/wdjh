@@ -6,9 +6,11 @@ import { useQuery } from "@tanstack/react-query";
 import { projectListOptions } from "@multica/core/projects/queries";
 import { useUpdateProject } from "@multica/core/projects/mutations";
 import {
+  PROJECT_STATUS_CONFIG,
+  PROJECT_STATUS_ORDER,
+  PROJECT_PRIORITY_CONFIG,
   PROJECT_PRIORITY_ORDER,
 } from "@multica/core/projects/config";
-import { useProjectStatusConfig, useProjectPriorityConfig } from "./use-project-config";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useWorkspacePaths } from "@multica/core/paths";
 import { memberListOptions, agentListOptions } from "@multica/core/workspace/queries";
@@ -34,7 +36,6 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@multica/ui/components/
 import type { Project, ProjectStatus, ProjectPriority, UpdateProjectRequest } from "@multica/core/types";
 import { PageHeader } from "../../layout/page-header";
 import { PriorityIcon } from "../../issues/components/priority-icon";
-import { useLocale } from "@/features/dashboard/i18n";
 
 function formatRelativeDate(date: string): string {
   const diff = Date.now() - new Date(date).getTime();
@@ -49,16 +50,12 @@ function formatRelativeDate(date: string): string {
 function ProjectRow({ project }: { project: Project }) {
   const wsId = useWorkspaceId();
   const wsPaths = useWorkspacePaths();
-  const { statusConfig, statusOrder } = useProjectStatusConfig();
-  const { priorityConfig, priorityOrder } = useProjectPriorityConfig();
+  const statusCfg = PROJECT_STATUS_CONFIG[project.status];
+  const priorityCfg = PROJECT_PRIORITY_CONFIG[project.priority];
   const updateProject = useUpdateProject();
   const { data: members = [] } = useQuery(memberListOptions(wsId));
   const { data: agents = [] } = useQuery(agentListOptions(wsId));
   const { getActorName } = useActorName();
-  const { t } = useLocale();
-
-  const statusCfg = statusConfig[project.status];
-  const priorityCfg = priorityConfig[project.priority];
 
   const [leadOpen, setLeadOpen] = useState(false);
   const [leadFilter, setLeadFilter] = useState("");
@@ -95,10 +92,10 @@ function ProjectRow({ project }: { project: Project }) {
           }
         />
         <DropdownMenuContent align="start" className="w-44">
-          {priorityOrder.map((p) => (
+          {PROJECT_PRIORITY_ORDER.map((p) => (
             <DropdownMenuItem key={p} onClick={() => handleUpdate({ priority: p as ProjectPriority })}>
               <PriorityIcon priority={p} />
-              <span>{priorityConfig[p].label}</span>
+              <span>{PROJECT_PRIORITY_CONFIG[p].label}</span>
               {p === project.priority && <Check className="ml-auto h-3.5 w-3.5" />}
             </DropdownMenuItem>
           ))}
@@ -118,10 +115,10 @@ function ProjectRow({ project }: { project: Project }) {
           }
         />
         <DropdownMenuContent align="start" className="w-44">
-          {statusOrder.map((s) => (
+          {PROJECT_STATUS_ORDER.map((s) => (
             <DropdownMenuItem key={s} onClick={() => handleUpdate({ status: s as ProjectStatus })}>
-              <span className={cn("size-2 rounded-full", statusConfig[s].dotColor)} />
-              <span>{statusConfig[s].label}</span>
+              <span className={cn("size-2 rounded-full", PROJECT_STATUS_CONFIG[s].dotColor)} />
+              <span>{PROJECT_STATUS_CONFIG[s].label}</span>
               {s === project.status && <Check className="ml-auto h-3.5 w-3.5" />}
             </DropdownMenuItem>
           ))}
@@ -169,7 +166,7 @@ function ProjectRow({ project }: { project: Project }) {
               type="text"
               value={leadFilter}
               onChange={(e) => setLeadFilter(e.target.value)}
-              placeholder={t.projects.assignLead}
+              placeholder="Assign lead..."
               className="w-full bg-transparent text-sm placeholder:text-muted-foreground outline-none"
             />
           </div>
@@ -180,11 +177,11 @@ function ProjectRow({ project }: { project: Project }) {
               className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent transition-colors"
             >
               <UserMinus className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="text-muted-foreground">{t.projects.noLead}</span>
+              <span className="text-muted-foreground">No lead</span>
             </button>
             {filteredMembers.length > 0 && (
               <>
-                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.projects.members}</div>
+                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Members</div>
                 {filteredMembers.map((m) => (
                   <button
                     type="button"
@@ -200,7 +197,7 @@ function ProjectRow({ project }: { project: Project }) {
             )}
             {filteredAgents.length > 0 && (
               <>
-                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">{t.projects.agents}</div>
+                <div className="px-2 pt-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">Agents</div>
                 {filteredAgents.map((a) => (
                   <button
                     type="button"
@@ -215,7 +212,7 @@ function ProjectRow({ project }: { project: Project }) {
               </>
             )}
             {filteredMembers.length === 0 && filteredAgents.length === 0 && leadFilter && (
-              <div className="px-2 py-3 text-center text-sm text-muted-foreground">{t.projects.noResults}</div>
+              <div className="px-2 py-3 text-center text-sm text-muted-foreground">No results</div>
             )}
           </div>
         </PopoverContent>
@@ -232,7 +229,6 @@ function ProjectRow({ project }: { project: Project }) {
 
 export function ProjectsPage() {
   const wsId = useWorkspaceId();
-  const { t } = useLocale();
   const { data: projects = [], isLoading } = useQuery(projectListOptions(wsId));
   const openCreateProject = () => useModalStore.getState().open("create-project");
 
@@ -242,14 +238,14 @@ export function ProjectsPage() {
       <PageHeader className="justify-between px-5">
         <div className="flex items-center gap-2">
           <FolderKanban className="h-4 w-4 text-muted-foreground" />
-          <h1 className="text-sm font-medium">{t.projects.projects}</h1>
+          <h1 className="text-sm font-medium">Projects</h1>
           {!isLoading && projects.length > 0 && (
             <span className="text-xs text-muted-foreground tabular-nums">{projects.length}</span>
           )}
         </div>
         <Button size="sm" variant="outline" onClick={openCreateProject}>
           <Plus className="h-3.5 w-3.5 mr-1" />
-          {t.projects.newProject}
+          New project
         </Button>
       </PageHeader>
 
@@ -275,9 +271,9 @@ export function ProjectsPage() {
         ) : projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-muted-foreground">
             <FolderKanban className="h-10 w-10 mb-3 opacity-30" />
-            <p className="text-sm">{t.projects.noProjectsYet}</p>
+            <p className="text-sm">No projects yet</p>
             <Button size="sm" variant="outline" className="mt-3" onClick={openCreateProject}>
-              {t.projects.createYourFirstProject}
+              Create your first project
             </Button>
           </div>
         ) : (
@@ -286,12 +282,12 @@ export function ProjectsPage() {
             <div className="sticky top-0 z-[1] flex h-8 items-center gap-2 border-b bg-muted/30 px-5 text-xs font-medium text-muted-foreground">
               {/* Icon spacer + Name */}
               <span className="shrink-0 w-[24px]" />
-              <span className="min-w-0 flex-1">{t.projects.name}</span>
-              <span className="w-24 text-center shrink-0">{t.projects.priority}</span>
-              <span className="w-28 text-center shrink-0">{t.projects.status}</span>
-              <span className="w-24 text-center shrink-0">{t.projects.progress}</span>
-              <span className="w-10 text-center shrink-0">{t.projects.lead}</span>
-              <span className="w-20 text-right shrink-0">{t.projects.created}</span>
+              <span className="min-w-0 flex-1">Name</span>
+              <span className="w-24 text-center shrink-0">Priority</span>
+              <span className="w-28 text-center shrink-0">Status</span>
+              <span className="w-24 text-center shrink-0">Progress</span>
+              <span className="w-10 text-center shrink-0">Lead</span>
+              <span className="w-20 text-right shrink-0">Created</span>
             </div>
             {/* Rows */}
             {projects.map((project) => (

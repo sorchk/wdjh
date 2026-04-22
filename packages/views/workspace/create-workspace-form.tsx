@@ -9,18 +9,18 @@ import { Card, CardContent } from "@multica/ui/components/ui/card";
 import { useCreateWorkspace } from "@multica/core/workspace/mutations";
 import type { Workspace } from "@multica/core/types";
 import {
+  WORKSPACE_SLUG_CONFLICT_ERROR,
+  WORKSPACE_SLUG_FORMAT_ERROR,
   WORKSPACE_SLUG_REGEX,
   isWorkspaceSlugConflict,
   nameToWorkspaceSlug,
 } from "./slug";
-import { useLocale } from "@/features/dashboard/i18n";
 
 export interface CreateWorkspaceFormProps {
   onSuccess: (workspace: Workspace) => void | Promise<void>;
 }
 
 export function CreateWorkspaceForm({ onSuccess }: CreateWorkspaceFormProps) {
-  const { t } = useLocale();
   const createWorkspace = useCreateWorkspace();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -29,7 +29,7 @@ export function CreateWorkspaceForm({ onSuccess }: CreateWorkspaceFormProps) {
 
   const slugValidationError =
     slug.length > 0 && !WORKSPACE_SLUG_REGEX.test(slug)
-      ? t.issues.workspaceSlugFormatError
+      ? WORKSPACE_SLUG_FORMAT_ERROR
       : null;
   const slugError = slugValidationError ?? slugServerError;
   const canSubmit =
@@ -57,11 +57,11 @@ export function CreateWorkspaceForm({ onSuccess }: CreateWorkspaceFormProps) {
         onSuccess,
         onError: (error) => {
           if (isWorkspaceSlugConflict(error)) {
-            setSlugServerError(t.issues.workspaceSlugConflictError);
-            toast.error(t.issues.chooseDifferentWorkspaceUrl);
+            setSlugServerError(WORKSPACE_SLUG_CONFLICT_ERROR);
+            toast.error("Choose a different workspace URL");
             return;
           }
-          toast.error(t.issues.failedToCreateWorkspace);
+          toast.error("Failed to create workspace");
         },
       },
     );
@@ -71,29 +71,29 @@ export function CreateWorkspaceForm({ onSuccess }: CreateWorkspaceFormProps) {
     <Card className="w-full">
       <CardContent className="space-y-4 pt-6">
         <div className="space-y-1.5">
-          <Label htmlFor="ws-name">{t.issues.workspaceName}</Label>
+          <Label htmlFor="ws-name">Workspace Name</Label>
           <Input
             id="ws-name"
             autoFocus
             type="text"
             value={name}
             onChange={(e) => handleNameChange(e.target.value)}
-            placeholder={t.issues.workspaceNamePlaceholder}
+            placeholder="My Workspace"
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="ws-slug">{t.issues.workspaceUrl}</Label>
+          <Label htmlFor="ws-slug">Workspace URL</Label>
           <div className="flex items-center gap-0 rounded-md border bg-background focus-within:ring-2 focus-within:ring-ring">
             <span className="pl-3 text-sm text-muted-foreground select-none">
-              {t.issues.workspaceUrlPrefix}
+              multica.ai/
             </span>
             <Input
               id="ws-slug"
               type="text"
               value={slug}
               onChange={(e) => handleSlugChange(e.target.value)}
-              placeholder={t.issues.workspaceUrlPlaceholder}
+              placeholder="my-workspace"
               className="border-0 shadow-none focus-visible:ring-0"
               onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             />
@@ -108,7 +108,7 @@ export function CreateWorkspaceForm({ onSuccess }: CreateWorkspaceFormProps) {
           onClick={handleCreate}
           disabled={createWorkspace.isPending || !canSubmit}
         >
-          {createWorkspace.isPending ? t.issues.creatingWorkspace : t.issues.createWorkspace}
+          {createWorkspace.isPending ? "Creating..." : "Create workspace"}
         </Button>
       </CardContent>
     </Card>

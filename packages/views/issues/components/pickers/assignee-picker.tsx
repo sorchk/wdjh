@@ -15,7 +15,6 @@ import {
   PickerSection,
   PickerEmpty,
 } from "./property-picker";
-import { useLocale } from "@/features/dashboard/i18n";
 
 export function canAssignAgent(agent: Agent, userId: string | undefined, memberRole: string | undefined): boolean {
   if (agent.visibility !== "private") return true;
@@ -43,7 +42,6 @@ export function AssigneePicker({
   onOpenChange?: (v: boolean) => void;
   align?: "start" | "center" | "end";
 }) {
-  const { t } = useLocale();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = controlledOpen ?? internalOpen;
   const setOpen = controlledOnOpenChange ?? setInternalOpen;
@@ -83,7 +81,7 @@ export function AssigneePicker({
   const triggerLabel =
     assigneeType && assigneeId
       ? getActorName(assigneeType, assigneeId)
-      : t.issues.unassigned;
+      : "Unassigned";
 
   return (
     <PropertyPicker
@@ -95,7 +93,7 @@ export function AssigneePicker({
       width="w-52"
       align={align}
       searchable
-      searchPlaceholder={t.issues.assignTo}
+      searchPlaceholder="Assign to..."
       onSearchChange={setFilter}
       triggerRender={triggerRender}
       trigger={
@@ -105,7 +103,7 @@ export function AssigneePicker({
             <span className="truncate">{triggerLabel}</span>
           </>
         ) : (
-          <span className="text-muted-foreground">{t.issues.unassigned}</span>
+          <span className="text-muted-foreground">Unassigned</span>
         )
       }
     >
@@ -119,13 +117,13 @@ export function AssigneePicker({
           }}
         >
           <UserMinus className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-muted-foreground">{t.issues.unassigned}</span>
+          <span className="text-muted-foreground">Unassigned</span>
         </PickerItem>
       )}
 
       {/* Members */}
       {filteredMembers.length > 0 && (
-        <PickerSection label={t.issues.members}>
+        <PickerSection label="Members">
           {filteredMembers.map((m) => (
             <PickerItem
               key={m.user_id}
@@ -147,7 +145,7 @@ export function AssigneePicker({
 
       {/* Agents */}
       {filteredAgents.length > 0 && (
-        <PickerSection label={t.issues.agents}>
+        <PickerSection label="Agents">
           {filteredAgents.map((a) => {
             const allowed = canAssignAgent(a, user?.id, memberRole);
             return (
@@ -177,7 +175,7 @@ export function AssigneePicker({
 
       {filteredMembers.length === 0 &&
         filteredAgents.length === 0 &&
-        filter && <PickerEmpty message={t.issues.noResultsFound} />}
+        filter && <PickerEmpty />}
     </PropertyPicker>
   );
 }

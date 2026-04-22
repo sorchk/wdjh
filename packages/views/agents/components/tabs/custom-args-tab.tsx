@@ -13,7 +13,6 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Input } from "@multica/ui/components/ui/input";
 import { Label } from "@multica/ui/components/ui/label";
 import { toast } from "sonner";
-import { useLocale } from "@/features/dashboard/i18n";
 
 interface ArgEntry {
   id: string;
@@ -37,7 +36,6 @@ export function CustomArgsTab({
   runtimeDevice?: RuntimeDevice;
   onSave: (updates: Partial<Agent>) => Promise<void>;
 }) {
-  const { t } = useLocale();
   const [entries, setEntries] = useState<ArgEntry[]>(
     argsToEntries(agent.custom_args ?? []),
   );
@@ -65,9 +63,9 @@ export function CustomArgsTab({
     setSaving(true);
     try {
       await onSave({ custom_args: currentArgs });
-      toast.success(t.agents.customArgsTab.customArgumentsSaved);
+      toast.success("Custom arguments saved");
     } catch {
-      toast.error(t.agents.customArgsTab.failedToSaveCustomArguments);
+      toast.error("Failed to save custom arguments");
     } finally {
       setSaving(false);
     }
@@ -80,14 +78,15 @@ export function CustomArgsTab({
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-xs text-muted-foreground">
-            {t.agents.customArgsTab.title}
+            Custom Arguments
           </Label>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {t.agents.customArgsTab.description}
+            Additional CLI arguments appended to the agent command at launch.
+            Supported flags depend on the agent's CLI.
           </p>
           {launchHeader && (
             <p className="mt-2 text-xs text-muted-foreground">
-              {t.agents.customArgsTab.launchMode}:{" "}
+              Launch mode:{" "}
               <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px]">
                 {launchHeader} &lt;your args&gt;
               </code>
@@ -102,7 +101,7 @@ export function CustomArgsTab({
           className="h-7 gap-1 text-xs"
         >
           <Plus className="h-3 w-3" />
-          {t.agents.customArgsTab.add}
+          Add
         </Button>
       </div>
       {entries.length > 0 && (
@@ -112,7 +111,7 @@ export function CustomArgsTab({
               <Input
                 value={entry.value}
                 onChange={(e) => updateEntry(index, e.target.value)}
-                placeholder={t.agents.customArgsTab.flagPlaceholder}
+                placeholder="--flag value"
                 className="flex-1 font-mono text-xs"
               />
               <button
@@ -133,7 +132,7 @@ export function CustomArgsTab({
         ) : (
           <Save className="h-3.5 w-3.5 mr-1.5" />
         )}
-        {saving ? t.agents.customArgsTab.saving : t.agents.customArgsTab.save}
+        Save
       </Button>
     </div>
   );
