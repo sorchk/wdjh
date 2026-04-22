@@ -255,6 +255,35 @@ export class ApiClient {
     return res.json() as Promise<T>;
   }
 
+  async get<T>(path: string): Promise<T> {
+    return this.fetch<T>(path);
+  }
+
+  async post<T>(path: string, body?: unknown): Promise<T> {
+    return this.fetch<T>(path, {
+      method: "POST",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  async put<T>(path: string, body?: unknown): Promise<T> {
+    return this.fetch<T>(path, {
+      method: "PUT",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
+  async delete<T>(path: string): Promise<T> {
+    return this.fetch<T>(path, { method: "DELETE" });
+  }
+
+  async patch<T>(path: string, body?: unknown): Promise<T> {
+    return this.fetch<T>(path, {
+      method: "PATCH",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  }
+
   // Auth
   async sendCode(email: string): Promise<void> {
     await this.fetch("/auth/send-code", {
@@ -349,6 +378,13 @@ export class ApiClient {
     return this.fetch("/api/me", {
       method: "PATCH",
       body: JSON.stringify(data),
+    });
+  }
+
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    await this.fetch("/api/me/password", {
+      method: "PUT",
+      body: JSON.stringify({ old_password: oldPassword, new_password: newPassword }),
     });
   }
 

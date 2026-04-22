@@ -15,6 +15,7 @@ import { CreateWorkspaceForm } from "../workspace/create-workspace-form";
 
 export function CreateWorkspaceModal({ onClose }: { onClose: () => void }) {
   const router = useNavigation();
+  const { t } = useLocale();
 
   return (
     <Dialog

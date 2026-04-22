@@ -17,6 +17,7 @@ import { useUpdatableRuntimeIds } from "@multica/core/runtimes/hooks";
 import { useWSEvent } from "@multica/core/realtime";
 import { RuntimeList } from "./runtime-list";
 import { RuntimeDetail } from "./runtime-detail";
+import { useLocale } from "@/features/dashboard/i18n";
 
 type RuntimeFilter = "mine" | "all";
 
@@ -39,6 +40,7 @@ export default function RuntimesPage({ topSlot, bootstrapping }: RuntimesPagePro
   const [filter, setFilter] = useState<RuntimeFilter>("mine");
   const [ownerFilter, setOwnerFilter] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState("");
+  const { t: runtimesT } = useLocale();
 
   const ownerParam = filter === "mine" ? "me" as const : undefined;
   const { data: runtimes = [], isLoading: fetching } = useQuery(runtimeListOptions(wsId, ownerParam));
@@ -130,7 +132,7 @@ export default function RuntimesPage({ topSlot, bootstrapping }: RuntimesPagePro
 
         <ResizablePanel id="detail" minSize="50%">
           {selected ? (
-            <RuntimeDetail key={selected.id} runtime={selected} />
+            <RuntimeDetail key={selected.id} runtime={selected} runtimesT={runtimesT.runtimes} />
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
               <Server className="h-10 w-10 text-muted-foreground/30" />
