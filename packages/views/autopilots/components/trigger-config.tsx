@@ -20,19 +20,37 @@ export interface TriggerConfig {
   timezone: string; // IANA
 }
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
+export interface TriggerI18n {
+  hourly: string;
+  daily: string;
+  weekdays: string;
+  weekly: string;
+  custom: string;
+  frequencyLabel: string;
+  cronExpressionLabel: string;
+  cronExpressionPlaceholder: string;
+  cronExpressionHelp: string;
+  minuteLabel: string;
+  timeLabel: string;
+  timezoneLabel: string;
+  daysLabel: string;
+  daysOfWeek: string[];
+  runsEveryHourAt: string;
+  runsDailyAt: string;
+  runsWeekdaysAt: string;
+  runsWeeklyAt: string;
+  runsCustomSchedule: string;
+}
 
-const FREQUENCIES: { value: TriggerFrequency; label: string }[] = [
-  { value: "hourly", label: "Hourly" },
-  { value: "daily", label: "Daily" },
-  { value: "weekdays", label: "Weekdays" },
-  { value: "weekly", label: "Days" },
-  { value: "custom", label: "Custom" },
-];
-
-const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+function getFrequencyOptions(i18n: TriggerI18n) {
+  return [
+    { value: "hourly" as TriggerFrequency, label: i18n.hourly },
+    { value: "daily" as TriggerFrequency, label: i18n.daily },
+    { value: "weekdays" as TriggerFrequency, label: i18n.weekdays },
+    { value: "weekly" as TriggerFrequency, label: i18n.weekly },
+    { value: "custom" as TriggerFrequency, label: i18n.custom },
+  ];
+}
 
 const COMMON_TIMEZONES = [
   "UTC",
@@ -112,10 +130,10 @@ function sortedDays(days: number[]): number[] {
   return [...new Set(days)].sort((a, b) => a - b);
 }
 
-function formatDayList(days: number[]): string {
+function formatDayList(days: number[], daysOfWeek: string[]): string {
   const sorted = sortedDays(days);
   if (sorted.length === 0) return "—";
-  return sorted.map((d) => DAYS_OF_WEEK[d]).join(", ");
+  return sorted.map((d) => daysOfWeek[d]).join(", ");
 }
 
 export function toCronExpression(cfg: TriggerConfig): string {
@@ -139,21 +157,21 @@ export function toCronExpression(cfg: TriggerConfig): string {
   }
 }
 
-export function describeTrigger(cfg: TriggerConfig): string {
+export function describeTrigger(cfg: TriggerConfig, i18n: TriggerI18n): string {
   const offset = getTimezoneOffset(cfg.timezone);
   switch (cfg.frequency) {
     case "hourly": {
       const min = parseInt(cfg.time.split(":")[1] ?? "0", 10);
-      return `Runs every hour at :${min.toString().padStart(2, "0")}`;
+      return i18n.runsEveryHourAt.replace("{minute}", min.toString().padStart(2, "0"));
     }
     case "daily":
-      return `Runs daily at ${formatTime12h(cfg.time)} ${offset}`;
+      return `${i18n.runsDailyAt} ${formatTime12h(cfg.time)} ${offset}`;
     case "weekdays":
-      return `Runs weekdays at ${formatTime12h(cfg.time)} ${offset}`;
+      return `${i18n.runsWeekdaysAt} ${formatTime12h(cfg.time)} ${offset}`;
     case "weekly":
-      return `Runs every ${formatDayList(cfg.daysOfWeek)} at ${formatTime12h(cfg.time)} ${offset}`;
+      return `${i18n.runsWeeklyAt.replace("{days}", formatDayList(cfg.daysOfWeek, i18n.daysOfWeek))} ${formatTime12h(cfg.time)} ${offset}`;
     case "custom":
-      return `Custom schedule: ${cfg.cronExpression}`;
+      return `${i18n.runsCustomSchedule}: ${cfg.cronExpression}`;
   }
 }
 
@@ -164,9 +182,11 @@ export function describeTrigger(cfg: TriggerConfig): string {
 export function TriggerConfigSection({
   config,
   onChange,
+  i18n,
 }: {
   config: TriggerConfig;
   onChange: (config: TriggerConfig) => void;
+  i18n: TriggerI18n;
 }) {
   const timezones = useMemo(() => {
     const local = getLocalTimezone();
@@ -174,11 +194,13 @@ export function TriggerConfigSection({
     return set.has(local) ? COMMON_TIMEZONES : [local, ...COMMON_TIMEZONES];
   }, []);
 
+  const frequencyOptions = useMemo(() => getFrequencyOptions(i18n), [i18n]);
+
   return (
     <div className="space-y-3">
       {/* Frequency tabs */}
       <div className="flex flex-wrap gap-1">
-        {FREQUENCIES.map((f) => (
+        {frequencyOptions.map((f) => (
           <button
             key={f.value}
             type="button"
@@ -198,16 +220,16 @@ export function TriggerConfigSection({
       {config.frequency === "custom" ? (
         /* Custom cron input */
         <div>
-          <label className="text-xs text-muted-foreground">Cron Expression</label>
+          <label className="text-xs text-muted-foreground">{i18n.cronExpressionLabel}</label>
           <input
             type="text"
             value={config.cronExpression}
             onChange={(e) => onChange({ ...config, cronExpression: e.target.value })}
-            placeholder="0 9 * * 1-5"
+            placeholder={i18n.cronExpressionPlaceholder}
             className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm font-mono outline-none focus:ring-1 focus:ring-ring"
           />
           <p className="text-xs text-muted-foreground mt-1">
-            Standard 5-field cron (min hour dom month dow)
+            {i18n.cronExpressionHelp}
           </p>
         </div>
       ) : (
@@ -216,7 +238,7 @@ export function TriggerConfigSection({
           <div className="flex gap-3">
             {config.frequency === "hourly" ? (
               <div className="w-24">
-                <label className="text-xs text-muted-foreground">Minute</label>
+                <label className="text-xs text-muted-foreground">{i18n.minuteLabel}</label>
                 <input
                   type="number"
                   min={0}
@@ -232,7 +254,7 @@ export function TriggerConfigSection({
             ) : (
               <>
                 <div className="w-28">
-                  <label className="text-xs text-muted-foreground">Time</label>
+                  <label className="text-xs text-muted-foreground">{i18n.timeLabel}</label>
                   <input
                     type="time"
                     value={config.time}
@@ -241,7 +263,7 @@ export function TriggerConfigSection({
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <label className="text-xs text-muted-foreground">Timezone</label>
+                  <label className="text-xs text-muted-foreground">{i18n.timezoneLabel}</label>
                   <Select
                     value={config.timezone}
                     onValueChange={(v) => v && onChange({ ...config, timezone: v })}
@@ -267,9 +289,9 @@ export function TriggerConfigSection({
           {/* Day-of-week multi-selector for weekly */}
           {config.frequency === "weekly" && (
             <div>
-              <label className="text-xs text-muted-foreground">Days</label>
+              <label className="text-xs text-muted-foreground">{i18n.daysLabel}</label>
               <div className="flex gap-1 mt-1">
-                {DAYS_OF_WEEK.map((day, i) => {
+                {i18n.daysOfWeek.map((day, i) => {
                   const selected = config.daysOfWeek.includes(i);
                   return (
                     <button
@@ -304,7 +326,7 @@ export function TriggerConfigSection({
       )}
 
       {/* Human-readable preview */}
-      <p className="text-xs text-muted-foreground">{describeTrigger(config)}</p>
+      <p className="text-xs text-muted-foreground">{describeTrigger(config, i18n)}</p>
     </div>
   );
 }

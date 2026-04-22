@@ -130,31 +130,37 @@ const TEMPLATES: AutopilotTemplate[] = [
   },
 ];
 
-function formatRelativeDate(date: string): string {
+function formatRelativeDate(date: string, i18n: { today: string; daysAgo: string; monthsAgo: string }): string {
   const diff = Date.now() - new Date(date).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days < 1) return "Today";
-  if (days === 1) return "1d ago";
-  if (days < 30) return `${days}d ago`;
+  if (days < 1) return i18n.today;
+  if (days === 1) return `1${i18n.daysAgo}`;
+  if (days < 30) return `${days}${i18n.daysAgo}`;
   const months = Math.floor(days / 30);
-  return `${months}mo ago`;
+  return `${months}${i18n.monthsAgo}`;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Zap }> = {
-  active: { label: "Active", color: "text-emerald-500", icon: Play },
-  paused: { label: "Paused", color: "text-amber-500", icon: Pause },
-  archived: { label: "Archived", color: "text-muted-foreground", icon: AlertCircle },
-};
+function getStatusConfig(status: string, i18n: { statusActive: string; statusPaused: string; statusArchived: string }) {
+  const configs: Record<string, { label: string; color: string; icon: typeof Zap }> = {
+    active: { label: i18n.statusActive, color: "text-emerald-500", icon: Play },
+    paused: { label: i18n.statusPaused, color: "text-amber-500", icon: Pause },
+    archived: { label: i18n.statusArchived, color: "text-muted-foreground", icon: AlertCircle },
+  };
+  return configs[status] ?? configs["active"]!;
+}
 
-const EXECUTION_MODE_LABELS: Record<string, string> = {
-  create_issue: "Create Issue",
-  run_only: "Run Only",
-};
+function getExecutionModeLabel(mode: string, i18n: { executionModeCreateIssue: string; executionModeRunOnly: string }): string {
+  const labels: Record<string, string> = {
+    create_issue: i18n.executionModeCreateIssue,
+    run_only: i18n.executionModeRunOnly,
+  };
+  return labels[mode] ?? mode;
+}
 
-function AutopilotRow({ autopilot }: { autopilot: Autopilot }) {
+function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: ReturnType<typeof useLocale>["t"] }) {
   const { getActorName } = useActorName();
   const wsPaths = useWorkspacePaths();
-  const statusCfg = (STATUS_CONFIG[autopilot.status] ?? STATUS_CONFIG["active"])!;
+  const statusCfg = getStatusConfig(autopilot.status, i18n.autopilots);
   const StatusIcon = statusCfg.icon;
 
   return (
@@ -171,13 +177,13 @@ function AutopilotRow({ autopilot }: { autopilot: Autopilot }) {
       <span className="flex w-32 items-center gap-1.5 shrink-0">
         <ActorAvatar actorType="agent" actorId={autopilot.assignee_id} size={18} />
         <span className="truncate text-xs text-muted-foreground">
-          {getActorName("agent", autopilot.assignee_id)}
+          {getActorName("agent", autopilot.assignee_id) || i18n.autopilots.unknownAgent}
         </span>
       </span>
 
       {/* Mode */}
       <span className="w-24 shrink-0 text-center text-xs text-muted-foreground">
-        {EXECUTION_MODE_LABELS[autopilot.execution_mode] ?? autopilot.execution_mode}
+        {getExecutionModeLabel(autopilot.execution_mode, i18n.autopilots)}
       </span>
 
       {/* Status */}
@@ -188,7 +194,7 @@ function AutopilotRow({ autopilot }: { autopilot: Autopilot }) {
 
       {/* Last run */}
       <span className="w-20 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-        {autopilot.last_run_at ? formatRelativeDate(autopilot.last_run_at) : "--"}
+        {autopilot.last_run_at ? formatRelativeDate(autopilot.last_run_at, i18n.autopilots) : "--"}
       </span>
     </div>
   );
@@ -325,7 +331,31 @@ function CreateAutopilotDialog({
           <div>
             <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.scheduleLabel}</label>
             <div className="mt-2">
-              <TriggerConfigSection config={triggerConfig} onChange={setTriggerConfig} />
+              <TriggerConfigSection
+                config={triggerConfig}
+                onChange={setTriggerConfig}
+                i18n={{
+                  hourly: i18n.autopilots.hourly,
+                  daily: i18n.autopilots.daily,
+                  weekdays: i18n.autopilots.weekdays,
+                  weekly: i18n.autopilots.weekly,
+                  custom: i18n.autopilots.custom,
+                  frequencyLabel: i18n.autopilots.frequencyLabel,
+                  cronExpressionLabel: i18n.autopilots.cronExpressionLabel,
+                  cronExpressionPlaceholder: i18n.autopilots.cronExpressionPlaceholder,
+                  cronExpressionHelp: i18n.autopilots.cronExpressionHelp,
+                  minuteLabel: i18n.autopilots.minuteLabel,
+                  timeLabel: i18n.autopilots.timeLabel,
+                  timezoneLabel: i18n.autopilots.timezoneLabel,
+                  daysLabel: i18n.autopilots.daysLabel,
+                  daysOfWeek: i18n.autopilots.daysOfWeek,
+                  runsEveryHourAt: i18n.autopilots.runsEveryHourAt,
+                  runsDailyAt: i18n.autopilots.runsDailyAt,
+                  runsWeekdaysAt: i18n.autopilots.runsWeekdaysAt,
+                  runsWeeklyAt: i18n.autopilots.runsWeeklyAt,
+                  runsCustomSchedule: i18n.autopilots.runsCustomSchedule,
+                }}
+              />
             </div>
           </div>
 
@@ -438,7 +468,7 @@ export function AutopilotsPage() {
               <span className="w-20 text-right shrink-0">{i18n.autopilots.lastRun}</span>
             </div>
             {autopilots.map((autopilot) => (
-              <AutopilotRow key={autopilot.id} autopilot={autopilot} />
+              <AutopilotRow key={autopilot.id} autopilot={autopilot} i18n={i18n} />
             ))}
           </>
         )}

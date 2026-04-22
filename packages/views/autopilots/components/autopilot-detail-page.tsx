@@ -23,6 +23,7 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Switch } from "@multica/ui/components/ui/switch";
 import { cn } from "@multica/ui/lib/utils";
 import { toast } from "sonner";
+import { useLocale } from "@/features/dashboard/i18n";
 import {
   Dialog,
   DialogContent,
@@ -52,16 +53,36 @@ function formatDate(date: string): string {
   });
 }
 
-const RUN_STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof CheckCircle2; spin?: boolean }> = {
-  issue_created: { label: "Issue Created", color: "text-blue-500", icon: Clock },
-  running: { label: "Running", color: "text-blue-500", icon: Loader2, spin: true },
-  completed: { label: "Completed", color: "text-emerald-500", icon: CheckCircle2 },
-  failed: { label: "Failed", color: "text-destructive", icon: XCircle },
-};
+function getRunStatusConfig(i18n: { runStatusIssueCreated: string; runStatusRunning: string; runStatusCompleted: string; runStatusFailed: string }) {
+  return {
+    issue_created: { label: i18n.runStatusIssueCreated, color: "text-blue-500", icon: Clock, spin: false },
+    running: { label: i18n.runStatusRunning, color: "text-blue-500", icon: Loader2, spin: true },
+    completed: { label: i18n.runStatusCompleted, color: "text-emerald-500", icon: CheckCircle2, spin: false },
+    failed: { label: i18n.runStatusFailed, color: "text-destructive", icon: XCircle, spin: false },
+  };
+}
 
-function RunRow({ run }: { run: AutopilotRun }) {
+function getPriorityOptions(i18n: { priorityUrgent: string; priorityHigh: string; priorityMedium: string; priorityLow: string; priorityNone: string }) {
+  return [
+    { value: "urgent", label: i18n.priorityUrgent },
+    { value: "high", label: i18n.priorityHigh },
+    { value: "medium", label: i18n.priorityMedium },
+    { value: "low", label: i18n.priorityLow },
+    { value: "none", label: i18n.priorityNone },
+  ];
+}
+
+function getExecutionModeOptions(i18n: { executionModeCreateIssue: string; executionModeRunOnly: string }) {
+  return [
+    { value: "create_issue", label: i18n.executionModeCreateIssue },
+    { value: "run_only", label: i18n.executionModeRunOnly },
+  ];
+}
+
+function RunRow({ run, i18n }: { run: AutopilotRun; i18n: ReturnType<typeof useLocale>["t"] }) {
   const wsPaths = useWorkspacePaths();
-  const cfg = (RUN_STATUS_CONFIG[run.status] ?? RUN_STATUS_CONFIG["issue_created"])!;
+  const runStatusConfig = getRunStatusConfig(i18n.autopilots);
+  const cfg = (runStatusConfig[run.status] ?? runStatusConfig["issue_created"])!;
   const StatusIcon = cfg.icon;
 
   const content = (
@@ -71,7 +92,7 @@ function RunRow({ run }: { run: AutopilotRun }) {
       <span className="w-16 shrink-0 text-xs text-muted-foreground capitalize">{run.source}</span>
       <span className="flex-1 min-w-0 text-xs text-muted-foreground truncate">
         {run.issue_id ? (
-          "Issue linked"
+          i18n.autopilots.issueLinked
         ) : run.failure_reason ? (
           <span className="text-destructive">{run.failure_reason}</span>
         ) : null}
@@ -95,7 +116,7 @@ function RunRow({ run }: { run: AutopilotRun }) {
   return <div className={rowClass}>{content}</div>;
 }
 
-function TriggerRow({ trigger, autopilotId }: { trigger: AutopilotTrigger; autopilotId: string }) {
+function TriggerRow({ trigger, autopilotId, i18n }: { trigger: AutopilotTrigger; autopilotId: string; i18n: ReturnType<typeof useLocale>["t"] }) {
   const deleteTrigger = useDeleteAutopilotTrigger();
 
   return (
@@ -108,7 +129,7 @@ function TriggerRow({ trigger, autopilotId }: { trigger: AutopilotTrigger; autop
             <span className="text-xs text-muted-foreground">({trigger.label})</span>
           )}
           {!trigger.enabled && (
-            <span className="text-xs bg-muted px-1.5 py-0.5 rounded">Disabled</span>
+            <span className="text-xs bg-muted px-1.5 py-0.5 rounded">{i18n.autopilots.disabled}</span>
           )}
         </div>
         {trigger.cron_expression && (
@@ -119,7 +140,7 @@ function TriggerRow({ trigger, autopilotId }: { trigger: AutopilotTrigger; autop
         )}
         {trigger.next_run_at && (
           <div className="text-xs text-muted-foreground">
-            Next: {formatDate(trigger.next_run_at)}
+            {i18n.autopilots.next} {formatDate(trigger.next_run_at)}
           </div>
         )}
       </div>
@@ -129,7 +150,7 @@ function TriggerRow({ trigger, autopilotId }: { trigger: AutopilotTrigger; autop
         className="h-7 w-7 shrink-0"
         onClick={() => {
           deleteTrigger.mutate({ autopilotId, triggerId: trigger.id });
-          toast.success("Trigger deleted");
+          toast.success(i18n.autopilots.triggerDeleted);
         }}
       >
         <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
@@ -138,29 +159,18 @@ function TriggerRow({ trigger, autopilotId }: { trigger: AutopilotTrigger; autop
   );
 }
 
-const PRIORITY_OPTIONS = [
-  { value: "urgent", label: "Urgent" },
-  { value: "high", label: "High" },
-  { value: "medium", label: "Medium" },
-  { value: "low", label: "Low" },
-  { value: "none", label: "None" },
-];
-
-const EXECUTION_MODE_OPTIONS = [
-  { value: "create_issue", label: "Create Issue" },
-  { value: "run_only", label: "Run Only" },
-];
-
 function EditAutopilotDialog({
   open,
   onOpenChange,
   autopilot,
   agents,
+  i18n,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   autopilot: { id: string; title: string; description?: string | null; assignee_id: string; priority: string; execution_mode: string; issue_title_template?: string | null };
   agents: { id: string; name: string; archived_at?: string | null }[];
+  i18n: ReturnType<typeof useLocale>["t"];
 }) {
   const updateAutopilot = useUpdateAutopilot();
   const [title, setTitle] = useState(autopilot.title);
@@ -171,6 +181,8 @@ function EditAutopilotDialog({
   const [submitting, setSubmitting] = useState(false);
 
   const activeAgents = agents.filter((a) => !a.archived_at);
+  const priorityOptions = getPriorityOptions(i18n.autopilots);
+  const executionModeOptions = getExecutionModeOptions(i18n.autopilots);
 
   // Sync form when autopilot data changes (e.g. after optimistic update)
   useEffect(() => {
@@ -194,9 +206,9 @@ function EditAutopilotDialog({
         execution_mode: executionMode as "create_issue" | "run_only",
       });
       onOpenChange(false);
-      toast.success("Autopilot updated");
+      toast.success(i18n.autopilots.autopilotUpdated);
     } catch {
-      toast.error("Failed to update autopilot");
+      toast.error(i18n.autopilots.failedToUpdateAutopilot);
     } finally {
       setSubmitting(false);
     }
@@ -205,16 +217,16 @@ function EditAutopilotDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
-        <DialogTitle>Edit Autopilot</DialogTitle>
+        <DialogTitle>{i18n.autopilots.editAutopilot}</DialogTitle>
         <div className="space-y-4 pt-2">
           {/* Name */}
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Name</label>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.nameLabel}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Daily code review"
+              placeholder={i18n.autopilots.namePlaceholder}
               className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
               autoFocus
             />
@@ -222,11 +234,11 @@ function EditAutopilotDialog({
 
           {/* Prompt */}
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Prompt</label>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.promptLabel}</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Step-by-step instructions for the agent..."
+              placeholder={i18n.autopilots.promptPlaceholder}
               rows={6}
               className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-y"
             />
@@ -235,14 +247,14 @@ function EditAutopilotDialog({
           {/* Agent + Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Agent</label>
+              <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.agentLabel}</label>
               <Select value={assigneeId} onValueChange={(v) => v && setAssigneeId(v)}>
                 <SelectTrigger className="mt-1 w-full">
                   <SelectValue>
                     {(value: string | null) => {
-                      if (!value) return "Select agent...";
+                      if (!value) return i18n.autopilots.selectAgentPlaceholder;
                       const agent = activeAgents.find((a) => a.id === value);
-                      return agent?.name ?? "Unknown Agent";
+                      return agent?.name ?? i18n.autopilots.unknownAgent;
                     }}
                   </SelectValue>
                 </SelectTrigger>
@@ -254,15 +266,15 @@ function EditAutopilotDialog({
               </Select>
             </div>
             <div>
-              <label className="text-xs font-medium text-muted-foreground">Priority</label>
+              <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.priorityLabel}</label>
               <Select value={priority} onValueChange={(v) => v && setPriority(v)}>
                 <SelectTrigger className="mt-1 w-full">
                   <SelectValue>
-                    {(value: string | null) => PRIORITY_OPTIONS.find((o) => o.value === value)?.label ?? "Medium"}
+                    {(value: string | null) => priorityOptions.find((o) => o.value === value)?.label ?? i18n.autopilots.priorityMedium}
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  {PRIORITY_OPTIONS.map((o) => (
+                  {priorityOptions.map((o) => (
                     <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                   ))}
                 </SelectContent>
@@ -272,15 +284,15 @@ function EditAutopilotDialog({
 
           {/* Execution Mode */}
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Execution Mode</label>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.executionModeLabel}</label>
             <Select value={executionMode} onValueChange={(v) => v && setExecutionMode(v)}>
               <SelectTrigger className="mt-1 w-full">
                 <SelectValue>
-                  {(value: string | null) => EXECUTION_MODE_OPTIONS.find((o) => o.value === value)?.label ?? "Create Issue"}
+                  {(value: string | null) => executionModeOptions.find((o) => o.value === value)?.label ?? i18n.autopilots.executionModeCreateIssue}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {EXECUTION_MODE_OPTIONS.map((o) => (
+                {executionModeOptions.map((o) => (
                   <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                 ))}
               </SelectContent>
@@ -290,10 +302,10 @@ function EditAutopilotDialog({
           {/* Actions */}
           <div className="flex justify-end gap-2 pt-1">
             <Button size="sm" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {i18n.autopilots.cancel}
             </Button>
             <Button size="sm" onClick={handleSubmit} disabled={!title.trim() || !assigneeId || submitting}>
-              {submitting ? "Saving..." : "Save"}
+              {submitting ? i18n.autopilots.saving : i18n.autopilots.save}
             </Button>
           </div>
         </div>
@@ -306,10 +318,12 @@ function AddTriggerDialog({
   open,
   onOpenChange,
   autopilotId,
+  i18n,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   autopilotId: string;
+  i18n: ReturnType<typeof useLocale>["t"];
 }) {
   const createTrigger = useCreateAutopilotTrigger();
   const [config, setConfig] = useState<TriggerConfig>(getDefaultTriggerConfig);
@@ -332,9 +346,9 @@ function AddTriggerDialog({
       onOpenChange(false);
       setConfig(getDefaultTriggerConfig());
       setLabel("");
-      toast.success("Trigger added");
+      toast.success(i18n.autopilots.triggerAdded);
     } catch {
-      toast.error("Failed to add trigger");
+      toast.error(i18n.autopilots.failedToAddTrigger);
     } finally {
       setSubmitting(false);
     }
@@ -343,22 +357,46 @@ function AddTriggerDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm">
-        <DialogTitle>Add Trigger</DialogTitle>
+        <DialogTitle>{i18n.autopilots.addTriggerTitle}</DialogTitle>
         <div className="space-y-4 pt-2">
-          <TriggerConfigSection config={config} onChange={setConfig} />
+          <TriggerConfigSection
+            config={config}
+            onChange={setConfig}
+            i18n={{
+              hourly: i18n.autopilots.hourly,
+              daily: i18n.autopilots.daily,
+              weekdays: i18n.autopilots.weekdays,
+              weekly: i18n.autopilots.weekly,
+              custom: i18n.autopilots.custom,
+              frequencyLabel: i18n.autopilots.frequencyLabel,
+              cronExpressionLabel: i18n.autopilots.cronExpressionLabel,
+              cronExpressionPlaceholder: i18n.autopilots.cronExpressionPlaceholder,
+              cronExpressionHelp: i18n.autopilots.cronExpressionHelp,
+              minuteLabel: i18n.autopilots.minuteLabel,
+              timeLabel: i18n.autopilots.timeLabel,
+              timezoneLabel: i18n.autopilots.timezoneLabel,
+              daysLabel: i18n.autopilots.daysLabel,
+              daysOfWeek: i18n.autopilots.daysOfWeek,
+              runsEveryHourAt: i18n.autopilots.runsEveryHourAt,
+              runsDailyAt: i18n.autopilots.runsDailyAt,
+              runsWeekdaysAt: i18n.autopilots.runsWeekdaysAt,
+              runsWeeklyAt: i18n.autopilots.runsWeeklyAt,
+              runsCustomSchedule: i18n.autopilots.runsCustomSchedule,
+            }}
+          />
           <div>
-            <label className="text-xs font-medium text-muted-foreground">Label (optional)</label>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.labelOptional}</label>
             <input
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. Weekday morning"
+              placeholder={i18n.autopilots.labelPlaceholder}
               className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
           <div className="flex justify-end pt-1">
             <Button size="sm" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? "Adding..." : "Add trigger"}
+              {submitting ? i18n.autopilots.adding : i18n.autopilots.addTriggerButton}
             </Button>
           </div>
         </div>
@@ -368,6 +406,7 @@ function AddTriggerDialog({
 }
 
 export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
+  const { t: i18n } = useLocale();
   const wsId = useWorkspaceId();
   const wsPaths = useWorkspacePaths();
   const router = useNavigation();
@@ -425,7 +464,7 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
   if (!data) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
-        Autopilot not found
+        {i18n.autopilots.autopilotNotFound}
       </div>
     );
   }
@@ -435,19 +474,19 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
   const handleRunNow = async () => {
     try {
       await triggerAutopilot.mutateAsync(autopilotId);
-      toast.success("Autopilot triggered");
+      toast.success(i18n.autopilots.autopilotTriggered);
     } catch (e: any) {
-      toast.error(e?.message || "Failed to trigger autopilot");
+      toast.error(e?.message || i18n.autopilots.failedToTriggerAutopilot);
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteAutopilot.mutateAsync(autopilotId);
-      toast.success("Autopilot deleted");
+      toast.success(i18n.autopilots.autopilotDeleted);
       router.push(wsPaths.autopilots());
     } catch {
-      toast.error("Failed to delete autopilot");
+      toast.error(i18n.autopilots.failedToDeleteAutopilot);
     }
   };
 
@@ -486,11 +525,11 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
         <div className="flex items-center gap-2">
           <Button size="sm" variant="outline" onClick={() => setEditDialogOpen(true)}>
             <Pencil className="h-3.5 w-3.5 mr-1" />
-            Edit
+            {i18n.autopilots.edit}
           </Button>
           <Button size="sm" onClick={handleRunNow} disabled={autopilot.status !== "active" || triggerAutopilot.isPending}>
             <Play className="h-3.5 w-3.5 mr-1" />
-            {triggerAutopilot.isPending ? "Running..." : "Run now"}
+            {triggerAutopilot.isPending ? i18n.autopilots.running : i18n.autopilots.runNow}
           </Button>
         </div>
       </PageHeader>
@@ -499,28 +538,28 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
         <div className="max-w-4xl mx-auto p-6 space-y-8">
           {/* Properties */}
           <section className="space-y-4">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Properties</h2>
+            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{i18n.autopilots.properties}</h2>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <label className="text-xs text-muted-foreground">Agent</label>
+                <label className="text-xs text-muted-foreground">{i18n.autopilots.agentLabel}</label>
                 <div className="mt-1 flex items-center gap-2">
                   <ActorAvatar actorType="agent" actorId={autopilot.assignee_id} size={20} />
                   <span>{getActorName("agent", autopilot.assignee_id)}</span>
                 </div>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Priority</label>
+                <label className="text-xs text-muted-foreground">{i18n.autopilots.priorityLabel}</label>
                 <div className="mt-1 capitalize">{autopilot.priority}</div>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Execution Mode</label>
+                <label className="text-xs text-muted-foreground">{i18n.autopilots.executionModeLabel}</label>
                 <div className="mt-1">
-                  {autopilot.execution_mode === "create_issue" ? "Create Issue" : "Run Only"}
+                  {autopilot.execution_mode === "create_issue" ? i18n.autopilots.executionModeCreateIssue : i18n.autopilots.executionModeRunOnly}
                 </div>
               </div>
               {autopilot.description && (
                 <div className="col-span-2">
-                  <label className="text-xs text-muted-foreground">Prompt</label>
+                  <label className="text-xs text-muted-foreground">{i18n.autopilots.promptLabel}</label>
                   <div className="mt-1 whitespace-pre-wrap text-sm">{autopilot.description}</div>
                 </div>
               )}
@@ -530,20 +569,20 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
           {/* Triggers */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Triggers</h2>
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{i18n.autopilots.triggers}</h2>
               <Button size="sm" variant="outline" onClick={() => setTriggerDialogOpen(true)}>
                 <Plus className="h-3.5 w-3.5 mr-1" />
-                Add trigger
+                {i18n.autopilots.addTrigger}
               </Button>
             </div>
             {triggers.length === 0 ? (
               <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
-                No triggers configured. Add a schedule to run automatically.
+                {i18n.autopilots.noTriggersConfigured}
               </div>
             ) : (
               <div className="space-y-2">
                 {triggers.map((t) => (
-                  <TriggerRow key={t.id} trigger={t} autopilotId={autopilotId} />
+                  <TriggerRow key={t.id} trigger={t} autopilotId={autopilotId} i18n={i18n} />
                 ))}
               </div>
             )}
@@ -551,7 +590,7 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
 
           {/* Run History */}
           <section className="space-y-3">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Run History</h2>
+            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{i18n.autopilots.runHistory}</h2>
             {runsLoading ? (
               <div className="space-y-1">
                 {Array.from({ length: 3 }).map((_, i) => (
@@ -560,12 +599,12 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
               </div>
             ) : runs.length === 0 ? (
               <div className="rounded-md border border-dashed p-4 text-center text-sm text-muted-foreground">
-                No runs yet. Click &quot;Run now&quot; to trigger manually.
+                {i18n.autopilots.noRunsYetDescription}
               </div>
             ) : (
               <div className="rounded-md border overflow-hidden">
                 {runs.map((run) => (
-                  <RunRow key={run.id} run={run} />
+                  <RunRow key={run.id} run={run} i18n={i18n} />
                 ))}
               </div>
             )}
@@ -573,10 +612,10 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
 
           {/* Danger zone */}
           <section className="space-y-3 pt-4 border-t">
-            <h2 className="text-sm font-medium text-destructive uppercase tracking-wider">Danger Zone</h2>
+            <h2 className="text-sm font-medium text-destructive uppercase tracking-wider">{i18n.autopilots.dangerZone}</h2>
             <Button size="sm" variant="destructive" onClick={handleDelete}>
               <Trash2 className="h-3.5 w-3.5 mr-1" />
-              Delete autopilot
+              {i18n.autopilots.deleteAutopilot}
             </Button>
           </section>
         </div>
@@ -586,12 +625,14 @@ export function AutopilotDetailPage({ autopilotId }: { autopilotId: string }) {
         open={triggerDialogOpen}
         onOpenChange={setTriggerDialogOpen}
         autopilotId={autopilotId}
+        i18n={i18n}
       />
       <EditAutopilotDialog
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         autopilot={autopilot}
         agents={agents}
+        i18n={i18n}
       />
     </div>
   );
