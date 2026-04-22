@@ -142,7 +142,7 @@ function StatusAccordionItem({
           <ChevronRight className="size-3.5 shrink-0 text-muted-foreground transition-transform group-aria-expanded/trigger:rotate-90" />
           <span className={`inline-flex items-center gap-1.5 rounded px-2 py-0.5 text-xs font-semibold ${cfg.badgeBg} ${cfg.badgeText}`}>
             <StatusIcon status={status} className="h-3 w-3" inheritColor />
-            {cfg.label}
+            {t.common.status[status] ?? cfg.label}
           </span>
           <span className="text-xs text-muted-foreground">{total}</span>
         </Accordion.Trigger>

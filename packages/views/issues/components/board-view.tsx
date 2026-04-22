@@ -377,6 +377,7 @@ function HiddenColumnRow({
   status: IssueStatus;
   myIssuesOpts?: { scope: string; filter: MyIssuesFilter };
 }) {
+  const { t } = useLocale();
   const cfg = STATUS_CONFIG[status];
   const viewStoreApi = useViewStoreApi();
   const { total } = useLoadMoreByStatus(status, myIssuesOpts);
@@ -384,7 +385,7 @@ function HiddenColumnRow({
     <div className="flex items-center justify-between rounded-lg px-2.5 py-2 hover:bg-muted/50">
       <div className="flex items-center gap-2">
         <StatusIcon status={status} className="h-3.5 w-3.5" />
-        <span className="text-sm">{cfg.label}</span>
+        <span className="text-sm">{t.common.status[status] ?? cfg.label}</span>
       </div>
       <div className="flex items-center gap-1.5">
         <span className="text-xs text-muted-foreground">{total}</span>

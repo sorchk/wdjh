@@ -200,7 +200,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
                     >
                       <HoverCheck checked={checked} />
                       <StatusIcon status={s} className="h-3.5 w-3.5" />
-                      {STATUS_CONFIG[s].label}
+                      {t.common.status[s] ?? STATUS_CONFIG[s].label}
                       {count > 0 && (
                         <span className="ml-auto text-xs text-muted-foreground">
                           {count} {count === 1 ? "issue" : "issues"}
@@ -236,7 +236,7 @@ export function MyIssuesHeader({ allIssues }: { allIssues: Issue[] }) {
                     >
                       <HoverCheck checked={checked} />
                       <PriorityIcon priority={p} />
-                      {PRIORITY_CONFIG[p].label}
+                      {t.common.priority[p] ?? PRIORITY_CONFIG[p].label}
                       {count > 0 && (
                         <span className="ml-auto text-xs text-muted-foreground">
                           {count} {count === 1 ? "issue" : "issues"}
