@@ -26,6 +26,28 @@ export const en: AutopilotsDict = {
   lastRun: "Last run",
   agent: "Agent",
   name: "Name",
+  // Agent live card activity area
+  agentLiveCard: {
+    isWorking: "{name} is working",
+    stop: "Stop",
+    liveLogNotAvailable: "Live log is not available for this agent provider. Results will appear when the task completes.",
+    latest: "Latest",
+    expandTranscript: "Expand transcript",
+  },
+  taskRunHistory: {
+    executionHistory: "Execution history ({count})",
+    loading: "Loading...",
+    noExecutionData: "No execution data recorded.",
+    completed: "completed",
+    failed: "failed",
+  },
+  timeline: {
+    result: "result: ",
+    loadingTranscript: "Loading...",
+    noResultsFound: "No results found",
+  },
+  // Autopilot message template
+  autopilotTriggered: "Autopilot run triggered at {time}. After starting work, rename this issue to accurately reflect what you are doing.",
   templates: {
     dailyNewsDigest: "Daily news digest",
     dailyNewsDigestSummary:

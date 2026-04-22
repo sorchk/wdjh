@@ -59,6 +59,7 @@ export const zh: CommonDict = {
     failedToUpdateIssue: "更新问题失败",
     issueDeleted: "问题已删除",
     failedToDeleteIssue: "删除问题失败",
+    failedToCancelTask: "取消任务失败",
   },
   date: {
     today: "今天",
