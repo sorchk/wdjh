@@ -159,7 +159,7 @@ setup: ## Prepare the current checkout from its env file: install deps, ensure D
 	pnpm install
 	@bash scripts/ensure-postgres.sh "$(ENV_FILE)"
 	@echo "==> Running migrations..."
-	cd server && go run ./cmd/migrate up
+	cd server && go mod tidy && go run ./cmd/migrate up
 	@echo ""
 	@echo "✓ Setup complete! Run 'make start' to launch the app."
 
@@ -280,7 +280,7 @@ build: ## Build the server, CLI, and migrate binaries into server/bin
 	cd server && go build -o bin/server ./cmd/server
 	cd server && go build -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)" -o bin/multica ./cmd/multica
 	cd server && go build -o bin/migrate ./cmd/migrate
-
+	cd apps/web && pnpm --filter @multica/web build
 test: ## Run Go tests after ensuring the target DB exists and migrations are applied
 	$(REQUIRE_ENV)
 	@bash scripts/ensure-postgres.sh "$(ENV_FILE)"
@@ -302,9 +302,11 @@ migrate-down: ## Create the target DB if needed, then roll back database migrati
 
 sqlc: ## Regenerate sqlc code
 	cd server && sqlc generate
+docker:
 
 # Cleanup
 ##@ Cleanup
 
 clean: ## Remove generated server binaries and temp files
 	rm -rf server/bin server/tmp
+	rm -rf node_modules apps/web/.next
