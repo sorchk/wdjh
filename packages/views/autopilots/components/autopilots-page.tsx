@@ -102,31 +102,37 @@ const TEMPLATES: AutopilotTemplate[] = [
   },
 ];
 
-function formatRelativeDate(date: string): string {
+function formatRelativeDate(date: string, i18n: { today: string; daysAgo: string; monthsAgo: string }): string {
   const diff = Date.now() - new Date(date).getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  if (days < 1) return "Today";
-  if (days === 1) return "1d ago";
-  if (days < 30) return `${days}d ago`;
+  if (days < 1) return i18n.today;
+  if (days === 1) return `1${i18n.daysAgo}`;
+  if (days < 30) return `${days}${i18n.daysAgo}`;
   const months = Math.floor(days / 30);
-  return `${months}mo ago`;
+  return `${months}${i18n.monthsAgo}`;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: typeof Zap }> = {
-  active: { label: "Active", color: "text-emerald-500", icon: Play },
-  paused: { label: "Paused", color: "text-amber-500", icon: Pause },
-  archived: { label: "Archived", color: "text-muted-foreground", icon: AlertCircle },
-};
+function getStatusConfig(status: string, i18n: { statusActive: string; statusPaused: string; statusArchived: string }) {
+  const configs: Record<string, { label: string; color: string; icon: typeof Zap }> = {
+    active: { label: i18n.statusActive, color: "text-emerald-500", icon: Play },
+    paused: { label: i18n.statusPaused, color: "text-amber-500", icon: Pause },
+    archived: { label: i18n.statusArchived, color: "text-muted-foreground", icon: AlertCircle },
+  };
+  return configs[status] ?? configs["active"]!;
+}
 
-const EXECUTION_MODE_LABELS: Record<string, string> = {
-  create_issue: "Create Issue",
-  run_only: "Run Only",
-};
+function getExecutionModeLabel(mode: string, i18n: { executionModeCreateIssue: string; executionModeRunOnly: string }): string {
+  const labels: Record<string, string> = {
+    create_issue: i18n.executionModeCreateIssue,
+    run_only: i18n.executionModeRunOnly,
+  };
+  return labels[mode] ?? mode;
+}
 
-function AutopilotRow({ autopilot }: { autopilot: Autopilot }) {
+function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: ReturnType<typeof useLocale>["t"] }) {
   const { getActorName } = useActorName();
   const wsPaths = useWorkspacePaths();
-  const statusCfg = (STATUS_CONFIG[autopilot.status] ?? STATUS_CONFIG["active"])!;
+  const statusCfg = getStatusConfig(autopilot.status, i18n.autopilots);
   const StatusIcon = statusCfg.icon;
 
   return (
@@ -143,13 +149,13 @@ function AutopilotRow({ autopilot }: { autopilot: Autopilot }) {
       <span className="flex w-32 items-center gap-1.5 shrink-0">
         <ActorAvatar actorType="agent" actorId={autopilot.assignee_id} size={18} />
         <span className="truncate text-xs text-muted-foreground">
-          {getActorName("agent", autopilot.assignee_id)}
+          {getActorName("agent", autopilot.assignee_id) || i18n.autopilots.unknownAgent}
         </span>
       </span>
 
       {/* Mode */}
       <span className="w-24 shrink-0 text-center text-xs text-muted-foreground">
-        {EXECUTION_MODE_LABELS[autopilot.execution_mode] ?? autopilot.execution_mode}
+        {getExecutionModeLabel(autopilot.execution_mode, i18n.autopilots)}
       </span>
 
       {/* Status */}
@@ -160,9 +166,183 @@ function AutopilotRow({ autopilot }: { autopilot: Autopilot }) {
 
       {/* Last run */}
       <span className="w-20 shrink-0 text-right text-xs text-muted-foreground tabular-nums">
-        {autopilot.last_run_at ? formatRelativeDate(autopilot.last_run_at) : "--"}
+        {autopilot.last_run_at ? formatRelativeDate(autopilot.last_run_at, i18n.autopilots) : "--"}
       </span>
     </div>
+  );
+}
+
+function CreateAutopilotDialog({
+  open,
+  onOpenChange,
+  template,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  template?: AutopilotTemplate | null;
+}) {
+  const { t: i18n } = useLocale();
+  const wsId = useWorkspaceId();
+  const { data: agents = [] } = useQuery(agentListOptions(wsId));
+  const createAutopilot = useCreateAutopilot();
+  const createTrigger = useCreateAutopilotTrigger();
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assigneeId, setAssigneeId] = useState("");
+  const [triggerConfig, setTriggerConfig] = useState<TriggerConfig>(getDefaultTriggerConfig);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Apply template when it changes
+  const [appliedTemplate, setAppliedTemplate] = useState<AutopilotTemplate | null | undefined>(null);
+  if (template !== appliedTemplate && open) {
+    setAppliedTemplate(template);
+    if (template) {
+      setTitle(template.title);
+      setDescription(template.prompt);
+      setTriggerConfig({
+        ...getDefaultTriggerConfig(),
+        frequency: template.frequency,
+        time: template.time,
+      });
+    }
+  }
+
+  const activeAgents = agents.filter((a) => !a.archived_at);
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !assigneeId || submitting) return;
+    setSubmitting(true);
+    try {
+      const autopilot = await createAutopilot.mutateAsync({
+        title: title.trim(),
+        description: description.trim() || undefined,
+        assignee_id: assigneeId,
+        execution_mode: "create_issue",
+      });
+
+      // Attach schedule trigger
+      try {
+        await createTrigger.mutateAsync({
+          autopilotId: autopilot.id,
+          kind: "schedule",
+          cron_expression: toCronExpression(triggerConfig),
+          timezone: triggerConfig.timezone,
+        });
+      } catch {
+        toast.error(i18n.autopilots.autopilotCreatedButTriggerFailed);
+      }
+
+      onOpenChange(false);
+      setTitle("");
+      setDescription("");
+      setAssigneeId("");
+      setTriggerConfig(getDefaultTriggerConfig());
+      toast.success(i18n.autopilots.autopilotCreated);
+    } catch {
+      toast.error(i18n.autopilots.failedToCreateAutopilot);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogTitle>{i18n.autopilots.newAutopilot}</DialogTitle>
+        <div className="space-y-5 pt-2">
+          {/* Name */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.nameLabel}</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={i18n.autopilots.namePlaceholder}
+              className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+              autoFocus
+            />
+          </div>
+
+          {/* Prompt */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.promptLabel}</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={i18n.autopilots.promptPlaceholder}
+              rows={6}
+              className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-y"
+            />
+          </div>
+
+          {/* Agent */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.agentLabel}</label>
+            <Select value={assigneeId} onValueChange={(v) => v && setAssigneeId(v)}>
+              <SelectTrigger className="mt-1 w-full">
+                <SelectValue>
+                  {(value: string | null) => {
+                    if (!value) return i18n.autopilots.selectAgentPlaceholder;
+                    const agent = activeAgents.find((a) => a.id === value);
+                    return agent?.name ?? "Unknown Agent";
+                  }}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {activeAgents.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Schedule */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground">{i18n.autopilots.scheduleLabel}</label>
+            <div className="mt-2">
+              <TriggerConfigSection
+                config={triggerConfig}
+                onChange={setTriggerConfig}
+                i18n={{
+                  hourly: i18n.autopilots.hourly,
+                  daily: i18n.autopilots.daily,
+                  weekdays: i18n.autopilots.weekdays,
+                  weekly: i18n.autopilots.weekly,
+                  custom: i18n.autopilots.custom,
+                  frequencyLabel: i18n.autopilots.frequencyLabel,
+                  cronExpressionLabel: i18n.autopilots.cronExpressionLabel,
+                  cronExpressionPlaceholder: i18n.autopilots.cronExpressionPlaceholder,
+                  cronExpressionHelp: i18n.autopilots.cronExpressionHelp,
+                  minuteLabel: i18n.autopilots.minuteLabel,
+                  timeLabel: i18n.autopilots.timeLabel,
+                  timezoneLabel: i18n.autopilots.timezoneLabel,
+                  daysLabel: i18n.autopilots.daysLabel,
+                  daysOfWeek: i18n.autopilots.daysOfWeek,
+                  runsEveryHourAt: i18n.autopilots.runsEveryHourAt,
+                  runsDailyAt: i18n.autopilots.runsDailyAt,
+                  runsWeekdaysAt: i18n.autopilots.runsWeekdaysAt,
+                  runsWeeklyAt: i18n.autopilots.runsWeeklyAt,
+                  runsCustomSchedule: i18n.autopilots.runsCustomSchedule,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-2 pt-1">
+            <Button size="sm" variant="outline" onClick={() => onOpenChange(false)}>
+              {i18n.autopilots.cancel}
+            </Button>
+            <Button size="sm" onClick={handleSubmit} disabled={!title.trim() || !assigneeId || submitting}>
+              {submitting ? i18n.autopilots.creating : i18n.autopilots.create}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -255,7 +435,7 @@ export function AutopilotsPage() {
               <span className="w-20 text-right shrink-0">Last run</span>
             </div>
             {autopilots.map((autopilot) => (
-              <AutopilotRow key={autopilot.id} autopilot={autopilot} />
+              <AutopilotRow key={autopilot.id} autopilot={autopilot} i18n={i18n} />
             ))}
           </>
         )}
