@@ -350,7 +350,6 @@ function HiddenColumnsPanel({
   hiddenStatuses: IssueStatus[];
   myIssuesOpts?: { scope: string; filter: MyIssuesFilter };
 }) {
-  const { t } = useLocale();
   return (
     <div className="flex w-[240px] shrink-0 flex-col">
       <div className="mb-2 flex items-center gap-2 px-1">
