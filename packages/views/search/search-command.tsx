@@ -634,7 +634,7 @@ export function SearchCommand() {
                       <span
                         className={`ml-auto text-xs shrink-0 ${STATUS_CONFIG[issue.status].iconColor}`}
                       >
-                        {STATUS_CONFIG[issue.status].label}
+                        {t.common.status[issue.status] ?? STATUS_CONFIG[issue.status].label}
                       </span>
                     </div>
                     {issue.match_source === "comment" &&
@@ -678,7 +678,7 @@ export function SearchCommand() {
                     <span
                       className={`ml-auto text-xs shrink-0 ${STATUS_CONFIG[item.status]?.iconColor ?? ""}`}
                     >
-                      {STATUS_CONFIG[item.status]?.label ?? ""}
+                      {item.status ? (t.common.status[item.status] ?? STATUS_CONFIG[item.status]?.label) : ""}
                     </span>
                   </CommandPrimitive.Item>
                 ))}
