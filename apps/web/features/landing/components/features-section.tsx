@@ -242,7 +242,7 @@ function TeammatesVisual() {
                       onClick={() => { setStatusOpen(!statusOpen); setPriorityOpen(false); }}
                     >
                       <StatusIcon status={status} className="h-3.5 w-3.5 shrink-0" />
-                      <span>{STATUS_CONFIG[status].label}</span>
+                      <span>{t.common.status[status] ?? STATUS_CONFIG[status].label}</span>
                     </button>
                   </PropRow>
                   {statusOpen && (
@@ -257,7 +257,7 @@ function TeammatesVisual() {
                           onClick={() => { setStatus(s); setStatusOpen(false); }}
                         >
                           <StatusIcon status={s} className="h-3.5 w-3.5 shrink-0" />
-                          {STATUS_CONFIG[s].label}
+                          {t.common.status[s] ?? STATUS_CONFIG[s].label}
                           {s === status && <Check className="ml-auto h-3.5 w-3.5" />}
                         </button>
                       ))}
@@ -273,7 +273,7 @@ function TeammatesVisual() {
                       onClick={() => { setPriorityOpen(!priorityOpen); setStatusOpen(false); }}
                     >
                       <PriorityIcon priority={priority} />
-                      <span>{PRIORITY_CONFIG[priority].label}</span>
+                      <span>{t.common.priority[priority] ?? PRIORITY_CONFIG[priority].label}</span>
                     </button>
                   </PropRow>
                   {priorityOpen && (
@@ -288,7 +288,7 @@ function TeammatesVisual() {
                           onClick={() => { setPriority(p); setPriorityOpen(false); }}
                         >
                           <PriorityIcon priority={p} />
-                          {PRIORITY_CONFIG[p].label}
+                          {t.common.priority[p] ?? PRIORITY_CONFIG[p].label}
                           {p === priority && <Check className="ml-auto h-3.5 w-3.5" />}
                         </button>
                       ))}
