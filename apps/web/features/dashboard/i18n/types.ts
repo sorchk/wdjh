@@ -453,6 +453,7 @@ export type SkillsDict = {
   create: string;
   skillUrlLabel: string;
   skillUrlPlaceholder: string;
+  skillUrlBatchHint: string;
   supportedSources: string;
   importing: string;
   importingFromClawHub: string;
