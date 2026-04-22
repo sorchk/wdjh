@@ -535,9 +535,77 @@ export type AutopilotsDict = {
   };
   // Autopilot message template
   autopilotTriggered: string;
+  editAutopilot: string;
+  deleteTrigger: string;
+  triggerDeleted: string;
+  disabled: string;
+  next: string;
+  priorityLabel: string;
+  executionModeLabel: string;
+  addTrigger: string;
+  addTriggerTitle: string;
+  labelOptional: string;
+  labelPlaceholder: string;
+  adding: string;
+  addTriggerButton: string;
+  triggerAdded: string;
+  failedToAddTrigger: string;
+  runNow: string;
+  running: string;
+  failedToTriggerAutopilot: string;
+  autopilotDeleted: string;
+  failedToDeleteAutopilot: string;
+  autopilotUpdated: string;
+  failedToUpdateAutopilot: string;
+  properties: string;
+  triggers: string;
+  runHistory: string;
+  dangerZone: string;
+  deleteAutopilot: string;
+  noTriggersConfigured: string;
+  noRunsYet: string;
+  noRunsYetDescription: string;
+  issueLinked: string;
+  autopilotNotFound: string;
+  // Status labels
+  // Run status labels
+  runStatusIssueCreated: string;
+  runStatusRunning: string;
+  runStatusCompleted: string;
+  runStatusFailed: string;
+  // Priority options
+  priorityUrgent: string;
+  priorityHigh: string;
+  priorityMedium: string;
+  priorityLow: string;
+  priorityNone: string;
+  // Trigger config labels
+  frequencyLabel: string;
+  cronExpressionLabel: string;
+  cronExpressionPlaceholder: string;
+  cronExpressionHelp: string;
+  minuteLabel: string;
+  timeLabel: string;
+  timezoneLabel: string;
+  daysLabel: string;
+  // Frequency labels
+  hourly: string;
+  daily: string;
+  weekdays: string;
+  weekly: string;
+  custom: string;
+  // Trigger description templates
+  daysOfWeek: string[];
+  runsEveryHourAt: string;
+  runsDailyAt: string;
+  runsWeekdaysAt: string;
+  runsWeeklyAt: string;
+  runsCustomSchedule: string;
+  // Template prompts (for filling in template values)
   today: string;
   daysAgo: string;
   monthsAgo: string;
+  unknownAgent: string;
   templates: {
     dailyNewsDigest: string;
     dailyNewsDigestSummary: string;
