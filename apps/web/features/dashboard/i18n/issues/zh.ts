@@ -163,11 +163,8 @@ export const zh: IssuesDict = {
   linkCopied: "链接已复制",
   failedToUpdateIssue: "更新问题失败",
 
-  // Date options
-  today: "今天",
-  tomorrow: "明天",
-  nextWeek: "下周",
-  clearDate: "清除日期",
+  // Date options - moved to common
+  // today, tomorrow, nextWeek, clearDate now in t.common.date
 
   // Picker labels (used in create issue modal pickers)
   noPriority: "无优先级",
