@@ -6,7 +6,7 @@ import { useSortable, defaultAnimateLayoutChanges } from "@dnd-kit/sortable";
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { toast } from "sonner";
-import type { Issue, UpdateIssueRequest } from "@multica/core/types";
+import type { Issue, IssuePriority, UpdateIssueRequest } from "@multica/core/types";
 import { CalendarDays } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { ActorAvatar } from "../../common/actor-avatar";
@@ -20,6 +20,15 @@ import { PRIORITY_CONFIG } from "@multica/core/issues/config";
 import { useViewStore } from "@multica/core/issues/stores/view-store-context";
 import { ProgressRing } from "./progress-ring";
 import type { ChildProgress } from "./list-row";
+import { useLocale } from "@/features/dashboard/i18n";
+
+const PRIORITY_I18N: Record<IssuePriority, keyof ReturnType<typeof useLocale>["t"]["issues"]> = {
+  urgent: "priorityUrgent",
+  high: "priorityHigh",
+  medium: "priorityMedium",
+  low: "priorityLow",
+  none: "noPriority",
+};
 
 function formatDate(date: string): string {
   return new Date(date).toLocaleDateString("en-US", {
@@ -52,6 +61,7 @@ export const BoardCardContent = memo(function BoardCardContent({
 }) {
   const storeProperties = useViewStore((s) => s.cardProperties);
   const priorityCfg = PRIORITY_CONFIG[issue.priority];
+  const { t } = useLocale();
   const wsId = useWorkspaceId();
   const { data: projects = [] } = useQuery({
     ...projectListOptions(wsId),
@@ -149,7 +159,7 @@ export const BoardCardContent = memo(function BoardCardContent({
                   trigger={
                     <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${priorityCfg.badgeBg} ${priorityCfg.badgeText}`}>
                       <PriorityIcon priority={issue.priority} className="h-3 w-3" inheritColor />
-                      {priorityCfg.label}
+                      {t.issues[PRIORITY_I18N[issue.priority]]}
                     </span>
                   }
                 />
@@ -157,7 +167,7 @@ export const BoardCardContent = memo(function BoardCardContent({
             ) : (
               <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium ${priorityCfg.badgeBg} ${priorityCfg.badgeText}`}>
                 <PriorityIcon priority={issue.priority} className="h-3 w-3" inheritColor />
-                {priorityCfg.label}
+                {t.issues[PRIORITY_I18N[issue.priority]]}
               </span>
             ))}
           {showDueDate && (
