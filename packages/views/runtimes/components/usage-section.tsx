@@ -14,6 +14,27 @@ import {
   DailyCostChart,
   ModelDistributionChart,
 } from "./charts";
+import type { RuntimesDict } from "@/features/dashboard/i18n/types";
+
+export type UsageSectionLocale = Pick<
+  RuntimesDict,
+  | "activity"
+  | "hourlyDistribution"
+  | "dailyTokenUsage"
+  | "tokenUsageByModel"
+  | "less"
+  | "more"
+  | "noActivity"
+  | "noUsageData"
+  | "input"
+  | "output"
+  | "cacheRead"
+  | "cacheWrite"
+  | "estimatedCost"
+  | "date"
+  | "model"
+  | "total"
+>;
 
 const TIME_RANGES = [
   { label: "7d", days: 7 },
@@ -23,7 +44,13 @@ const TIME_RANGES = [
 
 type TimeRange = (typeof TIME_RANGES)[number]["days"];
 
-export function UsageSection({ runtimeId }: { runtimeId: string }) {
+export function UsageSection({
+  runtimeId,
+  locale,
+}: {
+  runtimeId: string;
+  locale: UsageSectionLocale;
+}) {
   const [usage, setUsage] = useState<RuntimeUsage[]>([]);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState<TimeRange>(30);
@@ -62,7 +89,7 @@ export function UsageSection({ runtimeId }: { runtimeId: string }) {
     return (
       <div className="flex flex-col items-center rounded-lg border border-dashed py-6">
         <BarChart3 className="h-5 w-5 text-muted-foreground/40" />
-        <p className="mt-2 text-xs text-muted-foreground">No usage data yet</p>
+        <p className="mt-2 text-xs text-muted-foreground">{locale.noUsageData}</p>
       </div>
     );
   }
@@ -116,16 +143,16 @@ export function UsageSection({ runtimeId }: { runtimeId: string }) {
 
       {/* Summary cards */}
       <div className="grid grid-cols-4 gap-3">
-        <TokenCard label="Input" value={formatTokens(totals.input)} />
-        <TokenCard label="Output" value={formatTokens(totals.output)} />
-        <TokenCard label="Cache Read" value={formatTokens(totals.cacheRead)} />
-        <TokenCard label="Cache Write" value={formatTokens(totals.cacheWrite)} />
+        <TokenCard label={locale.input} value={formatTokens(totals.input)} />
+        <TokenCard label={locale.output} value={formatTokens(totals.output)} />
+        <TokenCard label={locale.cacheRead} value={formatTokens(totals.cacheRead)} />
+        <TokenCard label={locale.cacheWrite} value={formatTokens(totals.cacheWrite)} />
       </div>
 
       {totals.cost > 0 && (
         <div className="rounded-lg border bg-muted/30 px-3 py-2">
           <span className="text-xs text-muted-foreground">
-            Estimated cost ({days}d):{" "}
+            {locale.estimatedCost.replace("{days}d", `${days}d`).replace("{days}天", `${days}天`)}{" "}
           </span>
           <span className="text-sm font-semibold">
             ${totals.cost.toFixed(2)}
@@ -135,27 +162,46 @@ export function UsageSection({ runtimeId }: { runtimeId: string }) {
 
       {/* Heatmap + Hourly */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <ActivityHeatmap usage={usage} />
-        <HourlyActivityChart runtimeId={runtimeId} />
+        <ActivityHeatmap
+          usage={usage}
+          locale={{ title: locale.activity, less: locale.less, more: locale.more, noActivity: locale.noActivity }}
+        />
+        <HourlyActivityChart
+          runtimeId={runtimeId}
+          locale={{ title: locale.hourlyDistribution, loading: "Loading...", noData: locale.noUsageData }}
+        />
       </div>
 
       {/* Token & Cost charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-        <DailyTokenChart data={dailyTokens} />
+        <DailyTokenChart
+          data={dailyTokens}
+          locale={{
+            title: locale.dailyTokenUsage,
+            input: locale.input,
+            output: locale.output,
+            cacheRead: locale.cacheRead,
+            cacheWrite: locale.cacheWrite,
+            total: locale.total,
+          }}
+        />
         <DailyCostChart data={dailyCost} />
       </div>
 
-      <ModelDistributionChart data={modelDist} />
+      <ModelDistributionChart
+        data={modelDist}
+        locale={{ title: locale.tokenUsageByModel, tokens: locale.total }}
+      />
 
       {/* Daily breakdown table */}
       <div className="rounded-lg border">
         <div className="grid grid-cols-[100px_1fr_80px_80px_80px_80px] gap-2 border-b px-3 py-2 text-xs font-medium text-muted-foreground">
-          <div>Date</div>
-          <div>Model</div>
-          <div className="text-right">Input</div>
-          <div className="text-right">Output</div>
-          <div className="text-right">Cache R</div>
-          <div className="text-right">Cache W</div>
+          <div>{locale.date}</div>
+          <div>{locale.model}</div>
+          <div className="text-right">{locale.input}</div>
+          <div className="text-right">{locale.output}</div>
+          <div className="text-right">{locale.cacheRead}</div>
+          <div className="text-right">{locale.cacheWrite}</div>
         </div>
         <div className="max-h-64 overflow-y-auto divide-y">
           {[...byDate.entries()].map(([date, rows]) =>

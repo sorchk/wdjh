@@ -26,7 +26,7 @@ import { StatusBadge, InfoField } from "./shared";
 import { ProviderLogo } from "./provider-logo";
 import { PingSection } from "./ping-section";
 import { UpdateSection } from "./update-section";
-import { UsageSection } from "./usage-section";
+import { UsageSection, type UsageSectionLocale } from "./usage-section";
 
 function getCliVersion(metadata: Record<string, unknown>): string | null {
   if (
@@ -50,7 +50,13 @@ function getLaunchedBy(metadata: Record<string, unknown>): string | null {
   return null;
 }
 
-export function RuntimeDetail({ runtime }: { runtime: AgentRuntime }) {
+export function RuntimeDetail({
+  runtime,
+  locale,
+}: {
+  runtime: AgentRuntime;
+  locale: UsageSectionLocale;
+}) {
   const cliVersion =
     runtime.runtime_mode === "local" ? getCliVersion(runtime.metadata) : null;
   const launchedBy =
@@ -175,9 +181,9 @@ export function RuntimeDetail({ runtime }: { runtime: AgentRuntime }) {
         {/* Usage */}
         <div>
           <h3 className="text-xs font-medium text-muted-foreground mb-3">
-            Token Usage
+            {locale.tokenUsageByModel}
           </h3>
-          <UsageSection runtimeId={runtime.id} />
+          <UsageSection runtimeId={runtime.id} locale={locale} />
         </div>
 
         {/* Metadata */}

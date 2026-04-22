@@ -20,7 +20,19 @@ const hourlyChartConfig = {
   count: { label: "Tasks", color: "hsl(var(--chart-2))" },
 } satisfies ChartConfig;
 
-export function HourlyActivityChart({ runtimeId }: { runtimeId: string }) {
+export type HourlyActivityChartLocale = {
+  title: string;
+  loading: string;
+  noData: string;
+};
+
+export function HourlyActivityChart({
+  runtimeId,
+  locale,
+}: {
+  runtimeId: string;
+  locale: HourlyActivityChartLocale;
+}) {
   const [data, setData] = useState<RuntimeHourlyActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,15 +58,15 @@ export function HourlyActivityChart({ runtimeId }: { runtimeId: string }) {
 
   return (
     <div className="rounded-lg border p-4">
-      <h4 className="text-xs font-medium text-muted-foreground mb-3">Hourly Distribution</h4>
+      <h4 className="text-xs font-medium text-muted-foreground mb-3">{locale.title}</h4>
       {loading ? (
         <div className="flex h-[140px] items-center justify-center text-xs text-muted-foreground">
-          Loading...
+          {locale.loading}
         </div>
       ) : !hasData ? (
         <div className="flex h-[140px] flex-col items-center justify-center">
           <BarChart3 className="h-5 w-5 text-muted-foreground/40" />
-          <p className="mt-2 text-xs text-muted-foreground">No task data yet</p>
+          <p className="mt-2 text-xs text-muted-foreground">{locale.noData}</p>
         </div>
       ) : (
         <ChartContainer config={hourlyChartConfig} className="aspect-[2.5/1] w-full">

@@ -70,6 +70,17 @@ export const zh: RuntimesDict = {
   noUsageData: "暂无使用数据",
   date: "日期",
   model: "模型",
+  // Chart titles
+  activity: "活跃度",
+  hourlyDistribution: "小时分布",
+  dailyTokenUsage: "每日 Token 使用量",
+  tokenUsageByModel: "各模型 Token 使用量",
+  // Chart labels
+  total: "总计",
+  // Heatmap labels
+  less: "少",
+  more: "多",
+  noActivity: "无活动",
   // Delete dialog
   deleteRuntime: "删除运行时",
   deleteRuntimeConfirmation: '确定要删除 "{name}" 吗？此操作无法撤销。',

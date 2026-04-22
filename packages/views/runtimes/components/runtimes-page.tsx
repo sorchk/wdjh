@@ -132,7 +132,7 @@ export default function RuntimesPage({ topSlot, bootstrapping }: RuntimesPagePro
 
         <ResizablePanel id="detail" minSize="50%">
           {selected ? (
-            <RuntimeDetail key={selected.id} runtime={selected} runtimesT={runtimesT.runtimes} />
+            <RuntimeDetail key={selected.id} runtime={selected} locale={runtimesT.runtimes} />
           ) : (
             <div className="flex h-full flex-col items-center justify-center text-muted-foreground">
               <Server className="h-10 w-10 text-muted-foreground/30" />
