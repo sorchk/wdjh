@@ -15,6 +15,7 @@ import { Button } from "@multica/ui/components/ui/button";
 import { Input } from "@multica/ui/components/ui/input";
 import { Label } from "@multica/ui/components/ui/label";
 import { toast } from "sonner";
+import { useLocale } from "@/features/dashboard/i18n";
 
 let nextEnvId = 0;
 
@@ -54,6 +55,7 @@ export function EnvTab({
   readOnly?: boolean;
   onSave: (updates: Partial<Agent>) => Promise<void>;
 }) {
+  const { t } = useLocale();
   const [envEntries, setEnvEntries] = useState<EnvEntry[]>(
     envMapToEntries(agent.custom_env ?? {}),
   );
@@ -99,16 +101,16 @@ export function EnvTab({
     const keys = envEntries.filter((e) => e.key.trim()).map((e) => e.key.trim());
     const uniqueKeys = new Set(keys);
     if (uniqueKeys.size < keys.length) {
-      toast.error("Duplicate environment variable keys");
+      toast.error(t.agents.envTab.duplicateKeyError);
       return;
     }
 
     setSaving(true);
     try {
       await onSave({ custom_env: currentEnvMap });
-      toast.success("Environment variables saved");
+      toast.success(t.agents.envTab.environmentVariablesSaved);
     } catch {
-      toast.error("Failed to save environment variables");
+      toast.error(t.agents.envTab.failedToSaveEnvironmentVariables);
     } finally {
       setSaving(false);
     }
@@ -119,10 +121,10 @@ export function EnvTab({
       <div className="max-w-lg space-y-4">
         <div>
           <Label className="text-xs text-muted-foreground">
-            Environment Variables
+            {t.agents.envTab.title}
           </Label>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Injected into the agent process at launch. Values are hidden — only the agent owner or workspace admin can view and edit them.
+            {t.agents.envTab.readOnlyDescription}
           </p>
         </div>
         {envEntries.length > 0 ? (
@@ -147,7 +149,7 @@ export function EnvTab({
             ))}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground italic">No environment variables configured.</p>
+          <p className="text-xs text-muted-foreground italic">{t.agents.envTab.noEnvironmentVariablesConfigured}</p>
         )}
       </div>
     );
@@ -158,11 +160,10 @@ export function EnvTab({
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-xs text-muted-foreground">
-            Environment Variables
+            {t.agents.envTab.title}
           </Label>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Injected into the agent process at launch (e.g. ANTHROPIC_API_KEY,
-            ANTHROPIC_BASE_URL)
+            {t.agents.envTab.description}
           </p>
         </div>
         <Button
@@ -173,7 +174,7 @@ export function EnvTab({
           className="h-7 gap-1 text-xs"
         >
           <Plus className="h-3 w-3" />
-          Add
+          {t.agents.envTab.add}
         </Button>
       </div>
       {envEntries.length > 0 && (
@@ -183,7 +184,7 @@ export function EnvTab({
               <Input
                 value={entry.key}
                 onChange={(e) => updateEnvEntry(index, "key", e.target.value)}
-                placeholder="KEY"
+                placeholder={t.agents.envTab.keyPlaceholder}
                 className="w-[40%] font-mono text-xs"
               />
               <div className="relative flex-1">
@@ -193,7 +194,7 @@ export function EnvTab({
                   onChange={(e) =>
                     updateEnvEntry(index, "value", e.target.value)
                   }
-                  placeholder="value"
+                  placeholder={t.agents.envTab.valuePlaceholder}
                   className="pr-8 font-mono text-xs"
                 />
                 <button
@@ -226,7 +227,7 @@ export function EnvTab({
         ) : (
           <Save className="h-3.5 w-3.5 mr-1.5" />
         )}
-        Save
+        {saving ? t.agents.envTab.saving : t.agents.envTab.save}
       </Button>
     </div>
   );

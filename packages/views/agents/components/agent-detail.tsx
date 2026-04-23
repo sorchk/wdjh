@@ -30,6 +30,7 @@ import {
   DropdownMenuItem,
 } from "@multica/ui/components/ui/dropdown-menu";
 import { Button } from "@multica/ui/components/ui/button";
+import { useLocale } from "@/features/dashboard/i18n";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { statusConfig } from "../config";
 import { InstructionsTab } from "./tabs/instructions-tab";
@@ -71,11 +72,21 @@ export function AgentDetail({
   onArchive: (id: string) => Promise<void>;
   onRestore: (id: string) => Promise<void>;
 }) {
+  const { t } = useLocale();
   const st = statusConfig[agent.status];
   const runtimeDevice = getRuntimeDevice(agent, runtimes);
   const [activeTab, setActiveTab] = useState<DetailTab>("instructions");
   const [confirmArchive, setConfirmArchive] = useState(false);
   const isArchived = !!agent.archived_at;
+
+  const detailTabs: { id: DetailTab; labelKey: keyof AgentsDict; icon: typeof FileText }[] = [
+    { id: "instructions", labelKey: "tabInstructions", icon: FileText },
+    { id: "skills", labelKey: "tabSkills", icon: BookOpenText },
+    { id: "tasks", labelKey: "tabTasks", icon: ListTodo },
+    { id: "env", labelKey: "tabEnv", icon: KeyRound },
+    { id: "custom_args", labelKey: "tabCustomArgs", icon: Terminal },
+    { id: "settings", labelKey: "tabSettings", icon: Settings },
+  ];
 
   return (
     <div className="flex h-full flex-col">
@@ -83,9 +94,9 @@ export function AgentDetail({
       {isArchived && (
         <div className="flex items-center gap-2 bg-muted/50 px-4 py-2 text-xs text-muted-foreground border-b">
           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-          <span className="flex-1">This agent is archived. It cannot be assigned or mentioned.</span>
+          <span className="flex-1">{t.agents.thisAgentIsArchived}</span>
           <Button variant="outline" size="sm" className="h-6 text-xs" onClick={() => onRestore(agent.id)}>
-            Restore
+            {t.agents.agentArchivedBannerRestore}
           </Button>
         </div>
       )}
@@ -98,7 +109,7 @@ export function AgentDetail({
             <h2 className={`text-sm font-semibold truncate ${isArchived ? "text-muted-foreground" : ""}`}>{agent.name}</h2>
             {isArchived ? (
               <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">
-                Archived
+                {t.agents.statusArchived}
               </span>
             ) : (
               <span className={`flex items-center gap-1.5 text-xs ${st.color}`}>
@@ -112,7 +123,7 @@ export function AgentDetail({
               ) : (
                 <Monitor className="h-3 w-3" />
               )}
-              {runtimeDevice?.name ?? (agent.runtime_mode === "cloud" ? "Cloud" : "Local")}
+              {runtimeDevice?.name ?? (agent.runtime_mode === "cloud" ? t.agents.agentDetailCloud : t.agents.agentDetailLocal)}
             </span>
           </div>
         </div>
@@ -131,7 +142,7 @@ export function AgentDetail({
                 onClick={() => setConfirmArchive(true)}
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Archive Agent
+                {t.agents.archiveAgent}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -151,7 +162,7 @@ export function AgentDetail({
             }`}
           >
             <tab.icon className="h-3.5 w-3.5" />
-            {tab.label}
+            {t.agents[tab.labelKey]}
           </button>
         ))}
       </div>
@@ -202,15 +213,15 @@ export function AgentDetail({
                 <AlertCircle className="h-5 w-5 text-destructive" />
               </div>
               <DialogHeader className="flex-1 gap-1">
-                <DialogTitle className="text-sm font-semibold">Archive agent?</DialogTitle>
+                <DialogTitle className="text-sm font-semibold">{t.agents.archiveDialogTitle}</DialogTitle>
                 <DialogDescription className="text-xs">
-                  &quot;{agent.name}&quot; will be archived. It won&apos;t be assignable or mentionable, but all history is preserved. You can restore it later.
+                  {t.agents.archiveDialogDescription.replace("{name}", agent.name)}
                 </DialogDescription>
               </DialogHeader>
             </div>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setConfirmArchive(false)}>
-                Cancel
+                {t.agents.archiveDialogCancel}
               </Button>
               <Button
                 variant="destructive"
@@ -219,7 +230,7 @@ export function AgentDetail({
                   onArchive(agent.id);
                 }}
               >
-                Archive
+                {t.agents.archiveDialogConfirm}
               </Button>
             </DialogFooter>
           </DialogContent>

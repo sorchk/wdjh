@@ -441,6 +441,24 @@ export type AgentsDict = {
     selectModel: string;
     noModelsAvailable: string;
   };
+  // Agent detail page
+  agentArchivedBanner: string;
+  agentArchivedBannerRestore: string;
+  tabInstructions: string;
+  tabSkills: string;
+  tabTasks: string;
+  tabEnv: string;
+  tabCustomArgs: string;
+  tabSettings: string;
+  archiveAgent: string;
+  archiveDialogTitle: string;
+  archiveDialogDescription: string;
+  archiveDialogCancel: string;
+  archiveDialogConfirm: string;
+  agentDetailCloud: string;
+  agentDetailLocal: string;
+  statusArchived: string;
+  thisAgentIsArchived: string;
 };
 
 export type SkillsDict = {
