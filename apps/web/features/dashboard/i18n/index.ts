@@ -20,4 +20,8 @@ export { en as inboxEn } from "./inbox/en";
 export { zh as inboxZh } from "./inbox/zh";
 export { en as runtimesEn } from "./runtimes/en";
 export { zh as runtimesZh } from "./runtimes/zh";
+export { en as inviteEn } from "./invite/en";
+export { zh as inviteZh } from "./invite/zh";
+export { en as workspaceEn } from "./workspace/en";
+export { zh as workspaceZh } from "./workspace/zh";
 export type { Locale, DashboardDict } from "./types";

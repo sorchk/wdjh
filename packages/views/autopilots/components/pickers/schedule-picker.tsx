@@ -9,7 +9,9 @@ import {
 import {
   TriggerConfigSection,
   type TriggerConfig,
+  type TriggerI18n,
 } from "../trigger-config";
+import { useLocale } from "@/features/dashboard/i18n";
 
 export function SchedulePicker({
   config,
@@ -20,12 +22,14 @@ export function SchedulePicker({
   onChange: (cfg: TriggerConfig) => void;
   triggerRender: React.ReactElement;
 }) {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
+  const i18n = t.autopilots as unknown as TriggerI18n;
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger render={triggerRender} />
       <PopoverContent align="start" className="w-96 p-3">
-        <TriggerConfigSection config={config} onChange={onChange} />
+        <TriggerConfigSection config={config} onChange={onChange} i18n={i18n} />
       </PopoverContent>
     </Popover>
   );

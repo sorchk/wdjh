@@ -10,6 +10,8 @@ import { useAuthStore } from "@multica/core/auth";
 import { NoAccessPage } from "@multica/views/workspace/no-access-page";
 import { MulticaIcon } from "@multica/ui/components/common/multica-icon";
 import { useWorkspaceSeen } from "@multica/views/workspace/use-workspace-seen";
+import { LocaleProvider } from "@/features/dashboard/i18n";
+import type { Locale } from "@/features/dashboard/i18n";
 
 export default function WorkspaceLayout({
   children,
@@ -84,8 +86,10 @@ export default function WorkspaceLayout({
   }
 
   return (
-    <WorkspaceSlugProvider slug={workspaceSlug}>
-      {children}
-    </WorkspaceSlugProvider>
+    <LocaleProvider>
+      <WorkspaceSlugProvider slug={workspaceSlug}>
+        {children}
+      </WorkspaceSlugProvider>
+    </LocaleProvider>
   );
 }

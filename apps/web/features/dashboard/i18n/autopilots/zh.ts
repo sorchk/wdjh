@@ -28,9 +28,6 @@ export const zh: AutopilotsDict = {
   statusPaused: "已暂停",
   statusArchived: "已归档",
   lastRun: "上次运行",
-  today: "今天",
-  daysAgo: "天前",
-  monthsAgo: "月前",
   agent: "智能体",
   name: "名称",
   // Agent live card activity area
@@ -72,7 +69,6 @@ export const zh: AutopilotsDict = {
   failedToAddTrigger: "添加触发器失败",
   runNow: "立即运行",
   running: "运行中...",
-  autopilotTriggered: "自动任务已触发",
   failedToTriggerAutopilot: "触发自动任务失败",
   autopilotDeleted: "自动任务已删除",
   failedToDeleteAutopilot: "删除自动任务失败",
@@ -91,10 +87,6 @@ export const zh: AutopilotsDict = {
   noRunsYetDescription: "点击「立即运行」手动触发。",
   issueLinked: "已关联工单",
   autopilotNotFound: "自动任务未找到",
-  // Status labels
-  statusActive: "活跃",
-  statusPaused: "已暂停",
-  statusArchived: "已归档",
   // Run status labels
   runStatusIssueCreated: "工单已创建",
   runStatusRunning: "运行中",
@@ -124,14 +116,16 @@ export const zh: AutopilotsDict = {
   weekdays: "工作日",
   weekly: "每周",
   custom: "自定义",
-  // Trigger description templates
-  unknownAgent: "未知智能体",
-  daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
   runsEveryHourAt: "每小时 :{minute} 分运行",
   runsDailyAt: "每天运行于",
   runsWeekdaysAt: "工作日运行于",
   runsWeeklyAt: "每 {days} 运行于",
   runsCustomSchedule: "自定义计划",
+  daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+  today: "今天",
+  daysAgo: "天前",
+  monthsAgo: "月前",
+  unknownAgent: "未知智能体",
   templates: {
     dailyNewsDigest: "每日新闻摘要",
     dailyNewsDigestSummary: "为团队搜索并总结今天的新闻",

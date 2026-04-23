@@ -29,9 +29,6 @@ export const en: AutopilotsDict = {
   statusPaused: "Paused",
   statusArchived: "Archived",
   lastRun: "Last run",
-  today: "Today",
-  daysAgo: "d ago",
-  monthsAgo: "mo ago",
   agent: "Agent",
   name: "Name",
   // Agent live card activity area
@@ -73,7 +70,6 @@ export const en: AutopilotsDict = {
   failedToAddTrigger: "Failed to add trigger",
   runNow: "Run now",
   running: "Running...",
-  autopilotTriggered: "Autopilot triggered",
   failedToTriggerAutopilot: "Failed to trigger autopilot",
   autopilotDeleted: "Autopilot deleted",
   failedToDeleteAutopilot: "Failed to delete autopilot",
@@ -89,13 +85,9 @@ export const en: AutopilotsDict = {
   deleteAutopilot: "Delete autopilot",
   noTriggersConfigured: "No triggers configured. Add a schedule to run automatically.",
   noRunsYet: "No runs yet",
-  noRunsYetDescription: "Click \"Run now\" to trigger manually.",
+  noRunsYetDescription: 'Click "Run now" to trigger manually.',
   issueLinked: "Issue linked",
   autopilotNotFound: "Autopilot not found",
-  // Status labels
-  statusActive: "Active",
-  statusPaused: "Paused",
-  statusArchived: "Archived",
   // Run status labels
   runStatusIssueCreated: "Issue Created",
   runStatusRunning: "Running",
@@ -125,14 +117,16 @@ export const en: AutopilotsDict = {
   weekdays: "Weekdays",
   weekly: "Weekly",
   custom: "Custom",
-  // Trigger description templates
-  unknownAgent: "Unknown Agent",
-  daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   runsEveryHourAt: "Runs every hour at :{minute}",
   runsDailyAt: "Runs daily at",
   runsWeekdaysAt: "Runs weekdays at",
   runsWeeklyAt: "Runs every {days} at",
   runsCustomSchedule: "Custom schedule",
+  daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  today: "Today",
+  daysAgo: "d ago",
+  monthsAgo: "mo ago",
+  unknownAgent: "Unknown Agent",
   templates: {
     dailyNewsDigest: "Daily news digest",
     dailyNewsDigestSummary:

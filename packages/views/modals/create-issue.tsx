@@ -24,12 +24,14 @@ import { useFileUpload } from "@multica/core/hooks/use-file-upload";
 import { api } from "@multica/core/api";
 import { FileUploadButton } from "@multica/ui/components/common/file-upload-button";
 import { PillButton } from "../common/pill-button";
+import { useLocale } from "@/features/dashboard/i18n";
 
 // ---------------------------------------------------------------------------
 // CreateIssueModal
 // ---------------------------------------------------------------------------
 
 export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?: Record<string, unknown> | null }) {
+  const { t } = useLocale();
   const router = useNavigation();
   const p = useWorkspacePaths();
   const workspaceName = useCurrentWorkspace()?.name;
@@ -197,7 +199,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                     <ChevronRight className="size-3 text-muted-foreground/50" />
                   </>
                 )}
-                <span className="font-medium">{data?.parent_issue_id ? "New sub-issue" : "New issue"}</span>
+                <span className="font-medium">{data?.parent_issue_id ? t.issues.newSubIssue : t.issues.newIssue}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Tooltip>
@@ -211,7 +213,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                       </button>
                     }
                   />
-                  <TooltipContent side="bottom">{isExpanded ? "Collapse" : "Expand"}</TooltipContent>
+                  <TooltipContent side="bottom">{isExpanded ? t.issues.collapse : t.issues.expand}</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger
@@ -224,7 +226,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                       </button>
                     }
                   />
-                  <TooltipContent side="bottom">Close</TooltipContent>
+                  <TooltipContent side="bottom">{t.issues.close}</TooltipContent>
                 </Tooltip>
               </div>
             </div>
@@ -234,7 +236,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
               <TitleEditor
                 autoFocus
                 defaultValue={draft.title}
-                placeholder="Issue title"
+                placeholder={t.issues.issueTitlePlaceholder}
                 className="text-lg font-semibold"
                 onChange={(v) => updateTitle(v)}
                 onSubmit={handleSubmit}
@@ -246,7 +248,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
               <ContentEditor
                 ref={descEditorRef}
                 defaultValue={draft.description}
-                placeholder="Add description..."
+                placeholder={t.issues.addDescriptionPlaceholder}
                 onUpdate={(md) => setDraft({ description: md })}
                 onUploadFile={handleUpload}
                 debounceMs={500}
@@ -307,7 +309,7 @@ export function CreateIssueModal({ onClose, data }: { onClose: () => void; data?
                 onSelect={(file) => descEditorRef.current?.uploadFile(file)}
               />
               <Button size="sm" onClick={handleSubmit} disabled={!title.trim() || submitting}>
-                {submitting ? "Creating..." : "Create Issue"}
+                {submitting ? t.issues.creating : t.issues.createIssue}
               </Button>
             </div>
           </>

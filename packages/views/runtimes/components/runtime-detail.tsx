@@ -55,7 +55,7 @@ export function RuntimeDetail({
   locale,
 }: {
   runtime: AgentRuntime;
-  locale: UsageSectionLocale;
+  locale?: UsageSectionLocale;
 }) {
   const cliVersion =
     runtime.runtime_mode === "local" ? getCliVersion(runtime.metadata) : null;
@@ -179,12 +179,14 @@ export function RuntimeDetail({
         </div>
 
         {/* Usage */}
-        <div>
-          <h3 className="text-xs font-medium text-muted-foreground mb-3">
-            {locale.tokenUsageByModel}
-          </h3>
-          <UsageSection runtimeId={runtime.id} locale={locale} />
-        </div>
+        {locale && (
+          <div>
+            <h3 className="text-xs font-medium text-muted-foreground mb-3">
+              {locale.tokenUsageByModel}
+            </h3>
+            <UsageSection runtimeId={runtime.id} locale={locale} />
+          </div>
+        )}
 
         {/* Metadata */}
         {runtime.metadata && Object.keys(runtime.metadata).length > 0 && (

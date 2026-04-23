@@ -21,6 +21,13 @@ import { ActorAvatar } from "../../common/actor-avatar";
 import { Skeleton } from "@multica/ui/components/ui/skeleton";
 import { Button } from "@multica/ui/components/ui/button";
 import { Switch } from "@multica/ui/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@multica/ui/components/ui/select";
 import { cn } from "@multica/ui/lib/utils";
 import { toast } from "sonner";
 import { useLocale } from "@/features/dashboard/i18n";
@@ -29,13 +36,6 @@ import {
   DialogContent,
   DialogTitle,
 } from "@multica/ui/components/ui/dialog";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@multica/ui/components/ui/select";
 import {
   TriggerConfigSection,
   getDefaultTriggerConfig,

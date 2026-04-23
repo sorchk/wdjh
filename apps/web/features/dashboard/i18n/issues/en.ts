@@ -110,11 +110,8 @@ export const en: IssuesDict = {
   statusCancelled: "Cancelled",
   noPriority: "No priority",
 
-  // Date options
-  today: "Today",
-  tomorrow: "Tomorrow",
-  nextWeek: "Next week",
-  clearDate: "Clear date",
+  // Date options - moved to common
+  // today, tomorrow, nextWeek, clearDate now in t.common.date
 
   // Sub-issues
   subIssues: "Sub-issues",
