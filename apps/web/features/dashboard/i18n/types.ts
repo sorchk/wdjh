@@ -567,7 +567,6 @@ export type AutopilotsDict = {
   noRunsYetDescription: string;
   issueLinked: string;
   autopilotNotFound: string;
-  // Status labels
   // Run status labels
   runStatusIssueCreated: string;
   runStatusRunning: string;

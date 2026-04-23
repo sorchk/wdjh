@@ -92,10 +92,6 @@ export const en: AutopilotsDict = {
   noRunsYetDescription: "Click \"Run now\" to trigger manually.",
   issueLinked: "Issue linked",
   autopilotNotFound: "Autopilot not found",
-  // Status labels
-  statusActive: "Active",
-  statusPaused: "Paused",
-  statusArchived: "Archived",
   // Run status labels
   runStatusIssueCreated: "Issue Created",
   runStatusRunning: "Running",
@@ -125,14 +121,13 @@ export const en: AutopilotsDict = {
   weekdays: "Weekdays",
   weekly: "Weekly",
   custom: "Custom",
-  // Trigger description templates
-  unknownAgent: "Unknown Agent",
-  daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   runsEveryHourAt: "Runs every hour at :{minute}",
   runsDailyAt: "Runs daily at",
   runsWeekdaysAt: "Runs weekdays at",
   runsWeeklyAt: "Runs every {days} at",
   runsCustomSchedule: "Custom schedule",
+  daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  unknownAgent: "Unknown Agent",
   templates: {
     dailyNewsDigest: "Daily news digest",
     dailyNewsDigestSummary:

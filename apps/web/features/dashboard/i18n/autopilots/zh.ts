@@ -91,10 +91,6 @@ export const zh: AutopilotsDict = {
   noRunsYetDescription: "点击「立即运行」手动触发。",
   issueLinked: "已关联工单",
   autopilotNotFound: "自动任务未找到",
-  // Status labels
-  statusActive: "活跃",
-  statusPaused: "已暂停",
-  statusArchived: "已归档",
   // Run status labels
   runStatusIssueCreated: "工单已创建",
   runStatusRunning: "运行中",
@@ -124,14 +120,13 @@ export const zh: AutopilotsDict = {
   weekdays: "工作日",
   weekly: "每周",
   custom: "自定义",
-  // Trigger description templates
-  unknownAgent: "未知智能体",
-  daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
   runsEveryHourAt: "每小时 :{minute} 分运行",
   runsDailyAt: "每天运行于",
   runsWeekdaysAt: "工作日运行于",
   runsWeeklyAt: "每 {days} 运行于",
   runsCustomSchedule: "自定义计划",
+  daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+  unknownAgent: "未知智能体",
   templates: {
     dailyNewsDigest: "每日新闻摘要",
     dailyNewsDigestSummary: "为团队搜索并总结今天的新闻",

@@ -4,11 +4,15 @@ import { useState } from "react";
 import { Plus, Zap, Play, Pause, AlertCircle, Newspaper, GitPullRequest, Bug, BarChart3, Shield, FileSearch } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { autopilotListOptions } from "@multica/core/autopilots/queries";
-import { useCreateAutopilot, useCreateAutopilotTrigger } from "@multica/core/autopilots/mutations";
-import { agentListOptions } from "@multica/core/workspace/queries";
+import {
+  useCreateAutopilot,
+  useCreateAutopilotTrigger,
+  useDeleteAutopilot,
+} from "@multica/core/autopilots/mutations";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useWorkspacePaths } from "@multica/core/paths";
 import { useActorName } from "@multica/core/workspace/hooks";
+import { agentListOptions } from "@multica/core/workspace/queries";
 import { AppLink } from "../../navigation";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { PageHeader } from "../../layout/page-header";
@@ -16,7 +20,6 @@ import { Skeleton } from "@multica/ui/components/ui/skeleton";
 import { Button } from "@multica/ui/components/ui/button";
 import { cn } from "@multica/ui/lib/utils";
 import { toast } from "sonner";
-import { useLocale } from "@/features/dashboard/i18n";
 import {
   Dialog,
   DialogContent,
@@ -24,19 +27,16 @@ import {
 } from "@multica/ui/components/ui/dialog";
 import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@multica/ui/components/ui/select";
-import {
-  TriggerConfigSection,
-  getDefaultTriggerConfig,
-  toCronExpression,
-} from "./trigger-config";
-import type { TriggerConfig } from "./trigger-config";
+import { useLocale } from "@/features/dashboard/i18n";
+import { AutopilotDialog } from "./autopilot-dialog";
 import type { Autopilot } from "@multica/core/types";
-import type { TriggerFrequency } from "./trigger-config";
+import type { TriggerFrequency, TriggerConfig } from "./trigger-config";
+import { getDefaultTriggerConfig, toCronExpression, TriggerConfigSection } from "./trigger-config";
 
 interface AutopilotTemplate {
   key: string;
@@ -140,24 +140,7 @@ function formatRelativeDate(date: string, i18n: { today: string; daysAgo: string
   return `${months}${i18n.monthsAgo}`;
 }
 
-function getStatusConfig(status: string, i18n: { statusActive: string; statusPaused: string; statusArchived: string }) {
-  const configs: Record<string, { label: string; color: string; icon: typeof Zap }> = {
-    active: { label: i18n.statusActive, color: "text-emerald-500", icon: Play },
-    paused: { label: i18n.statusPaused, color: "text-amber-500", icon: Pause },
-    archived: { label: i18n.statusArchived, color: "text-muted-foreground", icon: AlertCircle },
-  };
-  return configs[status] ?? configs["active"]!;
-}
-
-function getExecutionModeLabel(mode: string, i18n: { executionModeCreateIssue: string; executionModeRunOnly: string }): string {
-  const labels: Record<string, string> = {
-    create_issue: i18n.executionModeCreateIssue,
-    run_only: i18n.executionModeRunOnly,
-  };
-  return labels[mode] ?? mode;
-}
-
-function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: ReturnType<typeof useLocale>["t"] }) {
+function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: { autopilots: { modeCreateIssue: string; modeRunOnly: string; statusActive: string; statusPaused: string; statusArchived: string; today: string; daysAgo: string; monthsAgo: string; lastRun: string; mode: string; status: string; agent: string; name: string; unknownAgent: string } } }) {
   const { getActorName } = useActorName();
   const wsPaths = useWorkspacePaths();
   const statusCfg = getStatusConfig(autopilot.status, i18n.autopilots);
@@ -377,6 +360,7 @@ function CreateAutopilotDialog({
 export function AutopilotsPage() {
   const { t: i18n } = useLocale();
   const wsId = useWorkspaceId();
+  const { t: i18n } = useLocale();
   const { data: autopilots = [], isLoading } = useQuery(autopilotListOptions(wsId));
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<AutopilotTemplate | null>(null);

@@ -175,6 +175,39 @@ export function describeTrigger(cfg: TriggerConfig, i18n: TriggerI18n): string {
   }
 }
 
+export const summarizeTrigger = describeTrigger;
+
+// Parses a cron expression + timezone back into a TriggerConfig
+export function parseCronExpression(cron: string, timezone: string): TriggerConfig {
+  const parts = cron.trim().split(/\s+/);
+  if (parts.length < 5) {
+    return { ...getDefaultTriggerConfig(), timezone };
+  }
+  const min = parts[0] ?? "0";
+  const hour = parts[1] ?? "9";
+  const dow = parts[4] ?? "1";
+
+  // Hourly: minute varies, hour is *
+  if (hour === "*" && min !== "*") {
+    const minute = parseInt(min, 10) || 0;
+    return { frequency: "hourly", time: `00:${minute.toString().padStart(2, "0")}`, daysOfWeek: [], cronExpression: cron, timezone };
+  }
+
+  // Weekdays (1-5)
+  if (dow === "1-5" && !hour.includes(",")) {
+    return { frequency: "weekdays", time: `${hour.padStart(2, "0")}:${min.padStart(2, "0")}`, daysOfWeek: [], cronExpression: cron, timezone };
+  }
+
+  // Daily or weekly (specific days)
+  const days = dow.split(",").map((d) => parseInt(d, 10)).filter((d) => !isNaN(d) && d >= 0 && d <= 6);
+  if (days.length > 0 && days.length < 7) {
+    return { frequency: "weekly", time: `${hour.padStart(2, "0")}:${min.padStart(2, "0")}`, daysOfWeek: days, cronExpression: cron, timezone };
+  }
+
+  // Default to daily
+  return { frequency: "daily", time: `${hour.padStart(2, "0")}:${min.padStart(2, "0")}`, daysOfWeek: [], cronExpression: cron, timezone };
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
