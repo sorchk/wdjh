@@ -514,6 +514,28 @@ export type AutopilotsDict = {
   lastRun: string;
   agent: string;
   name: string;
+  // Agent live card activity area
+  agentLiveCard: {
+    isWorking: string;
+    stop: string;
+    liveLogNotAvailable: string;
+    latest: string;
+    expandTranscript: string;
+  };
+  taskRunHistory: {
+    executionHistory: string;
+    loading: string;
+    noExecutionData: string;
+    completed: string;
+    failed: string;
+  };
+  timeline: {
+    result: string;
+    loadingTranscript: string;
+    noResultsFound: string;
+  };
+  // Autopilot message template
+  autopilotTriggered: string;
   editAutopilot: string;
   deleteTrigger: string;
   triggerDeleted: string;
@@ -531,13 +553,9 @@ export type AutopilotsDict = {
   failedToAddTrigger: string;
   runNow: string;
   running: string;
-  autopilotTriggered: string;
   failedToTriggerAutopilot: string;
   autopilotDeleted: string;
   failedToDeleteAutopilot: string;
-  edit: string;
-  save: string;
-  saving: string;
   autopilotUpdated: string;
   failedToUpdateAutopilot: string;
   properties: string;
@@ -555,9 +573,6 @@ export type AutopilotsDict = {
   runStatusRunning: string;
   runStatusCompleted: string;
   runStatusFailed: string;
-  // Execution mode labels
-  executionModeCreateIssue: string;
-  executionModeRunOnly: string;
   // Priority options
   priorityUrgent: string;
   priorityHigh: string;

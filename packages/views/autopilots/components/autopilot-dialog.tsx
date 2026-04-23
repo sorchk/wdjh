@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Calendar, ChevronRight, Maximize2, Minimize2, Rocket, X as XIcon } from "lucide-react";
 import { cn } from "@multica/ui/lib/utils";
+import { useLocale } from "@/features/dashboard/i18n";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ import {
   summarizeTrigger,
   toCronExpression,
   type TriggerConfig,
+  type TriggerI18n,
 } from "./trigger-config";
 import { AgentPicker } from "./pickers/agent-picker";
 import { ExecutionModePicker } from "./pickers/execution-mode-picker";
@@ -72,6 +74,7 @@ export type AutopilotDialogProps =
 
 export function AutopilotDialog(props: AutopilotDialogProps) {
   const { open, onOpenChange } = props;
+  const { t } = useLocale();
   const workspaceName = useCurrentWorkspace()?.name;
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -116,9 +119,10 @@ export function AutopilotDialog(props: AutopilotDialogProps) {
   const schedulePillDisabled = !isCreate && triggerCount >= 2;
 
   const schedulePillLabel = (() => {
-    if (isCreate) return summarizeTrigger(triggerConfig);
+    const i18n = t.autopilots as unknown as TriggerI18n;
+    if (isCreate) return summarizeTrigger(triggerConfig, i18n);
     if (triggerCount === 0) return "Add schedule";
-    if (triggerCount === 1) return summarizeTrigger(triggerConfig);
+    if (triggerCount === 1) return summarizeTrigger(triggerConfig, i18n);
     return `${triggerCount} schedules`;
   })();
 

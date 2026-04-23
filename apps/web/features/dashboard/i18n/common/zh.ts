@@ -53,7 +53,14 @@ export const zh: CommonDict = {
     low: "低",
     no_priority: "无优先级",
   },
-  // toast keys removed - use t.common.actions or t.xxx.toast instead
+  toast: {
+    failedToMoveIssue: "移动问题失败",
+    linkCopied: "链接已复制",
+    failedToUpdateIssue: "更新问题失败",
+    issueDeleted: "问题已删除",
+    failedToDeleteIssue: "删除问题失败",
+    failedToCancelTask: "取消任务失败",
+  },
   date: {
     today: "今天",
     tomorrow: "明天",

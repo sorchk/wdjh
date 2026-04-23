@@ -40,10 +40,10 @@ export function InboxDetailLabel({ item }: { item: InboxItem }) {
     case "status_changed": {
       if (!details.to) return <span>{typeLabels[item.type]}</span>;
       const status = details.to as IssueStatus;
-      const label = t.common.status[status] ?? STATUS_CONFIG[status]?.label ?? status;
+      const label = STATUS_CONFIG[status]?.label ?? status;
       return (
         <span className="inline-flex items-center gap-1">
-          {inboxT.setStatusTo}
+          Set status to
           <StatusIcon status={status} className="h-3 w-3" />
           {label}
         </span>

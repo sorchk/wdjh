@@ -28,6 +28,7 @@ import {
 } from "@multica/ui/components/ui/dropdown-menu";
 import { ALL_STATUSES, STATUS_CONFIG } from "@multica/core/issues/config";
 import { useViewStoreApi, useViewStore } from "@multica/core/issues/stores/view-store-context";
+import { useLocale } from "@/features/dashboard/i18n";
 import type { SortField, SortDirection } from "@multica/core/issues/stores/view-store";
 import { sortIssues } from "../utils/sort";
 import { StatusIcon } from "./status-icon";

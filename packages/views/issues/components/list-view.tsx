@@ -12,6 +12,7 @@ import { STATUS_CONFIG } from "@multica/core/issues/config";
 import { useModalStore } from "@multica/core/modals";
 import { useViewStore } from "@multica/core/issues/stores/view-store-context";
 import { useIssueSelectionStore } from "@multica/core/issues/stores/selection-store";
+import { useLocale } from "@/features/dashboard/i18n";
 import { sortIssues } from "../utils/sort";
 import { StatusIcon } from "./status-icon";
 import { ListRow, type ChildProgress } from "./list-row";
@@ -104,6 +105,7 @@ function StatusAccordionItem({
   childProgressMap: Map<string, ChildProgress>;
   myIssuesOpts?: { scope: string; filter: MyIssuesFilter };
 }) {
+  const { t } = useLocale();
   const cfg = STATUS_CONFIG[status];
   const selectedIds = useIssueSelectionStore((s) => s.selectedIds);
   const select = useIssueSelectionStore((s) => s.select);

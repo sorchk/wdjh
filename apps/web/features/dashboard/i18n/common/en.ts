@@ -53,7 +53,14 @@ export const en: CommonDict = {
     low: "Low",
     no_priority: "No priority",
   },
-  // toast keys removed - use t.common.actions or t.xxx.toast instead
+  toast: {
+    failedToMoveIssue: "Failed to move issue",
+    linkCopied: "Link copied",
+    failedToUpdateIssue: "Failed to update issue",
+    issueDeleted: "Issue deleted",
+    failedToDeleteIssue: "Failed to delete issue",
+    failedToCancelTask: "Failed to cancel task",
+  },
   date: {
     today: "Today",
     tomorrow: "Tomorrow",

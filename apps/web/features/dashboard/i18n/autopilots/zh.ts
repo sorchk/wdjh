@@ -30,6 +30,28 @@ export const zh: AutopilotsDict = {
   lastRun: "上次运行",
   agent: "智能体",
   name: "名称",
+  // Agent live card activity area
+  agentLiveCard: {
+    isWorking: "{name} 工作中",
+    stop: "停止",
+    liveLogNotAvailable: "此智能体提供商不支持实时日志。任务完成后将显示结果。",
+    latest: "最新",
+    expandTranscript: "展开对话记录",
+  },
+  taskRunHistory: {
+    executionHistory: "执行历史 ({count})",
+    loading: "加载中...",
+    noExecutionData: "无执行数据记录。",
+    completed: "已完成",
+    failed: "已失败",
+  },
+  timeline: {
+    result: "结果: ",
+    loadingTranscript: "加载中...",
+    noResultsFound: "无结果",
+  },
+  // Autopilot message template
+  autopilotTriggered: "自动任务于 {time} 触发。开始工作后，请将此问题的标题修改为准确反映实际工作内容。",
   editAutopilot: "编辑自动任务",
   deleteTrigger: "删除触发器",
   triggerDeleted: "触发器已删除",
@@ -95,13 +117,12 @@ export const zh: AutopilotsDict = {
   weekdays: "工作日",
   weekly: "每周",
   custom: "自定义",
-  // Trigger description templates
-  daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
   runsEveryHourAt: "每小时 :{minute} 分运行",
   runsDailyAt: "每天运行于",
   runsWeekdaysAt: "工作日运行于",
   runsWeeklyAt: "每 {days} 运行于",
   runsCustomSchedule: "自定义计划",
+  daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
   unknownAgent: "未知智能体",
   templates: {
     dailyNewsDigest: "每日新闻摘要",
