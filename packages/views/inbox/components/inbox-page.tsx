@@ -5,6 +5,7 @@ import { useDefaultLayout } from "react-resizable-panels";
 import { useQuery } from "@tanstack/react-query";
 import { useWorkspaceId } from "@multica/core/hooks";
 import { useWorkspacePaths } from "@multica/core/paths";
+import { useLocale } from "@/features/dashboard/i18n";
 import {
   inboxListOptions,
   deduplicateInboxItems,
@@ -29,7 +30,7 @@ import {
   ListChecks,
   ArrowLeft,
 } from "lucide-react";
-import type { InboxItem } from "@multica/core/types";
+import type { InboxItem, InboxItemType } from "@multica/core/types";
 import { Button } from "@multica/ui/components/ui/button";
 import {
   ResizablePanelGroup,
@@ -47,12 +48,30 @@ import {
 import { useIsMobile } from "@multica/ui/hooks/use-mobile";
 import { PageHeader } from "../../layout/page-header";
 import { InboxListItem, timeAgo } from "./inbox-list-item";
-import { typeLabels } from "./inbox-detail-label";
 
 export function InboxPage() {
   const { searchParams, replace } = useNavigation();
   const urlIssue = searchParams.get("issue") ?? "";
   const wsPaths = useWorkspacePaths();
+  const { t } = useLocale();
+  const inboxT = t.inbox;
+
+  const typeLabelsLocalized: Record<InboxItemType, string> = {
+    issue_assigned: inboxT.issueAssigned,
+    unassigned: inboxT.unassigned,
+    assignee_changed: inboxT.assigneeChanged,
+    status_changed: inboxT.statusChanged,
+    priority_changed: inboxT.priorityChanged,
+    due_date_changed: inboxT.dueDateChanged,
+    new_comment: inboxT.newComment,
+    mentioned: inboxT.mentioned,
+    review_requested: inboxT.reviewRequested,
+    task_completed: inboxT.taskCompleted,
+    task_failed: inboxT.taskFailed,
+    agent_blocked: inboxT.agentBlocked,
+    agent_completed: inboxT.agentCompleted,
+    reaction_added: inboxT.reacted,
+  };
 
   const [selectedKey, setSelectedKeyState] = useState(() => urlIssue);
 
@@ -119,7 +138,7 @@ export function InboxPage() {
     setSelectedKey(item.issue_id ?? item.id);
     if (!item.read) {
       markReadMutation.mutate(item.id, {
-        onError: () => toast.error("Failed to mark as read"),
+        onError: () => toast.error(inboxT.failedToMarkAsRead),
       });
     }
   };
@@ -128,21 +147,21 @@ export function InboxPage() {
     const archived = items.find((i) => i.id === id);
     if (archived && (archived.issue_id ?? archived.id) === selectedKey) setSelectedKey("");
     archiveMutation.mutate(id, {
-      onError: () => toast.error("Failed to archive"),
+      onError: () => toast.error(inboxT.failedToArchive),
     });
   };
 
   // Batch operations
   const handleMarkAllRead = () => {
     markAllReadMutation.mutate(undefined, {
-      onError: () => toast.error("Failed to mark all as read"),
+      onError: () => toast.error(inboxT.failedToMarkAsRead),
     });
   };
 
   const handleArchiveAll = () => {
     setSelectedKey("");
     archiveAllMutation.mutate(undefined, {
-      onError: () => toast.error("Failed to archive all"),
+      onError: () => toast.error(inboxT.failedToArchive),
     });
   };
 
@@ -150,14 +169,14 @@ export function InboxPage() {
     const readKeys = items.filter((i) => i.read).map((i) => i.issue_id ?? i.id);
     if (readKeys.includes(selectedKey)) setSelectedKey("");
     archiveAllReadMutation.mutate(undefined, {
-      onError: () => toast.error("Failed to archive read items"),
+      onError: () => toast.error(inboxT.failedToArchive),
     });
   };
 
   const handleArchiveCompleted = () => {
     setSelectedKey("");
     archiveCompletedMutation.mutate(undefined, {
-      onError: () => toast.error("Failed to archive completed"),
+      onError: () => toast.error(inboxT.failedToArchive),
     });
   };
 
@@ -166,7 +185,7 @@ export function InboxPage() {
   const listHeader = (
     <PageHeader className="justify-between">
       <div className="flex items-center gap-2">
-        <h1 className="text-sm font-semibold">Inbox</h1>
+        <h1 className="text-sm font-semibold">{inboxT.inbox}</h1>
         {unreadCount > 0 && (
           <span className="text-xs text-muted-foreground">
             {unreadCount}
@@ -188,20 +207,20 @@ export function InboxPage() {
         <DropdownMenuContent align="end" className="w-auto">
           <DropdownMenuItem onClick={handleMarkAllRead}>
             <CheckCheck className="h-4 w-4" />
-            Mark all as read
+            {inboxT.markAllAsRead}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleArchiveAll}>
             <Archive className="h-4 w-4" />
-            Archive all
+            {inboxT.archiveAll}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleArchiveAllRead}>
             <BookCheck className="h-4 w-4" />
-            Archive all read
+            {inboxT.archiveAllRead}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={handleArchiveCompleted}>
             <ListChecks className="h-4 w-4" />
-            Archive completed
+            {inboxT.archiveCompleted}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -211,7 +230,7 @@ export function InboxPage() {
   const listBody = items.length === 0 ? (
     <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
       <Inbox className="mb-3 h-8 w-8 text-muted-foreground/50" />
-      <p className="text-sm">No notifications</p>
+      <p className="text-sm">{inboxT.noNotifications}</p>
     </div>
   ) : (
     <div>
@@ -222,6 +241,7 @@ export function InboxPage() {
           isSelected={(item.issue_id ?? item.id) === selectedKey}
           onClick={() => handleSelect(item)}
           onArchive={() => handleArchive(item.id)}
+          typeLabels={typeLabelsLocalized}
         />
       ))}
     </div>
@@ -250,7 +270,7 @@ export function InboxPage() {
     <div className="p-6">
       <h2 className="text-lg font-semibold">{selected.title}</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        {typeLabels[selected.type]} · {timeAgo(selected.created_at)}
+        {typeLabelsLocalized[selected.type]} · {timeAgo(selected.created_at)}
       </p>
       {selected.body && (
         <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">
@@ -264,7 +284,7 @@ export function InboxPage() {
           onClick={() => handleArchive(selected.id)}
         >
           <Archive className="mr-1.5 h-3.5 w-3.5" />
-          Archive
+          {inboxT.archive}
         </Button>
       </div>
     </div>
@@ -306,7 +326,7 @@ export function InboxPage() {
               className="gap-1.5 text-muted-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
-              Inbox
+              {inboxT.inbox}
             </Button>
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto">
@@ -379,8 +399,8 @@ export function InboxPage() {
             <Inbox className="mb-3 h-10 w-10 text-muted-foreground/30" />
             <p className="text-sm">
               {items.length === 0
-                ? "Your inbox is empty"
-                : "Select a notification to view details"}
+                ? inboxT.yourInboxIsEmpty
+                : inboxT.selectNotificationToViewDetails}
             </p>
           </div>
         )}
