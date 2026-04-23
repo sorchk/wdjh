@@ -1,5 +1,5 @@
 #!/bin/bash
-name=multica
+name=wdjh
 ver=$1
 # 在代码中搜索 my-version，修改版本号
 build_date=$(date +"%Y%m%d")
