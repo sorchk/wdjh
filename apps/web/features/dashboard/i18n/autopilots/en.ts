@@ -29,9 +29,6 @@ export const en: AutopilotsDict = {
   statusPaused: "Paused",
   statusArchived: "Archived",
   lastRun: "Last run",
-  today: "Today",
-  daysAgo: "d ago",
-  monthsAgo: "mo ago",
   agent: "Agent",
   name: "Name",
   // Agent live card activity area
@@ -89,7 +86,7 @@ export const en: AutopilotsDict = {
   deleteAutopilot: "Delete autopilot",
   noTriggersConfigured: "No triggers configured. Add a schedule to run automatically.",
   noRunsYet: "No runs yet",
-  noRunsYetDescription: "Click \"Run now\" to trigger manually.",
+  noRunsYetDescription: 'Click "Run now" to trigger manually.',
   issueLinked: "Issue linked",
   autopilotNotFound: "Autopilot not found",
   // Run status labels

@@ -28,9 +28,6 @@ export const zh: AutopilotsDict = {
   statusPaused: "已暂停",
   statusArchived: "已归档",
   lastRun: "上次运行",
-  today: "今天",
-  daysAgo: "天前",
-  monthsAgo: "月前",
   agent: "智能体",
   name: "名称",
   // Agent live card activity area

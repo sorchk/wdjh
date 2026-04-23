@@ -29,8 +29,12 @@ export type CommonDict = {
   priority: Record<string, string>;
   projectStatus: Record<string, string>;
   projectPriority: Record<string, string>;
-  toast: Record<string, string>;
-  date: Record<string, string>;
+  date: {
+    today: string;
+    tomorrow: string;
+    nextWeek: string;
+    clearDate: string;
+  };
   actions: Record<string, string>;
   empty: Record<string, string>;
 };
@@ -177,13 +181,10 @@ export type IssuesDict = {
   failedToDeleteIssue: string;
   linkCopied: string;
   failedToUpdateIssue: string;
-  // Date options (used in due date picker)
-  today: string;
-  tomorrow: string;
-  nextWeek: string;
-  clearDate: string;
+  // Date options (used in due date picker) - moved to common.date
+  // today, tomorrow, nextWeek, clearDate
 
-  // Picker labels (used in create issue modal pickers)
+  // Picker labels
   noPriority: string;
   assignTo: string;
   priorityUrgent: string;
@@ -600,10 +601,7 @@ export type AutopilotsDict = {
   runsWeekdaysAt: string;
   runsWeeklyAt: string;
   runsCustomSchedule: string;
-  // Template prompts (for filling in template values)
-  today: string;
-  daysAgo: string;
-  monthsAgo: string;
+  // Template prompts (for filling in template values) - today, daysAgo, monthsAgo removed
   unknownAgent: string;
   templates: {
     dailyNewsDigest: string;
@@ -1093,5 +1091,93 @@ export type RuntimesDict = {
   daysAgo: string;
   never: string;
 };
-export type InviteDict = Record<string, unknown>;
-export type WorkspaceDict = Record<string, unknown>;
+export type InviteDict = {
+  // Page
+  back: string;
+  logOut: string;
+  goToDashboard: string;
+  // Error states
+  invitationNotFound: string;
+  invitationNotFoundDesc: string;
+  // Accepted state
+  joinedWorkspace: string;
+  redirecting: string;
+  // Declined state
+  invitationDeclined: string;
+  declinedDesc: string;
+  // Invite content
+  joinWorkspace: string;
+  invitedYou: string;
+  asAdmin: string;
+  asMember: string;
+  // Already handled
+  alreadyHandled: string;
+  expired: string;
+  // Actions
+  decline: string;
+  declining: string;
+  accept: string;
+  acceptAndJoin: string;
+  joining: string;
+  // Errors
+  failedToAccept: string;
+  failedToDecline: string;
+  // Welcome
+  welcomeToMultica: string;
+  createWorkspaceToGetStarted: string;
+};
+export type WorkspaceDict = {
+  // Breadcrumbs & page titles
+  workspace: string;
+  workspaces: string;
+  // Create workspace form
+  createWorkspace: string;
+  creatingWorkspace: string;
+  workspaceName: string;
+  workspaceNamePlaceholder: string;
+  workspaceUrl: string;
+  workspaceUrlPrefix: string;
+  workspaceUrlPlaceholder: string;
+  create: string;
+  // Error messages
+  chooseDifferentWorkspaceUrl: string;
+  failedToCreateWorkspace: string;
+  workspaceSlugFormatError: string;
+  workspaceSlugConflictError: string;
+  // Page titles
+  createNewWorkspace: string;
+  workspaceDescription: string;
+  // Actions
+  back: string;
+  // Delete workspace dialog
+  deleteWorkspace: string;
+  deleteWorkspaceDescription: string;
+  thisCannotBeUndone: string;
+  toConfirmType: string;
+  below: string;
+  cancel: string;
+  delete: string;
+  deleting: string;
+  // Leave workspace
+  leaveWorkspace: string;
+  leaveWorkspaceDescription: string;
+  isSoleOwner: string;
+  isSoleOwnerNoMember: string;
+  leaveWorkspaceConfirm: string;
+  leaving: string;
+  // General
+  settings: string;
+  members: string;
+  general: string;
+  dangerZone: string;
+  name: string;
+  description: string;
+  descriptionPlaceholder: string;
+  context: string;
+  contextPlaceholder: string;
+  save: string;
+  saving: string;
+  workspaceSettingsSaved: string;
+  failedToSaveWorkspaceSettings: string;
+  onlyAdminsAndOwnersCanUpdate: string;
+};
