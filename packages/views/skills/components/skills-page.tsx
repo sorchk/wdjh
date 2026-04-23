@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useDefaultLayout } from "react-resizable-panels";
 import {
   Sparkles,
@@ -10,6 +10,8 @@ import {
   AlertCircle,
   Download,
   HardDrive,
+  Upload,
+  FileArchive,
 } from "lucide-react";
 import type { Skill, CreateSkillRequest, UpdateSkillRequest } from "@multica/core/types";
 import {
@@ -33,6 +35,7 @@ import { Label } from "@multica/ui/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@multica/ui/components/ui/tabs";
 import { toast } from "sonner";
 import { Skeleton } from "@multica/ui/components/ui/skeleton";
+import { cn } from "@multica/ui/lib/utils";
 import { api } from "@multica/core/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWorkspaceId } from "@multica/core/hooks";
@@ -45,6 +48,136 @@ import { RuntimeLocalSkillImportPanel } from "./runtime-local-skill-import-panel
 import { useLocale } from "@/features/dashboard/i18n";
 
 // ---------------------------------------------------------------------------
+// Upload Skill Panel
+// ---------------------------------------------------------------------------
+
+function UploadSkillPanel({
+  onUploaded,
+}: {
+  onUploaded: (skill: Skill) => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (selectedFile: File) => {
+    if (!selectedFile.name.endsWith(".zip")) {
+      toast.error("Only .zip files are supported");
+      return;
+    }
+    if (selectedFile.size > 50 * 1024 * 1024) {
+      toast.error("File size must be less than 50MB");
+      return;
+    }
+    setFile(selectedFile);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      handleFileSelect(droppedFile);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const skill = await api.uploadSkill(file);
+      toast.success("Skill uploaded successfully");
+      onUploaded(skill);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to upload skill");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4 min-h-[180px]">
+      <div
+        className={cn(
+          "relative rounded-lg border-2 border-dashed p-8 text-center transition-colors",
+          dragOver
+            ? "border-primary bg-primary/5"
+            : "border-muted-foreground/25 hover:border-muted-foreground/50",
+          file && "border-primary/50 bg-primary/5",
+        )}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".zip"
+          className="hidden"
+          onChange={(e) => {
+            const selectedFile = e.target.files?.[0];
+            if (selectedFile) handleFileSelect(selectedFile);
+            e.target.value = "";
+          }}
+        />
+
+        {file ? (
+          <div className="flex flex-col items-center">
+            <FileArchive className="h-10 w-10 text-primary" />
+            <p className="mt-2 text-sm font-medium">{file.name}</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {(file.size / 1024 / 1024).toFixed(2)} MB
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-2"
+              onClick={() => setFile(null)}
+            >
+              Remove
+            </Button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="flex flex-col items-center"
+            onClick={() => inputRef.current?.click()}
+          >
+            <Upload className="h-10 w-10 text-muted-foreground" />
+            <p className="mt-2 text-sm font-medium">
+              {dragOver ? "Drop file here" : "Click to select or drag & drop"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              ZIP file containing SKILL.md (max 50MB)
+            </p>
+          </button>
+        )}
+      </div>
+
+      <div className="flex justify-end">
+        <Button
+          onClick={handleUpload}
+          disabled={!file || uploading}
+        >
+          {uploading ? (
+            "Uploading..."
+          ) : (
+            <>
+              <Upload className="mr-1.5 h-3 w-3" />
+              Upload
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Create Skill Dialog
 // ---------------------------------------------------------------------------
 
@@ -54,14 +187,16 @@ function CreateSkillDialog({
   onImport,
   onRuntimeImported,
   t,
+  onUploadUploaded,
 }: {
   onClose: () => void;
   onCreate: (data: CreateSkillRequest) => Promise<void>;
   onImport: (url: string) => Promise<void>;
   onRuntimeImported?: (skill: Skill) => void;
   t: ReturnType<typeof useLocale>["t"];
+  onUploadUploaded?: (skill: Skill) => void;
 }) {
-  const [tab, setTab] = useState<"create" | "import" | "runtime">("create");
+  const [tab, setTab] = useState<"create" | "import" | "runtime" | "upload">("create");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [importUrl, setImportUrl] = useState("");
@@ -102,7 +237,7 @@ function CreateSkillDialog({
   return (
     <Dialog open onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent
-        className={`flex max-h-[85vh] flex-col ${tab === "runtime" ? "sm:max-w-2xl" : "sm:max-w-md"}`}
+        className={`flex max-h-[85vh] flex-col ${tab === "runtime" || tab === "upload" ? "sm:max-w-2xl" : "sm:max-w-md"}`}
       >
         <DialogHeader>
           <DialogTitle>{t.skills.addWorkspaceSkill}</DialogTitle>
@@ -113,7 +248,7 @@ function CreateSkillDialog({
 
         <Tabs
           value={tab}
-          onValueChange={(v) => setTab(v as "create" | "import" | "runtime")}
+          onValueChange={(v) => setTab(v as "create" | "import" | "runtime" | "upload")}
           className="flex min-h-0 flex-1 flex-col"
         >
           <TabsList className="w-full">
@@ -128,6 +263,10 @@ function CreateSkillDialog({
             <TabsTrigger value="runtime" className="flex-1">
               <HardDrive className="mr-1.5 h-3 w-3" />
               {t.skills.runtimeTab}
+            </TabsTrigger>
+            <TabsTrigger value="upload" className="flex-1">
+              <Upload className="mr-1.5 h-3 w-3" />
+              Upload
             </TabsTrigger>
           </TabsList>
 
@@ -212,6 +351,15 @@ function CreateSkillDialog({
               active={tab === "runtime"}
               onImported={(skill) => {
                 onRuntimeImported?.(skill);
+                onClose();
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="upload" className="min-h-[180px]">
+            <UploadSkillPanel
+              onUploaded={(skill) => {
+                onUploadUploaded?.(skill);
                 onClose();
               }}
             />
@@ -850,6 +998,7 @@ export default function SkillsPage() {
           onImport={handleImport}
           onRuntimeImported={(skill) => setSelectedId(skill.id)}
           t={t}
+          onUploadUploaded={(skill) => setSelectedId(skill.id)}
         />
       )}
     </ResizablePanelGroup>
