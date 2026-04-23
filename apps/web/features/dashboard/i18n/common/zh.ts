@@ -22,6 +22,8 @@ export const zh: CommonDict = {
     logOut: "退出登录",
     newIssue: "新建问题",
     workspaces: "工作区",
+    unpin: "取消置顶",
+    whatsNew: "新功能",
   },
   status: {
     backlog: "待处理",

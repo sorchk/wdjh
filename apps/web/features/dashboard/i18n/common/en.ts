@@ -22,6 +22,8 @@ export const en: CommonDict = {
     logOut: "Log out",
     newIssue: "New Issue",
     workspaces: "Workspaces",
+    unpin: "Unpin",
+    whatsNew: "What's new",
   },
   status: {
     backlog: "Backlog",

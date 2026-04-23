@@ -798,17 +798,33 @@ export type SettingsDict = {
 export type AuthDict = {
   login: {
     signIn: string;
+    signInToMultica: string;
     enterCredentials: string;
+    enterEmailForCode: string;
     email: string;
     emailPlaceholder: string;
+    emailRequired: string;
     password: string;
     passwordPlaceholder: string;
     signInButton: string;
     signingIn: string;
+    sendingCode: string;
     authorizing: string;
     authorizeCli: string;
+    authorizeCliTitle: string;
     allowCliAccess: string;
     useDifferentAccount: string;
+    checkYourEmail: string;
+    weSentCodeTo: string;
+    invalidOrExpiredCode: string;
+    failedToSendCode: string;
+    failedToResendCode: string;
+    resendIn: string;
+    resendCode: string;
+    back: string;
+    or: string;
+    continueWithGoogle: string;
+    failedToAuthorizeCli: string;
   };
   init: {
     initializeAdmin: string;
