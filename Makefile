@@ -303,10 +303,14 @@ migrate-down: ## Create the target DB if needed, then roll back database migrati
 sqlc: ## Regenerate sqlc code
 	cd server && sqlc generate
 docker:
-
+	./dockerpush.sh
 # Cleanup
 ##@ Cleanup
 
 clean: ## Remove generated server binaries and temp files
 	rm -rf server/bin server/tmp
 	rm -rf node_modules apps/web/.next
+rebuild: 
+	$(MAKE) clean
+	$(MAKE) setup
+	$(MAKE) build

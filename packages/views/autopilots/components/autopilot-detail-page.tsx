@@ -37,13 +37,6 @@ import {
   DialogTitle,
 } from "@multica/ui/components/ui/dialog";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@multica/ui/components/ui/select";
-import {
   TriggerConfigSection,
   getDefaultTriggerConfig,
   toCronExpression,

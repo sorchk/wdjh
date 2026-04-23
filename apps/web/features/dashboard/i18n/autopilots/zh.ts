@@ -69,7 +69,6 @@ export const zh: AutopilotsDict = {
   failedToAddTrigger: "添加触发器失败",
   runNow: "立即运行",
   running: "运行中...",
-  autopilotTriggered: "自动任务已触发",
   failedToTriggerAutopilot: "触发自动任务失败",
   autopilotDeleted: "自动任务已删除",
   failedToDeleteAutopilot: "删除自动任务失败",
@@ -123,6 +122,9 @@ export const zh: AutopilotsDict = {
   runsWeeklyAt: "每 {days} 运行于",
   runsCustomSchedule: "自定义计划",
   daysOfWeek: ["日", "一", "二", "三", "四", "五", "六"],
+  today: "今天",
+  daysAgo: "天前",
+  monthsAgo: "月前",
   unknownAgent: "未知智能体",
   templates: {
     dailyNewsDigest: "每日新闻摘要",

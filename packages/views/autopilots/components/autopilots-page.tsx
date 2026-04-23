@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Zap, Play, Pause, AlertCircle, Newspaper, GitPullRequest, Bug, BarChart3, Shield, FileSearch } from "lucide-react";
+import { Plus, Zap, Play, Pause, AlertCircle, Newspaper, GitPullRequest, Bug, BarChart3, Shield, FileSearch, CheckCircle2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { autopilotListOptions } from "@multica/core/autopilots/queries";
 import {
@@ -138,6 +138,23 @@ function formatRelativeDate(date: string, i18n: { today: string; daysAgo: string
   if (days < 30) return `${days}${i18n.daysAgo}`;
   const months = Math.floor(days / 30);
   return `${months}${i18n.monthsAgo}`;
+}
+
+function getStatusConfig(status: string, i18n: { statusActive: string; statusPaused: string; statusArchived: string }): { label: string; color: string; icon: typeof CheckCircle2 } {
+  const configs: Record<string, { label: string; color: string; icon: typeof CheckCircle2 }> = {
+    active: { label: i18n.statusActive, color: "text-emerald-500", icon: CheckCircle2 },
+    paused: { label: i18n.statusPaused, color: "text-amber-500", icon: Pause },
+    archived: { label: i18n.statusArchived, color: "text-muted-foreground", icon: AlertCircle },
+  };
+  return configs[status] ?? { label: status, color: "text-muted-foreground", icon: AlertCircle };
+}
+
+function getExecutionModeLabel(mode: string, i18n: { modeCreateIssue: string; modeRunOnly: string }): string {
+  const configs: Record<string, string> = {
+    create_issue: i18n.modeCreateIssue,
+    run_only: i18n.modeRunOnly,
+  };
+  return configs[mode] ?? mode;
 }
 
 function AutopilotRow({ autopilot, i18n }: { autopilot: Autopilot; i18n: { autopilots: { modeCreateIssue: string; modeRunOnly: string; statusActive: string; statusPaused: string; statusArchived: string; today: string; daysAgo: string; monthsAgo: string; lastRun: string; mode: string; status: string; agent: string; name: string; unknownAgent: string } } }) {
@@ -360,7 +377,6 @@ function CreateAutopilotDialog({
 export function AutopilotsPage() {
   const { t: i18n } = useLocale();
   const wsId = useWorkspaceId();
-  const { t: i18n } = useLocale();
   const { data: autopilots = [], isLoading } = useQuery(autopilotListOptions(wsId));
   const [createOpen, setCreateOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<AutopilotTemplate | null>(null);

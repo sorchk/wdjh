@@ -29,6 +29,14 @@ export type CommonDict = {
   priority: Record<string, string>;
   projectStatus: Record<string, string>;
   projectPriority: Record<string, string>;
+  toast: {
+    failedToMoveIssue: string;
+    linkCopied: string;
+    failedToUpdateIssue: string;
+    issueDeleted: string;
+    failedToDeleteIssue: string;
+    failedToCancelTask: string;
+  };
   date: {
     today: string;
     tomorrow: string;
@@ -556,6 +564,9 @@ export type AutopilotsDict = {
   failedToTriggerAutopilot: string;
   autopilotDeleted: string;
   failedToDeleteAutopilot: string;
+  edit: string;
+  save: string;
+  saving: string;
   autopilotUpdated: string;
   failedToUpdateAutopilot: string;
   properties: string;
@@ -573,6 +584,9 @@ export type AutopilotsDict = {
   runStatusRunning: string;
   runStatusCompleted: string;
   runStatusFailed: string;
+  // Execution mode labels
+  executionModeCreateIssue: string;
+  executionModeRunOnly: string;
   // Priority options
   priorityUrgent: string;
   priorityHigh: string;
@@ -602,6 +616,9 @@ export type AutopilotsDict = {
   runsWeeklyAt: string;
   runsCustomSchedule: string;
   // Template prompts (for filling in template values) - today, daysAgo, monthsAgo removed
+  today: string;
+  daysAgo: string;
+  monthsAgo: string;
   unknownAgent: string;
   templates: {
     dailyNewsDigest: string;

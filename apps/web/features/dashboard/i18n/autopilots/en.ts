@@ -70,7 +70,6 @@ export const en: AutopilotsDict = {
   failedToAddTrigger: "Failed to add trigger",
   runNow: "Run now",
   running: "Running...",
-  autopilotTriggered: "Autopilot triggered",
   failedToTriggerAutopilot: "Failed to trigger autopilot",
   autopilotDeleted: "Autopilot deleted",
   failedToDeleteAutopilot: "Failed to delete autopilot",
@@ -124,6 +123,9 @@ export const en: AutopilotsDict = {
   runsWeeklyAt: "Runs every {days} at",
   runsCustomSchedule: "Custom schedule",
   daysOfWeek: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  today: "Today",
+  daysAgo: "d ago",
+  monthsAgo: "mo ago",
   unknownAgent: "Unknown Agent",
   templates: {
     dailyNewsDigest: "Daily news digest",
