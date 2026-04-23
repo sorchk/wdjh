@@ -78,6 +78,7 @@ import { useDeletePin, useReorderPins } from "@multica/core/pins/mutations";
 import { issueDetailOptions } from "@multica/core/issues/queries";
 import { projectDetailOptions } from "@multica/core/projects/queries";
 import type { PinnedItem } from "@multica/core/types";
+import { useLocale, locales, localeLabels } from "@/features/dashboard/i18n";
 import { useLogout } from "../auth";
 
 // Stable empty arrays for query defaults. Using an inline `= []` default on
@@ -311,6 +312,7 @@ export function AppSidebar({ topSlot, searchSlot, headerClassName, headerStyle }
   const user = useAuthStore((s) => s.user);
   const userId = useAuthStore((s) => s.user?.id);
   const logout = useLogout();
+  const { locale, setLocale } = useLocale();
   const workspace = useCurrentWorkspace();
   const p = useWorkspacePaths();
   const { data: workspaces = EMPTY_WORKSPACES } = useQuery(workspaceListOptions());
@@ -682,6 +684,23 @@ export function AppSidebar({ topSlot, searchSlot, headerClassName, headerStyle }
 
         <SidebarFooter className="p-2">
           <div className="border-t pt-2">
+            <div className="flex items-center justify-center gap-1 px-2 py-1.5 mb-1">
+              {locales.map((l, i) => (
+                <button
+                  key={l}
+                  onClick={() => setLocale(l)}
+                  className={cn(
+                    "px-1.5 py-0.5 text-[11px] font-medium transition-colors rounded hover:bg-accent",
+                    l === locale
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                    i > 0 && "border-l border-border",
+                  )}
+                >
+                  {localeLabels[l]}
+                </button>
+              ))}
+            </div>
             <Popover>
               <PopoverTrigger className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 hover:bg-accent transition-colors cursor-pointer">
                 <ActorAvatar

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { DashboardDict, Locale } from "./types";
 import { en as commonEn } from "./common/en";
 import { zh as commonZh } from "./common/zh";
@@ -32,6 +32,14 @@ import { zh as workspaceZh } from "./workspace/zh";
 const COOKIE_NAME = "multica-locale";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
+function getInitialLocale(): Locale {
+  if (typeof document === "undefined") return "zh";
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${COOKIE_NAME}=(\\w+)`));
+  const cookieLocale = match?.[1] as Locale | undefined;
+  if (cookieLocale === "en" || cookieLocale === "zh") return cookieLocale;
+  return "zh";
+}
+
 type LocaleContextValue = {
   locale: Locale;
   t: DashboardDict;
@@ -42,15 +50,23 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({
   children,
-  initialLocale = "zh",
+  initialLocale,
 }: {
   children: React.ReactNode;
   initialLocale?: Locale;
 }) {
-  const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const [locale, setLocaleState] = useState<Locale>(() => initialLocale ?? getInitialLocale());
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     document.cookie = `${COOKIE_NAME}=${l}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  }, []);
+
+  useEffect(() => {
+    const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${COOKIE_NAME}=(\\w+)`));
+    const cookieLocale = match?.[1] as Locale | undefined;
+    if ((cookieLocale === "en" || cookieLocale === "zh") && cookieLocale !== locale) {
+      setLocaleState(cookieLocale);
+    }
   }, []);
 
   const dictionaries: Record<Locale, DashboardDict> = {
