@@ -24,4 +24,4 @@ export { en as inviteEn } from "./invite/en";
 export { zh as inviteZh } from "./invite/zh";
 export { en as workspaceEn } from "./workspace/en";
 export { zh as workspaceZh } from "./workspace/zh";
-export type { Locale, DashboardDict } from "./types";
+export type { Locale, DashboardDict, AgentsDict } from "./types";

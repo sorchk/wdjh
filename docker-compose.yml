@@ -8,6 +8,7 @@ services:
     volumes:
       - ./uploads:/app/data/uploads
     environment:
+      TZ: Asia/Shanghai
       DATABASE_URL: ${DATABASE_URL}
       PORT: "8080"
       JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
@@ -25,6 +26,7 @@ services:
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
     environment:
+      TZ: Asia/Shanghai
       HOSTNAME: "0.0.0.0"
       REMOTE_API_URL: http://backend:8080
     restart: unless-stopped

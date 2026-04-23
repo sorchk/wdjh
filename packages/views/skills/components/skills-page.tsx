@@ -514,8 +514,6 @@ function AddFileDialog({
             {t.skills.add}
           </Button>
         </DialogFooter>
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

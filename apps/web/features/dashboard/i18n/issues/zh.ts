@@ -69,6 +69,10 @@ export const zh: IssuesDict = {
   copyLink: "复制链接",
   deleteIssue: "删除问题",
   toggleSidebar: "切换侧边栏",
+  today: "今天",
+  tomorrow: "明天",
+  nextWeek: "下周",
+  clearDate: "清除日期",
 
   // Subscribe
   subscribe: "订阅",

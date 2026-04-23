@@ -50,4 +50,6 @@ export const zh: SkillsDict = {
   skillDeleted: "技能已删除",
   failedToDeleteSkill: "删除技能失败",
   workspaceSkillsSupplement: "工作区技能可补充本地技能，并在团队间共享。",
+  runtimeTab: "运行时",
+  uploadTab: "上传",
 };

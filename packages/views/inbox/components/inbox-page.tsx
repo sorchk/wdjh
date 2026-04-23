@@ -241,7 +241,6 @@ export function InboxPage() {
           isSelected={(item.issue_id ?? item.id) === selectedKey}
           onClick={() => handleSelect(item)}
           onArchive={() => handleArchive(item.id)}
-          typeLabels={typeLabelsLocalized}
         />
       ))}
     </div>

@@ -43,12 +43,16 @@ export const zh: SettingsDict = {
 
   tokens: {
     apiTokens: "API 令牌",
+    tokensDescription: "个人访问令牌允许您使用 API 进行身份验证。",
     personalAccessTokensDescription: "个人访问令牌允许 CLI 和外部集成向您的账户进行身份验证。",
     tokenName: "令牌名称",
     tokenNamePlaceholder: "令牌名称（例如：我的 CLI）",
     expiry: "有效期",
     days30: "30 天",
     days90: "90 天",
+    thirtyDays: "30 天",
+    ninetyDays: "90 天",
+    oneYear: "1 年",
     year1: "1 年",
     noExpiry: "永不过期",
     create: "创建",
@@ -69,6 +73,9 @@ export const zh: SettingsDict = {
     failedToLoadTokens: "加载令牌失败",
     failedToCreateToken: "创建令牌失败",
     failedToRevokeToken: "撤销令牌失败",
+    tokenPrefix: "mult_",
+    revokeTokenDescription: "您确定要撤销此令牌吗？此操作无法撤销。",
+    tokenCreatedDescription: "请务必现在复制您的新令牌。您将无法再次看到它。",
   },
 
   appearance: {
@@ -106,6 +113,8 @@ export const zh: SettingsDict = {
     deleteWorkspaceButton: "删除工作空间",
     deleting: "删除中...",
     onlyAdminsAndOwnersCanUpdate: "只有管理员和所有者可以更新工作空间设置。",
+    failedToLeaveWorkspace: "离开工作空间失败。",
+    failedToDeleteWorkspace: "删除工作空间失败。",
   },
 
   members: {
@@ -137,6 +146,7 @@ export const zh: SettingsDict = {
     fullAccessManageAll: "完全访问权限，管理所有设置",
     manageMembersAndSettings: "管理成员和设置",
     createAndWorkOnIssues: "创建和处理问题",
+    pending: "待处理",
   },
 
   repositories: {

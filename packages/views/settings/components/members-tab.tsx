@@ -286,22 +286,6 @@ export function MembersTab() {
         }
       },
     });
-  };: `Remove ${member.name}`,
-      description: `Remove ${member.name} from ${workspace.name}? They will lose access to this workspace.`,
-      variant: "destructive",
-      onConfirm: async () => {
-        setMemberActionId(member.id);
-        try {
-          await api.deleteMember(workspace.id, member.id);
-          qc.invalidateQueries({ queryKey: workspaceKeys.members(wsId) });
-          toast.success("Member removed");
-        } catch (e) {
-          toast.error(e instanceof Error ? e.message : "Failed to remove member");
-        } finally {
-          setMemberActionId(null);
-        }
-      },
-    });
   };
 
   if (!workspace) return null;

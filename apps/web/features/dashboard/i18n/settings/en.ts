@@ -43,12 +43,16 @@ export const en: SettingsDict = {
 
   tokens: {
     apiTokens: "API Tokens",
+    tokensDescription: "Personal access tokens allow you to authenticate with the API.",
     personalAccessTokensDescription: "Personal access tokens allow the CLI and external integrations to authenticate with your account.",
     tokenName: "Token name",
     tokenNamePlaceholder: "Token name (e.g. My CLI)",
     expiry: "Expiry",
     days30: "30 days",
     days90: "90 days",
+    thirtyDays: "30 days",
+    ninetyDays: "90 days",
+    oneYear: "1 year",
     year1: "1 year",
     noExpiry: "No expiry",
     create: "Create",
@@ -69,6 +73,9 @@ export const en: SettingsDict = {
     failedToLoadTokens: "Failed to load tokens",
     failedToCreateToken: "Failed to create token",
     failedToRevokeToken: "Failed to revoke token",
+    tokenPrefix: "mult_",
+    revokeTokenDescription: "Are you sure you want to revoke this token? This action cannot be undone.",
+    tokenCreatedDescription: "Make sure to copy your new token now. You won't be able to see it again.",
   },
 
   appearance: {
@@ -106,6 +113,8 @@ export const en: SettingsDict = {
     deleteWorkspaceButton: "Delete workspace",
     deleting: "Deleting...",
     onlyAdminsAndOwnersCanUpdate: "Only admins and owners can update workspace settings.",
+    failedToLeaveWorkspace: "Failed to leave workspace.",
+    failedToDeleteWorkspace: "Failed to delete workspace.",
   },
 
   members: {
@@ -137,6 +146,7 @@ export const en: SettingsDict = {
     fullAccessManageAll: "Full access, manage all settings",
     manageMembersAndSettings: "Manage members and settings",
     createAndWorkOnIssues: "Create and work on issues",
+    pending: "Pending",
   },
 
   repositories: {

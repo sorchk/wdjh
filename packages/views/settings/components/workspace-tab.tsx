@@ -224,8 +224,7 @@ export function WorkspaceTab() {
                 rows={4}
                 disabled={!canManageWorkspace}
                 className="mt-1 resize-none"
-                placeholder={t.settings.workspace.contextPlaceholder}"
-                placeholder="Background information and context for AI agents working in this workspace"
+                placeholder={t.settings.workspace.contextPlaceholder}
               />
             </div>
             <div>

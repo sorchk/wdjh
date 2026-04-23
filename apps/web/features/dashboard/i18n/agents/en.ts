@@ -20,7 +20,6 @@ export const en: AgentsDict = {
   cloud: "Cloud",
   local: "Local",
   restore: "Restore",
-  archiveAgent: "Archive Agent",
   createAgentDialog: {
     title: "Create Agent",
     description: "Create a new AI agent for your workspace",
@@ -80,6 +79,15 @@ You are a frontend engineer specializing in React and TypeScript.
     addWorkspaceSkill: "Add Workspace Skill",
     localSkillsInfo:
       "Local runtime skills (from your CLI's skills directory) are always available automatically — no need to add them here.",
+    localRuntimeSkills: "Local Runtime Skills",
+    localRuntimeSkillsDescription: "Skills available from the local runtime's skills directory.",
+    runtimeDetailsUnavailable: "Runtime details unavailable. Please check the runtime connection.",
+    runtimeMustBeOnline: "Runtime must be online to view local skills.",
+    failedToLoadRuntimeLocalSkills: "Failed to load runtime local skills.",
+    runtimeDoesNotExposeLocalSkillInventory: "Runtime does not expose local skill inventory.",
+    noLocalSkillsFound: "No local skills found",
+    noLocalSkillsFoundDescription: "Add skills to the runtime's skills directory to make them available here.",
+    importToWorkspace: "Import to Workspace",
     noSkillsAssigned: "No skills assigned",
     noSkillsAssignedDesc:
       "Add workspace skills to share team knowledge with this agent. Local skills are already used automatically.",
@@ -105,6 +113,7 @@ You are a frontend engineer specializing in React and TypeScript.
     completedLabel: "Completed",
     failedLabel: "Failed",
     queuedLabel: "Queued",
+    taskWithoutLinkedIssue: "Task without linked issue",
   },
   settingsTab: {
     avatar: "Avatar",

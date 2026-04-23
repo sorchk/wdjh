@@ -52,4 +52,6 @@ export const en: SkillsDict = {
   failedToDeleteSkill: "Failed to delete skill",
   workspaceSkillsSupplement:
     "Workspace skills supplement your local skills and are shared across the team.",
+  runtimeTab: "Runtime",
+  uploadTab: "Upload",
 };

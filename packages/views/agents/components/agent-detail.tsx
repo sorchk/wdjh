@@ -31,6 +31,7 @@ import {
 } from "@multica/ui/components/ui/dropdown-menu";
 import { Button } from "@multica/ui/components/ui/button";
 import { useLocale } from "@/features/dashboard/i18n";
+import type { AgentsDict } from "@/features/dashboard/i18n/types";
 import { ActorAvatar } from "../../common/actor-avatar";
 import { statusConfig } from "../config";
 import { InstructionsTab } from "./tabs/instructions-tab";
@@ -80,12 +81,12 @@ export function AgentDetail({
   const isArchived = !!agent.archived_at;
 
   const detailTabs: { id: DetailTab; labelKey: keyof AgentsDict; icon: typeof FileText }[] = [
-    { id: "instructions", labelKey: "tabInstructions", icon: FileText },
-    { id: "skills", labelKey: "tabSkills", icon: BookOpenText },
-    { id: "tasks", labelKey: "tabTasks", icon: ListTodo },
-    { id: "env", labelKey: "tabEnv", icon: KeyRound },
-    { id: "custom_args", labelKey: "tabCustomArgs", icon: Terminal },
-    { id: "settings", labelKey: "tabSettings", icon: Settings },
+    { id: "instructions", labelKey: "tabInstructions" as keyof AgentsDict, icon: FileText },
+    { id: "skills", labelKey: "tabSkills" as keyof AgentsDict, icon: BookOpenText },
+    { id: "tasks", labelKey: "tabTasks" as keyof AgentsDict, icon: ListTodo },
+    { id: "env", labelKey: "tabEnv" as keyof AgentsDict, icon: KeyRound },
+    { id: "custom_args", labelKey: "tabCustomArgs" as keyof AgentsDict, icon: Terminal },
+    { id: "settings", labelKey: "tabSettings" as keyof AgentsDict, icon: Settings },
   ];
 
   return (
@@ -162,7 +163,7 @@ export function AgentDetail({
             }`}
           >
             <tab.icon className="h-3.5 w-3.5" />
-            {t.agents[tab.labelKey]}
+            {String(t.agents[tab.labelKey])}
           </button>
         ))}
       </div>

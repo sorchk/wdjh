@@ -71,6 +71,10 @@ export const en: IssuesDict = {
   copyLink: "Copy link",
   deleteIssue: "Delete issue",
   toggleSidebar: "Toggle sidebar",
+  today: "Today",
+  tomorrow: "Tomorrow",
+  nextWeek: "Next week",
+  clearDate: "Clear date",
 
   // Subscribe
   subscribe: "Subscribe",

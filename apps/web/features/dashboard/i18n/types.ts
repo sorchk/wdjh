@@ -110,6 +110,10 @@ export type IssuesDict = {
   copyLink: string;
   deleteIssue: string;
   toggleSidebar: string;
+  today: string;
+  tomorrow: string;
+  nextWeek: string;
+  clearDate: string;
   // Additional labels
   backToIssues: string;
   // Subscribe
@@ -310,7 +314,6 @@ export type AgentsDict = {
   cloud: string;
   local: string;
   restore: string;
-  archiveAgent: string;
   createAgentDialog: {
     title: string;
     description: string;
@@ -356,6 +359,15 @@ export type AgentsDict = {
     addSkill: string;
     addWorkspaceSkill: string;
     localSkillsInfo: string;
+    localRuntimeSkills: string;
+    localRuntimeSkillsDescription: string;
+    runtimeDetailsUnavailable: string;
+    runtimeMustBeOnline: string;
+    failedToLoadRuntimeLocalSkills: string;
+    runtimeDoesNotExposeLocalSkillInventory: string;
+    noLocalSkillsFound: string;
+    noLocalSkillsFoundDescription: string;
+    importToWorkspace: string;
     noSkillsAssigned: string;
     noSkillsAssignedDesc: string;
     allWorkspaceSkillsAssigned: string;
@@ -380,6 +392,7 @@ export type AgentsDict = {
     completedLabel: string;
     failedLabel: string;
     queuedLabel: string;
+    taskWithoutLinkedIssue: string;
   };
   settingsTab: {
     avatar: string;
@@ -509,6 +522,8 @@ export type SkillsDict = {
   skillDeleted: string;
   failedToDeleteSkill: string;
   workspaceSkillsSupplement: string;
+  runtimeTab: string;
+  uploadTab: string;
 };
 
 export type AutopilotsDict = {
@@ -694,12 +709,16 @@ export type SettingsDict = {
   };
   tokens: {
     apiTokens: string;
+    tokensDescription: string;
     personalAccessTokensDescription: string;
     tokenName: string;
     tokenNamePlaceholder: string;
     expiry: string;
     days30: string;
     days90: string;
+    thirtyDays: string;
+    ninetyDays: string;
+    oneYear: string;
     year1: string;
     noExpiry: string;
     create: string;
@@ -720,6 +739,9 @@ export type SettingsDict = {
     failedToLoadTokens: string;
     failedToCreateToken: string;
     failedToRevokeToken: string;
+    tokenPrefix: string;
+    revokeTokenDescription: string;
+    tokenCreatedDescription: string;
   };
   appearance: {
     theme: string;
@@ -755,6 +777,8 @@ export type SettingsDict = {
     deleteWorkspaceButton: string;
     deleting: string;
     onlyAdminsAndOwnersCanUpdate: string;
+    failedToLeaveWorkspace: string;
+    failedToDeleteWorkspace: string;
   };
   members: {
     members: string;
@@ -785,6 +809,7 @@ export type SettingsDict = {
     fullAccessManageAll: string;
     manageMembersAndSettings: string;
     createAndWorkOnIssues: string;
+    pending: string;
   };
   repositories: {
     repositories: string;
