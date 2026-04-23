@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -862,6 +863,171 @@ func (h *Handler) ImportSkill(w http.ResponseWriter, r *http.Request) {
 	actorType, actorID := h.resolveActor(r, creatorID, workspaceID)
 	h.publish(protocol.EventSkillCreated, workspaceID, actorType, actorID, map[string]any{"skill": resp})
 	writeJSON(w, http.StatusCreated, resp)
+}
+
+// --- Skill Upload (ZIP) ---
+
+// skillUploadFile represents a file extracted from a zip.
+type skillUploadFile struct {
+	path    string
+	content string
+}
+
+// UploadSkill handles ZIP file upload for skill import.
+func (h *Handler) UploadSkill(w http.ResponseWriter, r *http.Request) {
+	workspaceID := h.resolveWorkspaceID(r)
+
+	creatorID, ok := requireUserID(w, r)
+	if !ok {
+		return
+	}
+
+	if err := r.ParseMultipartForm(50 << 20); err != nil { // 50MB max
+		writeError(w, http.StatusBadRequest, "failed to parse multipart form: "+err.Error())
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "file field is required")
+		return
+	}
+	defer file.Close()
+
+	// Validate file extension
+	if !strings.HasSuffix(strings.ToLower(header.Filename), ".zip") {
+		writeError(w, http.StatusBadRequest, "only .zip files are supported")
+		return
+	}
+
+	// Read zip content
+	zipData, err := io.ReadAll(io.LimitReader(file, 50<<20)) // 50MB limit
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "failed to read zip file: "+err.Error())
+		return
+	}
+
+	reader, err := zip.NewReader(strings.NewReader(string(zipData)), int64(len(zipData)))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid zip file: "+err.Error())
+		return
+	}
+
+	// Extract files, normalize paths, find SKILL.md
+	var files []skillUploadFile
+	var skillMDContent string
+	var skillName string
+	var skillDescription string
+
+	for _, f := range reader.File {
+		// Skip directories
+		if f.FileInfo().IsDir() {
+			continue
+		}
+
+		// Validate and normalize path
+		name := filepath.ToSlash(f.Name)
+		if strings.HasPrefix(name, "..") || filepath.IsAbs(name) {
+			slog.Warn("upload skill: skipping file with suspicious path", "path", name)
+			continue
+		}
+
+		// Read file content
+		rc, err := f.Open()
+		if err != nil {
+			slog.Warn("upload skill: failed to open file in zip", "path", name, "error", err)
+			continue
+		}
+		content, err := io.ReadAll(rc)
+		rc.Close()
+		if err != nil {
+			slog.Warn("upload skill: failed to read file from zip", "path", name, "error", err)
+			continue
+		}
+
+		// Limit individual file size to 1MB
+		if len(content) > 1<<20 {
+			writeError(w, http.StatusBadRequest, "file too large (max 1MB per file): "+name)
+			return
+		}
+
+		// Handle SKILL.md specially
+		lowerName := strings.ToLower(name)
+		if lowerName == "skill.md" {
+			skillMDContent = string(content)
+			// Extract name from frontmatter or use folder name
+			skillName, skillDescription = parseSkillFrontmatter(skillMDContent)
+			if skillName == "" {
+				// Try to get name from parent folder
+				skillName = extractFolderName(f.Name)
+			}
+		}
+
+		files = append(files, skillUploadFile{
+			path:    name,
+			content: string(content),
+		})
+	}
+
+	if skillMDContent == "" {
+		writeError(w, http.StatusBadRequest, "the uploaded zip must contain a SKILL.md file")
+		return
+	}
+
+	if skillName == "" {
+		skillName = "Imported Skill"
+	}
+
+	// Convert to CreateSkillFileRequest, excluding SKILL.md from files list
+	createFiles := make([]CreateSkillFileRequest, 0, len(files))
+	for _, f := range files {
+		lower := strings.ToLower(f.path)
+		if lower == "skill.md" {
+			continue
+		}
+		if !validateFilePath(f.path) {
+			continue
+		}
+		createFiles = append(createFiles, CreateSkillFileRequest{
+			Path:    f.path,
+			Content: f.content,
+		})
+	}
+
+	resp, err := h.createSkillWithFiles(r.Context(), skillCreateInput{
+		WorkspaceID: workspaceID,
+		CreatorID:   creatorID,
+		Name:        skillName,
+		Description: skillDescription,
+		Content:     skillMDContent,
+		Config:      map[string]any{},
+		Files:       createFiles,
+	})
+	if err != nil {
+		if isUniqueViolation(err) {
+			writeError(w, http.StatusConflict, "a skill with this name already exists")
+			return
+		}
+		writeError(w, http.StatusInternalServerError, "failed to create skill: "+err.Error())
+		return
+	}
+	actorType, actorID := h.resolveActor(r, creatorID, workspaceID)
+	h.publish(protocol.EventSkillCreated, workspaceID, actorType, actorID, map[string]any{"skill": resp})
+	writeJSON(w, http.StatusCreated, resp)
+}
+
+// extractFolderName extracts the name of the parent folder from a zip path.
+// e.g., "my-skill/SKILL.md" -> "my-skill"
+func extractFolderName(zipPath string) string {
+	// Normalize path separators
+	zipPath = filepath.ToSlash(zipPath)
+	dir := filepath.Dir(zipPath)
+	// Get the last segment
+	parts := strings.Split(dir, "/")
+	if len(parts) > 0 && parts[len(parts)-1] != "" && parts[len(parts)-1] != "." {
+		return parts[len(parts)-1]
+	}
+	return ""
 }
 
 // --- Skill File endpoints ---
