@@ -871,6 +871,15 @@ export class ApiClient {
     });
   }
 
+  async uploadSkill(file: File): Promise<Skill> {
+    const formData = new FormData();
+    formData.append("file", file);
+    return this.fetch("/api/skills/upload", {
+      method: "POST",
+      body: formData,
+    });
+  }
+
   async listAgentSkills(agentId: string): Promise<Skill[]> {
     return this.fetch(`/api/agents/${agentId}/skills`);
   }
